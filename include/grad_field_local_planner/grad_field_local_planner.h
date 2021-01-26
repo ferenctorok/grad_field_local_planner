@@ -3,8 +3,8 @@
 
 
 /* standard includes */
-// time
-#include <time.h>
+// timing 
+#include <chrono>
 
 //files
 #include <fstream>
@@ -71,6 +71,10 @@ namespace grad_field_local_planner
        * @return True if achieved, false otherwise
        */
       bool isGoalReached();
+
+    private:
+      // initialization_time:
+      chrono::time_point<chrono::high_resolution_clock> init_time_;
   };
 
 } // namespace grad_field_local_planner

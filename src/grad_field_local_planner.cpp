@@ -25,7 +25,7 @@ namespace grad_field_local_planner
                                   tf2_ros::Buffer* tf,
                                   costmap_2d::Costmap2DROS* costmap_ros)
   {
-
+    init_time_ = chrono::high_resolution_clock::now();
   }
 
 
@@ -37,12 +37,20 @@ namespace grad_field_local_planner
 
   bool GradFieldPlannerROS::computeVelocityCommands(geometry_msgs::Twist& cmd_vel)
   {
+    ROS_INFO("--- PUBLISHED CMD_VEL ---");
+    cmd_vel.linear.x = 1.0;
+    cmd_vel.linear.y = 0.0;
+    cmd_vel.linear.z = 0.0;
+    cmd_vel.angular.x = 0.0;
+    cmd_vel.angular.y = 0.0;
+    cmd_vel.angular.z = 0.0;
+
     return true;
   }
 
 
   bool GradFieldPlannerROS::isGoalReached()
   {
-    return true;
+    return false;
   }
 } // namespace grad_field_local_planner
