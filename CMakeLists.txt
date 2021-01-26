@@ -130,12 +130,12 @@ include_directories(
 )
 
 ## Declare a C++ library
-add_library(grad_field_local_planner
-  src/grad_field_local_planner.cpp
+add_library(gradplanner_ros
+  src/gradplanner_ros/grad_field_local_planner.cpp
 )
 
-target_link_libraries(grad_field_local_planner
-  ${catkin_LIBRARIES}
+add_library(gradplanner
+  src/gradplanner/potential_field.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -159,9 +159,10 @@ target_link_libraries(grad_field_local_planner
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(gradplanner_ros
+  gradplanner
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##

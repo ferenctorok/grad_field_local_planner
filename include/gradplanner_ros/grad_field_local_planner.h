@@ -73,8 +73,14 @@ namespace grad_field_local_planner
       bool isGoalReached();
 
     private:
-      // initialization_time:
-      chrono::time_point<chrono::high_resolution_clock> init_time_;
+      bool initialized; // true if the object is already initialized.
+
+      // Pointers to external objects received from move_base:
+      costmap_2d::Costmap2DROS* costmap_ros; // costmap
+      tf2_ros::Buffer* tf_buffer; // transform buffer
+
+      // Topics & Services
+      ros::Subscriber amcl_sub; // subscribes to the amcl topic     
   };
 
 } // namespace grad_field_local_planner

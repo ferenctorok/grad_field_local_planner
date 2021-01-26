@@ -1,4 +1,4 @@
-# include <grad_field_local_planner/grad_field_local_planner.h>
+# include <gradplanner_ros/grad_field_local_planner.h>
 
 #include <pluginlib/class_list_macros.h>
 
@@ -25,7 +25,7 @@ namespace grad_field_local_planner
                                   tf2_ros::Buffer* tf,
                                   costmap_2d::Costmap2DROS* costmap_ros)
   {
-    init_time_ = chrono::high_resolution_clock::now();
+    
   }
 
 
