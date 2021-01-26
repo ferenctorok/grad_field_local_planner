@@ -133,9 +133,11 @@ include_directories(
 add_library(gradplanner_ros
   src/gradplanner_ros/grad_field_local_planner.cpp
 )
+add_dependencies(gradplanner_ros gradplanner)
 
 add_library(gradplanner
-  src/gradplanner/potential_field.cpp
+  src/gradplanner/gradient_field_base.cpp
+  src/gradplanner/pixel.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -161,6 +163,10 @@ add_library(gradplanner
 ## Specify libraries to link a library or executable target against
 target_link_libraries(gradplanner_ros
   gradplanner
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(gradplanner
   ${catkin_LIBRARIES}
 )
 
