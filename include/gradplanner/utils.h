@@ -13,7 +13,7 @@ namespace gradplanner
       /**
        * @brief Default constructor of the Pixel class.
        */
-      Pixel(){}
+      Pixel();
 
       /**
        * @brief Contstructor of the Pixel class.
@@ -46,7 +46,7 @@ namespace gradplanner
       /**
        * @brief Destructor of the Pixel class.
        */
-      ~Pixel();
+      ~Pixel() {}
 
       /**
        * @brief Get the x member of a Pixel.

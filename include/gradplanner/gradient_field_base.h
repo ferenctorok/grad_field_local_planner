@@ -20,7 +20,7 @@ namespace gradplanner
    * @class PotentialField
    * @brief Base class for gradient fields
    */
-  class GradientFieldBase
+  class GradientFieldBase 
   {
     public:
       /**
