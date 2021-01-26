@@ -19,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
   tf2
+  tf2_ros
 )
 
 ## System dependencies are found with CMake's conventions
@@ -124,14 +125,18 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/grad_field_local_planner.cpp
-# )
+add_library(grad_field_local_planner
+  src/grad_field_local_planner.cpp
+)
+
+target_link_libraries(grad_field_local_planner
+  ${catkin_LIBRARIES}
+)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
