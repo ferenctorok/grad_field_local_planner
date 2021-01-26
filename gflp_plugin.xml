@@ -1,0 +1,7 @@
+<library path="lib/libgrad_field_local_planner">
+	<class name ="grad_field_local_planner/GradFieldPlannerROS" type ="grad_field_local_planner::GradFieldPlannerROS" base_class_type= "nav_core::BaseLocalPlanner">
+		<description>
+			Plugin for BaseLocalPlanner that navigates locally based on a gradient field.
+		</description>
+	</class>
+</library>
