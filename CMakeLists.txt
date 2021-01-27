@@ -52,5 +52,7 @@ include_directories(
 )
 
 ## add subdirectories: ##
-add_subdirectory(tests)
 add_subdirectory(src)
+if (CXXTEST_FOUND)
+  add_subdirectory(tests)
+endif()
