@@ -1,17 +1,6 @@
 cmake_minimum_required(VERSION 3.10.2)
 project(grad_field_local_planner)
 
-# Finding CXXTest for the unittests:
-set(CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cxxtest-4.3)
-find_package(CxxTest REQUIRED)
-
-# Enable testing to set up CTEST to use the tests of CXXTest and
-# adding the include directories of CXXTest to be able to use the headers.
-if (CXXTEST_FOUND)
-  include_directories(${CXXTEST_INCLUDE_DIR})
-  enable_testing()
-endif()
-
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
 
@@ -32,6 +21,17 @@ find_package(catkin REQUIRED COMPONENTS
   tf2
   tf2_ros
 )
+
+# Finding CXXTest for the unittests:
+set(CMAKE_PREFIX_PATH ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cxxtest-4.3)
+find_package(CxxTest REQUIRED)
+
+# Enable testing to set up CTEST to use the tests of CXXTest and
+# adding the include directories of CXXTest to be able to use the headers.
+if (CXXTEST_FOUND)
+  include_directories(${CXXTEST_INCLUDE_DIR})
+  enable_testing()
+endif()
 
 catkin_package(
 #  INCLUDE_DIRS include

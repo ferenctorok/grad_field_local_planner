@@ -1,6 +1,10 @@
 #include <cxxtest/TestSuite.h>
 
+#include <gradplanner/field_utils.h>
 #include <gradplanner/utils.h>
+
+#include <cmath>
+using namespace std;
 
 
 class MyTestSuite : public CxxTest::TestSuite
@@ -18,12 +22,13 @@ class MyTestSuite : public CxxTest::TestSuite
       grad[1] = -1.2;
       parent[0] = 4;
       parent[1] = 5;
+      eps = 1e-5;
     }
 
     /**
      * @brief Tests the constructors of the Pixel class.
      */
-    void test_constr1()
+    void test_Pixel_constr1()
     {
       // default constructor:
       p = gradplanner::Pixel();
@@ -50,12 +55,69 @@ class MyTestSuite : public CxxTest::TestSuite
       do_pixel_value_tests(p, x, y, value, grad, parent);
     }
 
+    /**
+     * @brief Tests the set methods of the Pixel class.
+     */
+    void test_Pixel_set_methods()
+    {
+      p = gradplanner::Pixel();
+
+      // set_val()
+      p.set_val(value);
+      TS_ASSERT_EQUALS(p.get_val(), value);
+
+      // set_grad()
+      p.set_grad(grad);
+      TS_ASSERT_EQUALS(p.get_grad()[0], grad[0]);
+      TS_ASSERT_EQUALS(p.get_grad()[1], grad[1]);
+
+      // set_parent()
+      p.set_parent(parent);
+      TS_ASSERT_EQUALS(p.get_parent()[0], parent[0]);
+      TS_ASSERT_EQUALS(p.get_parent()[1], parent[1]);
+    }
+
+    /**
+     * @brief Tests the scale_grad method of the Pixel class.
+     */
+    void test_Pixel_scale_grad()
+    {
+      p = gradplanner::Pixel(x, y, value, grad, parent);
+
+      // without length parameter:
+      p.scale_grad();
+      double* out = p.get_grad();
+      TS_ASSERT_DELTA(1, gradplanner::get_length(out), eps);
+      TS_ASSERT_DELTA(out[0] / out[1], grad[0] / grad[1], eps);
+      TS_ASSERT_EQUALS(signbit(out[0]), signbit(grad[0]));
+
+      // with length parameter:
+      p.scale_grad(3.2);
+      out = p.get_grad();
+      TS_ASSERT_DELTA(3.2, gradplanner::get_length(out), eps);
+      TS_ASSERT_DELTA(out[0] / out[1], grad[0] / grad[1], eps);
+      TS_ASSERT_EQUALS(signbit(out[0]), signbit(grad[0]));
+    }
+
+    /**
+     * @brief Tests the normalize_grad method of the Pixel class.
+     */
+    void test_Pixel_normalize_grad()
+    {
+      p = gradplanner::Pixel(x, y, value, grad, parent);
+      p.normalize_grad();
+      double* out = p.get_grad();
+      TS_ASSERT_DELTA(1, gradplanner::get_length(out), eps);
+      TS_ASSERT_DELTA(out[0] / out[1], grad[0] / grad[1], eps);
+      TS_ASSERT_EQUALS(signbit(out[0]), signbit(grad[0]));
+    }
+
   private:
     gradplanner::Pixel p;
     unsigned int x, y, parent[2];
     int value;
     double grad[2];
-
+    double eps;
 
     /**
      * @brief Compares the values of the members of the given pixel
@@ -64,7 +126,6 @@ class MyTestSuite : public CxxTest::TestSuite
     void do_pixel_value_tests(gradplanner::Pixel p, unsigned int x, unsigned int y,
       int value, double grad[2], unsigned int parent[2])
       {
-        std::cout << "yoller2" << std::endl;
         TS_ASSERT_EQUALS(p.get_x(), x);
         TS_ASSERT_EQUALS(p.get_y(), y);
         TS_ASSERT_EQUALS(p.get_val(), value);

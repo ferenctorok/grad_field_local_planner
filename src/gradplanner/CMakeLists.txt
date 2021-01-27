@@ -2,6 +2,7 @@
 add_library(gradplanner
   ${CMAKE_CURRENT_LIST_DIR}/gradient_field_base.cpp
   ${CMAKE_CURRENT_LIST_DIR}/pixel.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/utils.cpp
 )
 
 # Specify libraries to link against the gradplanner target library:

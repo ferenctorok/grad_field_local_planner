@@ -1,3 +1,4 @@
+#include <gradplanner/field_utils.h>
 #include <gradplanner/utils.h>
 
 #include <cmath>
@@ -22,11 +23,11 @@ namespace gradplanner
   x(x), y(y), value(value), grad{grad[0], grad[1]}, parent{parent[0], parent[1]} {}
 
 
-  unsigned int Pixel::get_x() const {return x;}
-  unsigned int Pixel::get_y() const {return y;}
-  int Pixel::get_val() const {return value;}
-  const double* Pixel::get_grad() const {return grad;}
-  const unsigned int* Pixel::get_parent() const {return parent;}
+  unsigned int Pixel::get_x() {return x;}
+  unsigned int Pixel::get_y() {return y;}
+  int Pixel::get_val() {return value;}
+  double* Pixel::get_grad() {return grad;}
+  unsigned int* Pixel::get_parent() {return parent;}
   void Pixel::set_val(int value) {this->value = value;}
 
 
@@ -49,7 +50,7 @@ namespace gradplanner
 
   void Pixel::scale_grad(double L)
   {
-    double length = sqrt(pow(grad[0], 2) + pow(grad[1], 2));
+    double length = get_length(grad);
     if (length < 1e-5) grad[0], grad[1] = 0.0, 0.0;
     else
     {
