@@ -57,5 +57,5 @@ namespace gradplanner
       grad[0] *= L / length;
       grad[1] *= L / length;
     }
-  }
+  }  
 } // namespace gradplanner

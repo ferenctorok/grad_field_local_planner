@@ -1,6 +1,9 @@
 #ifndef FIELD_UTILS_H
 #define FIELD_UTILS_H
 
+#include <vector>
+using namespace std;
+
 
 namespace gradplanner
 {
@@ -107,6 +110,93 @@ namespace gradplanner
       int value;
       double grad[2];
       unsigned int parent[2];
+  };
+
+  /**
+   * @class Field class that is a 2D container for Pixels. 
+   */
+  class Field
+  {
+    public:
+      /**
+       * @brief Default constructor of the Field class.
+       */
+      Field() {}
+
+      /**
+       * @brief Constructor of the Field class.
+       * @param N size of the field in the x direction. (first coordinate.)
+       * @param M size of the field in the y direction. (second coordinate.)
+       */
+      Field(unsigned int N, unsigned int M);
+
+      /**
+       * @brief Default destructor of the Field class.
+       */
+      ~Field() {}
+
+      /**
+       * @brief Returns the shape of the field as an array.
+       */
+      unsigned int* get_shape();
+
+      /**
+       * @brief Returns the Pixel pointer at the given index. 
+       * @param x x direction.
+       * @param y y direction.
+       */
+      Pixel* get_pix(unsigned int x, unsigned int y);
+
+      /**
+       * @brief Get the value of the pixel at the given place.
+       * @param x The x coordinate of the pixel.
+       * @param y The y coordinate of the pixel.
+       */
+      int get_val(unsigned int x, unsigned int y);
+
+      /**
+       * @brief Set the value of the pixel at the given place.
+       * @param x The x coordinate of the pixel.
+       * @param y The y coordinate of the pixel.
+       * @param val The value to be set.
+       */
+      void set_val(unsigned int x, unsigned int y, int val);
+
+      /**
+       * @brief Get the gradient of the pixel at the given place.
+       * @param x The x coordinate of the pixel.
+       * @param y The y coordinate of the pixel.
+       */
+      double* get_grad(unsigned int x, unsigned int y);
+
+      /**
+       * @brief Set the gradient of the pixel at the given place.
+       * @param x The x coordinate of the pixel.
+       * @param y The y coordinate of the pixel.
+       * @param grad The value to be set.
+       */
+      void set_grad(unsigned int x, unsigned int y, double grad[2]);
+
+      /**
+       * @brief Get the gradient of the pixel at the given place.
+       * @param x The x coordinate of the pixel.
+       * @param y The y coordinate of the pixel.
+       */
+      unsigned int* get_parent(unsigned int x, unsigned int y);
+
+      /**
+       * @brief Set the gradient of the pixel at the given place.
+       * @param x The x coordinate of the pixel.
+       * @param y The y coordinate of the pixel.
+       * @param parent The value to be set.
+       */
+      void set_parent(unsigned int x, unsigned int y, unsigned int parent[2]);
+
+    private:
+      unsigned int N;
+      unsigned int M;
+      vector<vector<Pixel* >> data;
+      vector<int > data2;
   };
 } // namespace gradplanner
 

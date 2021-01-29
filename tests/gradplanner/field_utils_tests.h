@@ -7,7 +7,25 @@
 using namespace std;
 
 
-class MyTestSuite : public CxxTest::TestSuite
+/**
+ * @brief Compares the values of the members of the given pixel
+ * to the provided values.
+ */
+void do_pixel_value_tests(gradplanner::Pixel p, unsigned int x, unsigned int y,
+int value, double grad[2], unsigned int parent[2])
+{
+  TS_ASSERT_EQUALS(p.get_x(), x);
+  TS_ASSERT_EQUALS(p.get_y(), y);
+  TS_ASSERT_EQUALS(p.get_val(), value);
+  for (int i=0; i < 2; i++)
+  {
+    TS_ASSERT_EQUALS(p.get_grad()[i], grad[i]);
+    TS_ASSERT_EQUALS(p.get_parent()[i], parent[i]);
+  }
+}
+
+
+class PixelTests : public CxxTest::TestSuite
 {
   public:
     /**
@@ -118,21 +136,43 @@ class MyTestSuite : public CxxTest::TestSuite
     int value;
     double grad[2];
     double eps;
+};
+
+
+class FieldTests : public CxxTest::TestSuite
+{
+  public:
+    /**
+     * @brief sets up the tests.
+     */
+    void setUp()
+    {
+      N = 10;
+      M = 12;
+      f = gradplanner::Field(N, M);
+    }
+
+    void test1()
+    {
+      TS_ASSERT_EQUALS(2, 2);
+    }
 
     /**
-     * @brief Compares the values of the members of the given pixel
-     * to the provided values.
+     * @brief Tests the constructor of the Field class.
      */
-    void do_pixel_value_tests(gradplanner::Pixel p, unsigned int x, unsigned int y,
-      int value, double grad[2], unsigned int parent[2])
-      {
-        TS_ASSERT_EQUALS(p.get_x(), x);
-        TS_ASSERT_EQUALS(p.get_y(), y);
-        TS_ASSERT_EQUALS(p.get_val(), value);
-        for (int i=0; i < 2; i++)
-        {
-          TS_ASSERT_EQUALS(p.get_grad()[i], grad[i]);
-          TS_ASSERT_EQUALS(p.get_parent()[i], parent[i]);
-        }
-      }
+    void test_Field_constr()
+    {
+      unsigned int* shape = f.get_shape();
+      ETS_ASSERT_EQUALS(N, shape[0]);
+      ETS_ASSERT_EQUALS(M, shape[1]);
+
+      for (int i = 0; i < N; i ++)
+        for (int j = 0; j < M; j ++)
+          do_pixel_value_tests(*f.get_pix(i, j), i, j, 0,
+           new double[2]{0, 0}, new unsigned int[2]{0, 0});
+    }
+
+  private:
+    int N, M;
+    gradplanner::Field f;
 };
