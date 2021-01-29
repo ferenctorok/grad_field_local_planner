@@ -163,13 +163,42 @@ class FieldTests : public CxxTest::TestSuite
     void test_Field_constr()
     {
       unsigned int* shape = f.get_shape();
-      ETS_ASSERT_EQUALS(N, shape[0]);
-      ETS_ASSERT_EQUALS(M, shape[1]);
+      TS_ASSERT_EQUALS(N, shape[0]);
+      TS_ASSERT_EQUALS(M, shape[1]);
 
       for (int i = 0; i < N; i ++)
         for (int j = 0; j < M; j ++)
           do_pixel_value_tests(*f.get_pix(i, j), i, j, 0,
            new double[2]{0, 0}, new unsigned int[2]{0, 0});
+    }
+
+    /**
+     * @brief Tests the set_val method of the Field class.
+     */
+    void test_Field_set_val()
+    {
+      f.set_val(3, 4, 5);
+      TS_ASSERT_EQUALS(5, f.get_val(3, 4));
+    }
+
+    /**
+     * @brief Tests the set_grad method of the Field class.
+     */
+    void test_Field_set_grad()
+    {
+      f.set_grad(3, 4, new double [2] {5.2, 6.3});
+      TS_ASSERT_EQUALS(5.2, f.get_grad(3, 4)[0]);
+      TS_ASSERT_EQUALS(6.3, f.get_grad(3, 4)[1]);
+    }
+
+    /**
+     * @brief Tests the set_parent method of the Field class.
+     */
+    void test_Field_set_parent()
+    {
+      f.set_parent(3, 4, new unsigned int [2] {5, 6});
+      TS_ASSERT_EQUALS(5, f.get_parent(3, 4)[0]);
+      TS_ASSERT_EQUALS(6, f.get_parent(3, 4)[1]);
     }
 
   private:

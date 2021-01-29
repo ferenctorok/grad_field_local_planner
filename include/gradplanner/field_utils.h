@@ -196,7 +196,6 @@ namespace gradplanner
       unsigned int N;
       unsigned int M;
       vector<vector<Pixel* >> data;
-      vector<int > data2;
   };
 } // namespace gradplanner
 
