@@ -4,6 +4,7 @@
 /* ROS related includes: */
 // costmap & geometry
 #include <costmap_2d/costmap_2d_ros.h>
+#include <costmap_2d/costmap_2d.h>
 
 /* gradplanner includes: */
 #include <gradplanner/field_utils.h>
@@ -27,23 +28,35 @@ namespace gradplanner
        * @brief Constructor for the GradFieldBase class.
        * @param costmap 2D ROS costmap about the enironment
        */
-      GradFieldBase(costmap_2d::Costmap2DROS* costmap);
+      GradFieldBase(vector<vector<bool >>* occ_grid);
 
       /**
        * Defualt destructor of the GradFieldBase class.
        */
       ~GradFieldBase();
+
+      /**
+       * @brief Returns the gridsize of the field in the x direction.
+       * @return The gridsize in the x direction.
+       */
+      unsigned int get_size_x();
+
+      /**
+       * @brief Returns the gridsize of the field in the y direction.
+       * @return The gridsize in the y direction.
+       */
+      unsigned int get_size_y();
+
+      /**
+       * @brief updates the gradient field.
+       *        Pure virtual function, has to be defined in child class.
+       */
+      virtual void update_field() = 0;
     
     protected:
-      costmap_2d::Costmap2DROS* costmap;
-      gradplanner::Field field;
-
-    private:
-      /**
-       * @brief Initializes the field member of the class GradFieldBase.
-       *        Pure virtual function, has to be overriden in Child class.
-       */
-      virtual void init_field() = 0;
+      vector<vector<bool >>* occ_grid;  // occupancy grid.
+      unsigned int size_x, size_y;
+      gradplanner::Field field; // gradient field.
   };
 } // namespace gradplanner
 

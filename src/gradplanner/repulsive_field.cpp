@@ -3,17 +3,13 @@
 
 namespace gradplanner
 {
-  RepulsiveField::RepulsiveField(costmap_2d::Costmap2DROS* costmap,
+  RepulsiveField::RepulsiveField(vector<vector<bool >>* occ_grid,
                                  unsigned int R):
-    GradFieldBase(costmap)
-  {
-    this->R = R;
-    init_field();
-  }
+    GradFieldBase(occ_grid), R(R) {}
 
 
-  void RepulsiveField::init_field()
+  void RepulsiveField::update_field()
   {
-    field = Field(2 * R + 1, 2 * R + 1);
+
   }
 }

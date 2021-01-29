@@ -24,10 +24,15 @@ namespace gradplanner
 
 
   unsigned int Pixel::get_x() {return x;}
+
   unsigned int Pixel::get_y() {return y;}
+
   int Pixel::get_val() {return value;}
+
   double* Pixel::get_grad() {return grad;}
+
   unsigned int* Pixel::get_parent() {return parent;}
+  
   void Pixel::set_val(int value) {this->value = value;}
 
 

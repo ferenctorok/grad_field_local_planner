@@ -2,7 +2,7 @@
 
 # setting variable for the dir where the headers are:
 set(GRADPLANNER_INCLUDE_DIR
-  ${CMAKE_SOURCE_DIR}/include/gradplanner
+  ${INCLUDE_DIR}/gradplanner
 )
 
 # set the sources and headers lists:

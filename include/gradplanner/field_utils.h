@@ -53,16 +53,19 @@ namespace gradplanner
 
       /**
        * @brief Get the x member of a Pixel.
+       * @return the x position of the Pixel.
        */
       unsigned int get_x();
 
       /**
        * @brief Get the y member of a Pixel.
+       * @return the y position of the Pixel.
        */
       unsigned int get_y();
 
       /**
        * @brief Get the value member of a Pixel.
+       * @return the value of the Pixel.
        */
       int get_val();
 
@@ -74,6 +77,7 @@ namespace gradplanner
 
       /**
        * @brief Get the gradient member of a Pixel.
+       * @return the gradient of the Pixel.
        */
       double* get_grad();
 
@@ -85,6 +89,7 @@ namespace gradplanner
 
       /**
        * @brief Get the gradient member of a Pixel.
+       * @return the parent of the Pixel.
        */
       unsigned int* get_parent();
 
@@ -137,6 +142,7 @@ namespace gradplanner
 
       /**
        * @brief Returns the shape of the field as an array.
+       * @return the shape of the Field.
        */
       unsigned int* get_shape();
 
@@ -144,6 +150,7 @@ namespace gradplanner
        * @brief Returns the Pixel pointer at the given index. 
        * @param x x direction.
        * @param y y direction.
+       * @return The pointer to the Pixel object at the given position.
        */
       Pixel* get_pix(unsigned int x, unsigned int y);
 
@@ -151,6 +158,7 @@ namespace gradplanner
        * @brief Get the value of the pixel at the given place.
        * @param x The x coordinate of the pixel.
        * @param y The y coordinate of the pixel.
+       * @return The value of the Pixel object at the given position.
        */
       int get_val(unsigned int x, unsigned int y);
 
@@ -166,6 +174,7 @@ namespace gradplanner
        * @brief Get the gradient of the pixel at the given place.
        * @param x The x coordinate of the pixel.
        * @param y The y coordinate of the pixel.
+       * @return The gradient of the Pixel object at the given position.
        */
       double* get_grad(unsigned int x, unsigned int y);
 
@@ -181,6 +190,7 @@ namespace gradplanner
        * @brief Get the gradient of the pixel at the given place.
        * @param x The x coordinate of the pixel.
        * @param y The y coordinate of the pixel.
+       * @return The parent of the Pixel object at the given position.
        */
       unsigned int* get_parent(unsigned int x, unsigned int y);
 

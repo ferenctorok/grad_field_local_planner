@@ -23,8 +23,9 @@ namespace gradplanner
       /**
        * @brief Constructor for the GradFieldBase class.
        * @param costmap 2D ROS costmap about the enironment
+       * @param R The radius in grid step, in which the obstacles have an effect
        */
-      RepulsiveField(costmap_2d::Costmap2DROS* costmap,
+      RepulsiveField(vector<vector<bool >>* occ_grid,
                      unsigned int R);
 
       /**
@@ -39,6 +40,11 @@ namespace gradplanner
        * @brief Initializes the field member of the class RepulsiveField.
        */
       void init_field();
+
+      /**
+       * @brief updates the field values and gradients based on the costmap from ROS.
+       */
+      void update_field();
   };
 }
 
