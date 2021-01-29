@@ -1,9 +1,29 @@
 # adding the gradplanner library as target to build:
+
+# setting variable for the dir where the headers are:
+set(GRADPLANNER_INCLUDE_DIR
+  ${CMAKE_SOURCE_DIR}/include/gradplanner
+)
+
+# set the sources and headers lists:
+set(GRADPLANNER_SOURCES
+  utils.cpp
+  pixel.cpp
+  field.cpp
+  grad_field_base.cpp
+  repulsive_field.cpp
+)
+set(GRADPLANNER_HEADERS
+  ${GRADPLANNER_INCLUDE_DIR}/field_utils.h
+  ${GRADPLANNER_INCLUDE_DIR}/utils.h
+  ${GRADPLANNER_INCLUDE_DIR}/grad_field_base.h
+  ${GRADPLANNER_INCLUDE_DIR}/repulsive_field.h
+)
+
+# constructing target library:
 add_library(gradplanner
-  ${CMAKE_CURRENT_LIST_DIR}/grad_field_base.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/pixel.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/utils.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/field.cpp
+  ${GRADPLANNER_SOURCES}
+  ${GRADPLANNER_HEADERS}
 )
 
 # Specify libraries to link against the gradplanner target library:

@@ -1,14 +1,6 @@
 #ifndef GRADIENT_FIELD_BASE_H
 #define GRADIENT_FIELD_BASE_H
 
-/* standard includes */
-// timing 
-#include <chrono>
-
-// IO
-#include <iostream>
-using namespace std;
-
 /* ROS related includes: */
 // costmap & geometry
 #include <costmap_2d/costmap_2d_ros.h>
@@ -37,6 +29,9 @@ namespace gradplanner
        */
       GradFieldBase(costmap_2d::Costmap2DROS* costmap);
 
+      /**
+       * Defualt destructor of the GradFieldBase class.
+       */
       ~GradFieldBase();
     
     protected:
