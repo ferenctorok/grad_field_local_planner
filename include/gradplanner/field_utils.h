@@ -153,10 +153,16 @@ namespace gradplanner
       unsigned int get_y();
 
       /**
+       * @brief Assignment operator overloading.
+       * @param new_ind New indices to set for the object.
+       */
+      void operator=(unsigned int new_ind[2]);
+
+      /**
        * @brief Addition operation overloading.
        * @param ind2 the other index which is added to it.
        */
-      friend Index operator + (const Index& a, const Index& b);
+      friend Index operator+(const Index& a, const Index& b);
 
       /**
        * @brief Returns true, if the index is valid, that is the index
@@ -195,6 +201,12 @@ namespace gradplanner
       ~Field() {}
 
       /**
+       * @brief Gets an indexer object for this field:
+       * @return Indexer object with set shape that fits to this field.
+       */
+      Index get_indexer();
+
+      /**
        * @brief Returns the shape of the field as an array.
        * @return the shape of the Field.
        */
@@ -224,12 +236,26 @@ namespace gradplanner
       int get_val(unsigned int x, unsigned int y);
 
       /**
-       * @brief Set the value of the pixel at the given place.
+       * @brief Returns the Pixel pointer at the given index. 
+       * @param ind the Index object.
+       * @return The value of the Pixel at that index.
+       */
+      int get_val(Index ind);
+
+      /**
+       * @brief Sets the value of the pixel at the given place.
        * @param x The x coordinate of the pixel.
        * @param y The y coordinate of the pixel.
        * @param val The value to be set.
        */
       void set_val(unsigned int x, unsigned int y, int val);
+
+      /**
+       * @brief Sets the value of the pixel at the given place.
+       * @param ind the Index object.
+       * @param val the value to be set.
+       */
+      void set_val(Index ind, int val);
 
       /**
        * @brief Get the gradient of the pixel at the given place.
@@ -240,12 +266,26 @@ namespace gradplanner
       double* get_grad(unsigned int x, unsigned int y);
 
       /**
-       * @brief Set the gradient of the pixel at the given place.
+       * @brief Returns the Pixel pointer at the given index. 
+       * @param ind the Index object.
+       * @return The gradient of the Pixel at that index.
+       */
+      double* get_grad(Index ind);
+
+      /**
+       * @brief Sets the gradient of the pixel at the given place.
        * @param x The x coordinate of the pixel.
        * @param y The y coordinate of the pixel.
-       * @param grad The value to be set.
+       * @param grad The gradient to be set.
        */
       void set_grad(unsigned int x, unsigned int y, double grad[2]);
+
+      /**
+       * @brief Sets the value of the pixel at the given place.
+       * @param ind the Index object.
+       * @param grad The gradient to be set.
+       */
+      void set_grad(Index ind, double grad[2]);
 
       /**
        * @brief Get the gradient of the pixel at the given place.
@@ -256,12 +296,26 @@ namespace gradplanner
       unsigned int* get_parent(unsigned int x, unsigned int y);
 
       /**
+       * @brief Returns the Pixel pointer at the given index. 
+       * @param ind the Index object.
+       * @return The parent of the Pixel at that index.
+       */
+      unsigned int* get_parent(Index ind);
+
+      /**
        * @brief Set the gradient of the pixel at the given place.
        * @param x The x coordinate of the pixel.
        * @param y The y coordinate of the pixel.
-       * @param parent The value to be set.
+       * @param parent The parent to be set.
        */
       void set_parent(unsigned int x, unsigned int y, unsigned int parent[2]);
+
+      /**
+       * @brief Sets the value of the pixel at the given place.
+       * @param ind the Index object.
+       * @param parent The parent to be set.
+       */
+      void set_parent(Index ind, unsigned int parent[2]);
 
     private:
       unsigned int N;

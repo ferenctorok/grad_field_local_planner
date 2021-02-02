@@ -25,6 +25,9 @@ int value, double grad[2], unsigned int parent[2])
 }
 
 
+/**
+ * @class Tests the Pixel class.
+ */
 class PixelTests : public CxxTest::TestSuite
 {
   public:
@@ -139,6 +142,9 @@ class PixelTests : public CxxTest::TestSuite
 };
 
 
+/**
+ * @class Tests the Index class.
+ */
 class IndexTests : public CxxTest::TestSuite
 {
   public:
@@ -181,7 +187,17 @@ class IndexTests : public CxxTest::TestSuite
     }
 
     /**
-     * @brief tests the + operator method.
+     * @brief Tests the assignment operator overloading.
+     */
+    void Test_assignment()
+    {
+      ind = new unsigned int [2] {2, 3};
+      TS_ASSERT_EQUALS(2, ind.get_x());
+      TS_ASSERT_EQUALS(3, ind.get_y());
+    }
+
+    /**
+     * @brief tests the + operator overloading.
      */
     void test_plus_operator()
     {
@@ -202,6 +218,9 @@ class IndexTests : public CxxTest::TestSuite
 };
 
 
+/**
+ * @class Tests the Field class.
+ */
 class FieldTests : public CxxTest::TestSuite
 {
   public:
@@ -217,7 +236,7 @@ class FieldTests : public CxxTest::TestSuite
       // indices:
       x = 2;
       y = 4;
-      ind = gradplanner::Index(f.get_shape(), new unsigned int [2] {x, y});
+      ind = f.get_indexer();
     }
 
     /**
@@ -238,9 +257,23 @@ class FieldTests : public CxxTest::TestSuite
     /**
      * @brief Tests the get_pix method of the Field class.
      */
-    void test_get_Pix()
+    void test_get_pix()
     {
-      TS_ASSERT_EQUALS(2, 2);
+      unsigned int a[2] {2, 3};
+      ind = a;
+      TS_ASSERT_EQUALS(f.get_pix(a[0], a[1]), f.get_pix(ind));
+    }
+
+    /**
+     * @brief Tests the get_val method of the Field class.
+     */
+    void test_get_val()
+    {
+      unsigned int a[2] {2, 3};
+      ind = a;
+      f.set_val(ind, 3);
+      TS_ASSERT_EQUALS(f.get_val(ind), 3);
+      TS_ASSERT_EQUALS(f.get_val(a[0], a[1]), f.get_val(ind));
     }
 
     /**
@@ -253,6 +286,20 @@ class FieldTests : public CxxTest::TestSuite
     }
 
     /**
+     * @brief Tests the get_grad method of the Field class.
+     */
+    void test_get_grad()
+    {
+      unsigned int a[2] {2, 3};
+      ind = a;
+      f.set_grad(ind, new double [2] {2.3, -4.6});
+      TS_ASSERT_EQUALS(f.get_grad(ind)[0], 2.3);
+      TS_ASSERT_EQUALS(f.get_grad(ind)[1], -4.6);
+      TS_ASSERT_EQUALS(f.get_grad(a[0], a[1])[0], f.get_grad(ind)[0]);
+      TS_ASSERT_EQUALS(f.get_grad(a[0], a[1])[1], f.get_grad(ind)[1]);
+    }
+
+    /**
      * @brief Tests the set_grad method of the Field class.
      */
     void test_set_grad()
@@ -260,6 +307,20 @@ class FieldTests : public CxxTest::TestSuite
       f.set_grad(3, 4, new double [2] {5.2, 6.3});
       TS_ASSERT_EQUALS(5.2, f.get_grad(3, 4)[0]);
       TS_ASSERT_EQUALS(6.3, f.get_grad(3, 4)[1]);
+    }
+
+    /**
+     * @brief Tests the get_parent method of the Field class.
+     */
+    void test_get_parent()
+    {
+      unsigned int a[2] {2, 3};
+      ind = a;
+      f.set_parent(ind, new unsigned int [2] {4, 2});
+      TS_ASSERT_EQUALS(f.get_parent(ind)[0], 4);
+      TS_ASSERT_EQUALS(f.get_parent(ind)[1], 2);
+      TS_ASSERT_EQUALS(f.get_parent(a[0], a[1])[0], f.get_parent(ind)[0]);
+      TS_ASSERT_EQUALS(f.get_parent(a[0], a[1])[1], f.get_parent(ind)[1]);
     }
 
     /**

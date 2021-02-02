@@ -16,7 +16,10 @@ namespace gradplanner
 
   unsigned int Index::get_y() {return ind[1];}
 
-  Index operator + (const Index& a, const Index& b)
+  void Index::operator=(unsigned int new_ind[2])
+    {ind = new_ind;}
+
+  Index operator+(const Index& a, const Index& b)
   {
     // Asserting that the indices are indices of a field of same size:
     assert((a.shape[0] == b.shape[0]));
