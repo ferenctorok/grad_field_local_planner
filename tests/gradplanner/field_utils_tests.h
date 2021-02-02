@@ -139,6 +139,69 @@ class PixelTests : public CxxTest::TestSuite
 };
 
 
+class IndexTests : public CxxTest::TestSuite
+{
+  public:
+    /**
+    * @brief sets up the tests.
+    */
+    void setUp()
+    {
+      shape[0] = 5;
+      shape[1] = 6;
+    }
+
+    /**
+     * @brief tests the constructor.
+     */
+    void test_constr()
+    {
+      ind = gradplanner::Index(shape);
+      TS_ASSERT_EQUALS(0, ind.get_x());
+      TS_ASSERT_EQUALS(0, ind.get_y());
+      
+      ind = gradplanner::Index(shape, new unsigned int [2] {2, 3});
+      TS_ASSERT_EQUALS(2, ind.get_x());
+      TS_ASSERT_EQUALS(3, ind.get_y());
+    }
+
+    /**
+     * @brief tests the is_valid() method.
+     */
+    void test_is_valid()
+    {      
+      ind = gradplanner::Index(shape, new unsigned int [2] {0, 0});
+      TS_ASSERT_EQUALS(true, ind.is_valid());
+
+      ind = gradplanner::Index(shape, new unsigned int [2] {4, 5});
+      TS_ASSERT_EQUALS(true, ind.is_valid());
+
+      ind = gradplanner::Index(shape, new unsigned int [2] {4, 6});
+      TS_ASSERT_EQUALS(false, ind.is_valid());
+    }
+
+    /**
+     * @brief tests the + operator method.
+     */
+    void test_plus_operator()
+    {
+      gradplanner::Index ind1(shape, new unsigned int [2] {2, 3});
+      gradplanner::Index ind2(shape, new unsigned int [2] {1, 1});
+
+      ind = ind1 + ind2;
+      std::cout <<"x: " << ind.get_x() << std::endl;
+      std::cout <<"y: " << ind.get_y() << std::endl;
+      
+      TS_ASSERT_EQUALS(3, ind.get_x());
+      TS_ASSERT_EQUALS(4, ind.get_y());
+    }
+
+  private:
+    unsigned int shape[2];
+    gradplanner::Index ind;
+};
+
+
 class FieldTests : public CxxTest::TestSuite
 {
   public:
@@ -150,17 +213,17 @@ class FieldTests : public CxxTest::TestSuite
       N = 10;
       M = 12;
       f = gradplanner::Field(N, M);
-    }
 
-    void test1()
-    {
-      TS_ASSERT_EQUALS(2, 2);
+      // indices:
+      x = 2;
+      y = 4;
+      ind = gradplanner::Index(f.get_shape(), new unsigned int [2] {x, y});
     }
 
     /**
      * @brief Tests the constructor of the Field class.
      */
-    void test_Field_constr()
+    void test_constr()
     {
       unsigned int* shape = f.get_shape();
       TS_ASSERT_EQUALS(N, shape[0]);
@@ -173,9 +236,17 @@ class FieldTests : public CxxTest::TestSuite
     }
 
     /**
+     * @brief Tests the get_pix method of the Field class.
+     */
+    void test_get_Pix()
+    {
+      TS_ASSERT_EQUALS(2, 2);
+    }
+
+    /**
      * @brief Tests the set_val method of the Field class.
      */
-    void test_Field_set_val()
+    void test_set_val()
     {
       f.set_val(3, 4, 5);
       TS_ASSERT_EQUALS(5, f.get_val(3, 4));
@@ -184,7 +255,7 @@ class FieldTests : public CxxTest::TestSuite
     /**
      * @brief Tests the set_grad method of the Field class.
      */
-    void test_Field_set_grad()
+    void test_set_grad()
     {
       f.set_grad(3, 4, new double [2] {5.2, 6.3});
       TS_ASSERT_EQUALS(5.2, f.get_grad(3, 4)[0]);
@@ -194,7 +265,7 @@ class FieldTests : public CxxTest::TestSuite
     /**
      * @brief Tests the set_parent method of the Field class.
      */
-    void test_Field_set_parent()
+    void test_set_parent()
     {
       f.set_parent(3, 4, new unsigned int [2] {5, 6});
       TS_ASSERT_EQUALS(5, f.get_parent(3, 4)[0]);
@@ -204,4 +275,6 @@ class FieldTests : public CxxTest::TestSuite
   private:
     int N, M;
     gradplanner::Field f;
+    unsigned int x, y;
+    gradplanner::Index ind;
 };

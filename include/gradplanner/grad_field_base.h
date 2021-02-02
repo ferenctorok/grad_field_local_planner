@@ -1,12 +1,6 @@
 #ifndef GRADIENT_FIELD_BASE_H
 #define GRADIENT_FIELD_BASE_H
 
-/* ROS related includes: */
-// costmap & geometry
-#include <costmap_2d/costmap_2d_ros.h>
-#include <costmap_2d/costmap_2d.h>
-
-/* gradplanner includes: */
 #include <gradplanner/field_utils.h>
 
 
@@ -22,7 +16,7 @@ namespace gradplanner
       /**
        * @brief Default constructor of the GradFieldBase class. 
        */
-      GradFieldBase();
+      GradFieldBase() {}
 
       /**
        * @brief Constructor for the GradFieldBase class.
@@ -33,7 +27,7 @@ namespace gradplanner
       /**
        * Defualt destructor of the GradFieldBase class.
        */
-      ~GradFieldBase();
+      ~GradFieldBase() {}
 
       /**
        * @brief Returns the gridsize of the field in the x direction.
@@ -55,8 +49,15 @@ namespace gradplanner
     
     protected:
       vector<vector<bool >>* occ_grid;  // occupancy grid.
-      unsigned int size_x, size_y;
+      unsigned int size_x, size_y;  // x and y size of the field
       gradplanner::Field field; // gradient field.
+      vector<int *> search_directions4, search_directions8; // constants for searching directions.
+
+      /**
+       * @brief Re-initializes the field member of the class, that is,
+       * sets every value to zero and then the values where an obstacle is to 1.
+       */
+      void re_init_field();
   };
 } // namespace gradplanner
 

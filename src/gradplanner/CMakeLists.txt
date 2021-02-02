@@ -10,6 +10,7 @@ set(GRADPLANNER_SOURCES
   utils.cpp
   pixel.cpp
   field.cpp
+  index.cpp
   grad_field_base.cpp
   repulsive_field.cpp
 )

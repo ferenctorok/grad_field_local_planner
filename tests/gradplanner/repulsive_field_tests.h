@@ -13,6 +13,7 @@ class RepulsiveFieldTests : public CxxTest::TestSuite
     {
       size_x = 10;
       size_y = 12;
+      R = 4;
 
       // creating the occuancy grid:
       for (int i = 0; i < size_x; i ++)
@@ -39,14 +40,20 @@ class RepulsiveFieldTests : public CxxTest::TestSuite
     }
 
     /**
-     * @brief Testing the contstructor.
+     * @brief Tests the constructor of the RepulsiveField class.
      */
     void test_constructor()
     {
-      TS_ASSERT_EQUALS(2, 2);
+      rf = gradplanner::RepulsiveField(&occ_grid, R);
+      TS_ASSERT_EQUALS(R, rf.get_R());
+      cout << "shape: " << occ_grid.size() / sizeof(occ_grid[0]) << endl;
+      TS_ASSERT_EQUALS(size_x, rf.get_size_x());
+      TS_ASSERT_EQUALS(size_y, rf.get_size_y());
     }
 
   private:
-    uint size_x, size_y;
+    unsigned int size_x, size_y;
+    unsigned int R;
     vector<vector<bool >> occ_grid;
+    gradplanner::RepulsiveField rf;
 };

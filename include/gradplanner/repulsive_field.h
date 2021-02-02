@@ -9,16 +9,21 @@
 #include <gradplanner/field_utils.h>
 #include <gradplanner/grad_field_base.h>
 
+/* standarnd includes: */
+#include <queue>
+
+using namespace std;
+
 
 namespace gradplanner
 {
-  class RepulsiveField: protected GradFieldBase
+  class RepulsiveField: public GradFieldBase
   {
     public:
       /**
        * @brief Default constructor of the GradFieldBase class. 
        */
-      RepulsiveField();
+      RepulsiveField() {}
 
       /**
        * @brief Constructor for the GradFieldBase class.
@@ -31,20 +36,28 @@ namespace gradplanner
       /**
        * Defualt destructor of the GradFieldBase class.
        */
-      ~RepulsiveField();
+      ~RepulsiveField() {}
+
+      /**
+       * @brief updates the field values and gradients based on the occupancy grid.
+       */
+      void update_field();
+
+      /**
+       * @brief Gets the R member of the class. 
+       * @return The radius around obstacles which they infulence.
+       */
+      unsigned int get_R();
 
     private:
       unsigned int R;
 
       /**
-       * @brief Initializes the field member of the class RepulsiveField.
+       * @brief Initializes the queue of indices to expand, that is
+       * it fills it up with the indices of the occupied grid points.
+       * @param q Reference to the queue.
        */
-      void init_field();
-
-      /**
-       * @brief updates the field values and gradients based on the costmap from ROS.
-       */
-      void update_field();
+      void init_queue(queue<unsigned int* >& q);
   };
 }
 

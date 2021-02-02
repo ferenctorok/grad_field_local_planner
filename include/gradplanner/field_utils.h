@@ -118,6 +118,60 @@ namespace gradplanner
   };
 
   /**
+   * @class Index class, that implements some functionality to be able
+   * to mainpulate indices used for Fields easier. 
+   */
+  class Index
+  {
+    public:
+      /**
+       * @brief Default constructor of the Index class.
+       */
+      Index() {}
+
+      /**
+       * @brief Constructor of the Index class.
+       * @param shape Necessary, array containing the size of the field
+       *              in the x and y directions.
+       * @param ind 2 member pointer, the indices.
+       */
+      Index(unsigned int shape[2], unsigned int ind[2]=nullptr);
+
+      /**
+       * @brief Default destructor of the Index class.
+       */
+      ~Index() {}
+
+      /**
+       * @brief returns the x coordinate of the Index object.
+       */
+      unsigned int get_x();
+
+      /**
+       * @brief returns the y coordinate of the Index object.
+       */
+      unsigned int get_y();
+
+      /**
+       * @brief Addition operation overloading.
+       * @param ind2 the other index which is added to it.
+       */
+      friend Index operator + (const Index& a, const Index& b);
+
+      /**
+       * @brief Returns true, if the index is valid, that is the index
+       * points within the boundaries of the field.
+       */
+      bool is_valid();
+
+
+    private:
+      unsigned int* shape;  // size of the field.
+      unsigned int* ind;  // The indices.
+  };
+
+
+  /**
    * @class Field class that is a 2D container for Pixels. 
    */
   class Field
@@ -153,6 +207,13 @@ namespace gradplanner
        * @return The pointer to the Pixel object at the given position.
        */
       Pixel* get_pix(unsigned int x, unsigned int y);
+
+      /**
+       * @brief Returns the Pixel pointer at the given index. 
+       * @param ind the Index object.
+       * @return The pointer to the Pixel object at the given position.
+       */
+      Pixel* get_pix(Index ind);
 
       /**
        * @brief Get the value of the pixel at the given place.
@@ -207,6 +268,9 @@ namespace gradplanner
       unsigned int M;
       vector<vector<Pixel* >> data;
   };
+
+
+  
 } // namespace gradplanner
 
 #endif // FIELD_UTILS_H

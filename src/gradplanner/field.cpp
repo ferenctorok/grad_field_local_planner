@@ -22,6 +22,8 @@ namespace gradplanner
   unsigned int* Field::get_shape() {return new unsigned int [2] {N, M};}
 
   Pixel* Field::get_pix(unsigned int x, unsigned int y) {return data[x][y];}
+  
+  Pixel* Field::get_pix(Index ind) {return data[ind.get_x()][ind.get_y()];}
 
   int Field::get_val(unsigned int x, unsigned int y) {return data[x][y]->get_val();}
 
