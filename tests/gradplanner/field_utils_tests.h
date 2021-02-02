@@ -4,6 +4,7 @@
 #include <gradplanner/utils.h>
 
 #include <cmath>
+#include <queue>
 using namespace std;
 
 
@@ -166,7 +167,7 @@ class IndexTests : public CxxTest::TestSuite
       TS_ASSERT_EQUALS(0, ind.get_x());
       TS_ASSERT_EQUALS(0, ind.get_y());
       
-      ind = gradplanner::Index(shape, new unsigned int [2] {2, 3});
+      ind = gradplanner::Index(shape, new int [2] {2, 3});
       TS_ASSERT_EQUALS(2, ind.get_x());
       TS_ASSERT_EQUALS(3, ind.get_y());
     }
@@ -176,13 +177,13 @@ class IndexTests : public CxxTest::TestSuite
      */
     void test_is_valid()
     {      
-      ind = gradplanner::Index(shape, new unsigned int [2] {0, 0});
+      ind = gradplanner::Index(shape, new int [2] {0, 0});
       TS_ASSERT_EQUALS(true, ind.is_valid());
 
-      ind = gradplanner::Index(shape, new unsigned int [2] {4, 5});
+      ind = gradplanner::Index(shape, new int [2] {4, 5});
       TS_ASSERT_EQUALS(true, ind.is_valid());
 
-      ind = gradplanner::Index(shape, new unsigned int [2] {4, 6});
+      ind = gradplanner::Index(shape, new int [2] {4, 6});
       TS_ASSERT_EQUALS(false, ind.is_valid());
     }
 
@@ -191,9 +192,17 @@ class IndexTests : public CxxTest::TestSuite
      */
     void Test_assignment()
     {
-      ind = new unsigned int [2] {2, 3};
+      ind = new int [2] {2, 3};
       TS_ASSERT_EQUALS(2, ind.get_x());
       TS_ASSERT_EQUALS(3, ind.get_y());
+
+      queue<gradplanner::Index > q;
+      q.push(gradplanner::Index(ind));
+      ind = new int [2] {4, 5};
+
+      gradplanner::Index new_ind = q.front();
+      TS_ASSERT_EQUALS(2, new_ind.get_x());
+      TS_ASSERT_EQUALS(3, new_ind.get_y());
     }
 
     /**
@@ -201,19 +210,17 @@ class IndexTests : public CxxTest::TestSuite
      */
     void test_plus_operator()
     {
-      gradplanner::Index ind1(shape, new unsigned int [2] {2, 3});
-      gradplanner::Index ind2(shape, new unsigned int [2] {1, 1});
+      gradplanner::Index ind1(shape, new int [2] {2, 3});
+      gradplanner::Index ind2(shape, new int [2] {1, 1});
 
       ind = ind1 + ind2;
-      std::cout <<"x: " << ind.get_x() << std::endl;
-      std::cout <<"y: " << ind.get_y() << std::endl;
       
       TS_ASSERT_EQUALS(3, ind.get_x());
       TS_ASSERT_EQUALS(4, ind.get_y());
     }
 
   private:
-    unsigned int shape[2];
+    unsigned int shape[2] {0, 0};
     gradplanner::Index ind;
 };
 
@@ -259,7 +266,7 @@ class FieldTests : public CxxTest::TestSuite
      */
     void test_get_pix()
     {
-      unsigned int a[2] {2, 3};
+      int a[2] {2, 3};
       ind = a;
       TS_ASSERT_EQUALS(f.get_pix(a[0], a[1]), f.get_pix(ind));
     }
@@ -269,7 +276,7 @@ class FieldTests : public CxxTest::TestSuite
      */
     void test_get_val()
     {
-      unsigned int a[2] {2, 3};
+      int a[2] {2, 3};
       ind = a;
       f.set_val(ind, 3);
       TS_ASSERT_EQUALS(f.get_val(ind), 3);
@@ -290,7 +297,7 @@ class FieldTests : public CxxTest::TestSuite
      */
     void test_get_grad()
     {
-      unsigned int a[2] {2, 3};
+      int a[2] {2, 3};
       ind = a;
       f.set_grad(ind, new double [2] {2.3, -4.6});
       TS_ASSERT_EQUALS(f.get_grad(ind)[0], 2.3);
@@ -314,7 +321,7 @@ class FieldTests : public CxxTest::TestSuite
      */
     void test_get_parent()
     {
-      unsigned int a[2] {2, 3};
+      int a[2] {2, 3};
       ind = a;
       f.set_parent(ind, new unsigned int [2] {4, 2});
       TS_ASSERT_EQUALS(f.get_parent(ind)[0], 4);

@@ -118,8 +118,8 @@ namespace gradplanner
   };
 
   /**
-   * @class Index class, that implements some functionality to be able
-   * to mainpulate indices used for Fields easier. 
+   * @class Index class, that enables convinient indexing of a Field and 
+   * manipulation of the indices.
    */
   class Index
   {
@@ -127,7 +127,13 @@ namespace gradplanner
       /**
        * @brief Default constructor of the Index class.
        */
-      Index() {}
+      Index();
+
+      /**
+       * @brief Copy constructor.
+       * @param other Other Index to copy.
+       */
+      Index(const Index& other);
 
       /**
        * @brief Constructor of the Index class.
@@ -135,7 +141,7 @@ namespace gradplanner
        *              in the x and y directions.
        * @param ind 2 member pointer, the indices.
        */
-      Index(unsigned int shape[2], unsigned int ind[2]=nullptr);
+      Index(unsigned int shape[2], int ind[2]=nullptr);
 
       /**
        * @brief Default destructor of the Index class.
@@ -145,18 +151,24 @@ namespace gradplanner
       /**
        * @brief returns the x coordinate of the Index object.
        */
-      unsigned int get_x();
+      int get_x();
 
       /**
        * @brief returns the y coordinate of the Index object.
        */
-      unsigned int get_y();
+      int get_y();
+
+      /**
+       * @brief Copy assignment operator:
+       * @param other Reference to another Index object to copy.
+       */
+      Index& operator=(Index other);
 
       /**
        * @brief Assignment operator overloading.
        * @param new_ind New indices to set for the object.
        */
-      void operator=(unsigned int new_ind[2]);
+      void operator=(int new_ind[2]);
 
       /**
        * @brief Addition operation overloading.
@@ -173,7 +185,7 @@ namespace gradplanner
 
     private:
       unsigned int* shape;  // size of the field.
-      unsigned int* ind;  // The indices.
+      int* ind;  // The indices.
   };
 
 

@@ -51,7 +51,7 @@ namespace gradplanner
       vector<vector<bool >>* occ_grid;  // occupancy grid.
       unsigned int size_x, size_y;  // x and y size of the field
       gradplanner::Field field; // gradient field.
-      vector<int *> search_directions4, search_directions8; // constants for searching directions.
+      vector<Index > search_directions4, search_directions8; // constants for searching directions.
 
       /**
        * @brief Re-initializes the field member of the class, that is,

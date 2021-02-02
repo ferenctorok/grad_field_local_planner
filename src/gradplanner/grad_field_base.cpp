@@ -10,6 +10,22 @@ namespace gradplanner
       size_y = (*occ_grid)[0].size();
       // initializing the field:
       field = Field(size_x, size_y);
+
+      // Constants for searching. (Representing the directions to the neighboring
+      // cells.)
+      search_directions4.push_back(Index(field.get_shape(), new int [2] {1, 0}));
+      search_directions4.push_back(Index(field.get_shape(), new int [2] {0, 1}));
+      search_directions4.push_back(Index(field.get_shape(), new int [2] {-1, 0}));
+      search_directions4.push_back(Index(field.get_shape(), new int [2] {0, -1}));
+
+      search_directions8.push_back(Index(field.get_shape(), new int [2] {1, 0}));
+      search_directions8.push_back(Index(field.get_shape(), new int [2] {1, 1}));
+      search_directions8.push_back(Index(field.get_shape(), new int [2] {0, 1}));
+      search_directions8.push_back(Index(field.get_shape(), new int [2] {-1, 1}));
+      search_directions8.push_back(Index(field.get_shape(), new int [2] {-1, 0}));
+      search_directions8.push_back(Index(field.get_shape(), new int [2] {-1, -1}));
+      search_directions8.push_back(Index(field.get_shape(), new int [2] {0, -1}));
+      search_directions8.push_back(Index(field.get_shape(), new int [2] {1, -1}));
     }
 
   unsigned int GradFieldBase::get_size_x() {return size_x;}
@@ -18,10 +34,14 @@ namespace gradplanner
 
   void GradFieldBase::re_init_field()
   {
-    for (unsigned int i = 0; i < size_x; i ++)
+    for (int i = 0; i < size_x; i ++)
     {
-      for (unsigned int j = 0; j < size_y; j ++)
-        if ((*occ_grid)[i][j]) field.set_val(i, j, 1);
+      for (int j = 0; j < size_y; j ++)
+        if ((*occ_grid)[i][j])
+        {
+          field.set_val(i, j, 1);
+          field.set_parent(i, j, new unsigned int [2] {i, j});
+        }
         else field.set_val(i, j, 0);
     }
   }

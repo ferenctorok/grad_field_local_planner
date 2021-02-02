@@ -46,7 +46,6 @@ class RepulsiveFieldTests : public CxxTest::TestSuite
     {
       rf = gradplanner::RepulsiveField(&occ_grid, R);
       TS_ASSERT_EQUALS(R, rf.get_R());
-      cout << "shape: " << occ_grid.size() / sizeof(occ_grid[0]) << endl;
       TS_ASSERT_EQUALS(size_x, rf.get_size_x());
       TS_ASSERT_EQUALS(size_y, rf.get_size_y());
     }
