@@ -41,10 +41,8 @@ namespace gradplanner
             set_new_pixel();
             // if the pixel's distance from an obstacle is smaller the R,
             // it is still expandable. (The obstacle has value 1, so an obstacle
-            // at distance D has got a value D+1. Also if the pixel is R-1 far
-            // away from an obst, it does not have t be further expanded, since
-            // its child's grad will be already 0.)
-            if ((field.get_val(new_ind) - 1) < R - 1)
+            // at distance D has got a value D+1.)
+            if ((field.get_val(new_ind) - 1) < R)
               q.push(Index(new_ind));
           }
       }
@@ -102,7 +100,7 @@ namespace gradplanner
     // scale the length of the gradient. The length should
     // decrease linearly from the edge of an obstacle.
     // It has got length 1 at the boarder of an obstacle,
-    // so in pixels which have a value of 2.
+    // that is, in pixels with value 2.
     double scale = (1 - (new_pix->get_val() - 2)) / R;
     new_pix->scale_grad(scale);
   }

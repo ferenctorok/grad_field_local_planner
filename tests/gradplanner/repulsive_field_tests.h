@@ -51,7 +51,7 @@ class RepulsiveFieldTests : public CxxTest::TestSuite
     {
       size_x = 10;
       size_y = 12;
-      R = 3;
+      R = 2;
 
       occ_grid.resize(size_x);
       for (int i = 0; i < size_x; i ++)
