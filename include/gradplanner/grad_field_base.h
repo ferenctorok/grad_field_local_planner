@@ -63,7 +63,13 @@ namespace gradplanner
        * @brief Returns a 2D vector (Matrix) that contains the values of
        * The Pixels in the field. Mostly for testing purposes.
        */
-      
+      vector<vector<int >> get_values();
+
+      /**
+       * @brief Returns a 2D vector (Matrix) that contains the gradients of
+       * The Pixels in the field. Mostly for testing purposes.
+       */
+      const vector<vector<double* >> get_grads();
     
     protected:
       vector<vector<bool >>* occ_grid;  // occupancy grid.

@@ -62,4 +62,32 @@ namespace gradplanner
         else field.set_val(i, j, 0);
     }
   }
+
+  vector<vector<int >> GradFieldBase::get_values()
+  {
+    vector<vector<int >> out;
+    out.resize(size_x);
+    for(int i = 0; i < size_x; i ++)
+    {
+      out[i].resize(size_y);
+      for(int j = 0; j < size_y; j ++)
+        out[i][j] = field.get_val(i, j);
+    }
+
+    return out;
+  }
+
+  const vector<vector<double* >> GradFieldBase::get_grads()
+  {
+    vector<vector<double* >> out;
+    out.resize(size_x);
+    for(int i = 0; i < size_x; i ++)
+    {
+      out[i].resize(size_y);
+      for(int j = 0; j < size_y; j ++)
+        out[i][j] = field.get_grad(i, j);
+    }
+
+    return out;
+  }
 } //namespace gradplanner
