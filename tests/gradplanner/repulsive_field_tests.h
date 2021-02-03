@@ -65,6 +65,7 @@ class RepulsiveFieldTests : public CxxTest::TestSuite
     {
       rf = gradplanner::RepulsiveField(&occ_grid, R);
       rf.update_field();
+      int a;
     }
 
   private:

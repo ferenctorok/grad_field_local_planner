@@ -26,6 +26,12 @@ namespace gradplanner
       RepulsiveField() {}
 
       /**
+       * @brief Copy Constructor of the RepulsiveField class.
+       * @param other The other Object to copy.
+       */
+      RepulsiveField(const RepulsiveField& other);
+
+      /**
        * @brief Constructor for the GradFieldBase class.
        * @param costmap 2D ROS costmap about the enironment
        * @param R The radius in grid step, in which the obstacles have an effect
@@ -37,6 +43,12 @@ namespace gradplanner
        * Defualt destructor of the GradFieldBase class.
        */
       ~RepulsiveField() {}
+
+      /**
+       * @brief Copy assignment.
+       * @param other The other oject to copy.
+       */
+      RepulsiveField& operator=(const RepulsiveField& other);
 
       /**
        * @brief updates the field values and gradients based on the occupancy grid.

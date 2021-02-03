@@ -4,12 +4,20 @@
 
 namespace gradplanner
 {
+  RepulsiveField::RepulsiveField(const RepulsiveField& other):
+    GradFieldBase(other), R(other.R) {}
+
   RepulsiveField::RepulsiveField(vector<vector<bool >>* occ_grid,
                                  unsigned int R):
     GradFieldBase(occ_grid), R(R) {}
 
-  unsigned int RepulsiveField::get_R() {return R;}
+  RepulsiveField& RepulsiveField::operator=(const RepulsiveField& other)
+  {
+    this->GradFieldBase::operator=(other);
+    R = other.R;
+  }
 
+  unsigned int RepulsiveField::get_R() {return R;}
 
   void RepulsiveField::update_field()
   {
@@ -44,7 +52,6 @@ namespace gradplanner
     }
   }
 
-
   void RepulsiveField::init_queue(queue<Index >& q)
   {
     for (int i = 0; i < size_x; i ++)
@@ -54,7 +61,6 @@ namespace gradplanner
           q.push(Index(new int [2] {i, j}));
     }
   }
-
 
   void RepulsiveField::set_new_pixel()
   {
@@ -100,7 +106,6 @@ namespace gradplanner
     double scale = (1 - (new_pix->get_val() - 2)) / R;
     new_pix->scale_grad(scale);
   }
-
 
   bool RepulsiveField::is_special_case()
   {

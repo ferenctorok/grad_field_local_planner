@@ -3,6 +3,12 @@
 
 namespace gradplanner
 {
+  GradFieldBase::GradFieldBase(const GradFieldBase& other):
+  occ_grid(other.occ_grid), size_x(other.size_x),
+  size_y(other.size_y), field(other.field),
+  search_directions4(other.search_directions4),
+  search_directions8(other.search_directions8) {}
+
   GradFieldBase::GradFieldBase(vector<vector<bool >>* occ_grid):
     occ_grid(occ_grid)
     {
@@ -27,6 +33,17 @@ namespace gradplanner
       search_directions8.push_back(Index(new int [2] {0, -1}));
       search_directions8.push_back(Index(new int [2] {1, -1}));
     }
+
+  GradFieldBase& GradFieldBase::operator=(const GradFieldBase& other)
+  {
+    size_x = other.size_x;
+    size_y = other.size_y;
+    field = other.field;
+    search_directions4 = other.search_directions4;
+    search_directions8 = other.search_directions8;
+
+    return *this;
+  }
 
   unsigned int GradFieldBase::get_size_x() {return size_x;}
 

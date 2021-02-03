@@ -19,6 +19,12 @@ namespace gradplanner
       GradFieldBase() {}
 
       /**
+       * @brief Copy Constructor of the GradFieldBase class.
+       * @param other The other Object to copy.
+       */
+      GradFieldBase(const GradFieldBase& other);
+
+      /**
        * @brief Constructor for the GradFieldBase class.
        * @param costmap 2D ROS costmap about the enironment
        */
@@ -28,6 +34,12 @@ namespace gradplanner
        * Defualt destructor of the GradFieldBase class.
        */
       ~GradFieldBase() {}
+
+      /**
+       * @brief Copy assignment.
+       * @param other The other oject to copy.
+       */
+      GradFieldBase& operator=(const GradFieldBase& other);
 
       /**
        * @brief Returns the gridsize of the field in the x direction.
@@ -46,6 +58,12 @@ namespace gradplanner
        *        Pure virtual function, has to be defined in child class.
        */
       virtual void update_field() = 0;
+
+      /**
+       * @brief Returns a 2D vector (Matrix) that contains the values of
+       * The Pixels in the field. Mostly for testing purposes.
+       */
+      
     
     protected:
       vector<vector<bool >>* occ_grid;  // occupancy grid.
