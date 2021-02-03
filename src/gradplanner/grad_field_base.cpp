@@ -36,6 +36,7 @@ namespace gradplanner
 
   GradFieldBase& GradFieldBase::operator=(const GradFieldBase& other)
   {
+    occ_grid = other.occ_grid;
     size_x = other.size_x;
     size_y = other.size_y;
     field = other.field;

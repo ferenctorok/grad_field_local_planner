@@ -3,6 +3,44 @@
 #include <gradplanner/repulsive_field.h>
 
 
+/**
+ * @brief Checks whether every values in the two matrices are equal.
+ * @param a martix 1 to compare.
+ * @param b matrix 2 to compare.
+ */
+void check_values_in_matrix(vector<vector<int >>* a,
+                            vector<vector<int >>* b)
+{
+  int size_x = a->size();
+  int size_y = (*a)[0].size();
+
+  for (int i = 0; i < size_x; i ++)
+    for (int j = 0; j < size_y; j ++)
+      TS_ASSERT_EQUALS((*a)[i][j], (*b)[i][j]);
+}
+
+/**
+ * @brief Checks whether every gradients in the two matrices are equal.
+ * @param a martix 1 to compare.
+ * @param b matrix 2 to compare.
+ */
+void check_gradients_in_matrix(vector<vector<double* >>* a,
+                            vector<vector<double* >>* b)
+{
+  int size_x = a->size();
+  int size_y = (*a)[0].size();
+
+  for (int i = 0; i < size_x; i ++)
+    for (int j = 0; j < size_y; j ++)
+    {
+      TS_ASSERT_EQUALS((*a)[i][j][0], (*b)[i][j][0]);
+      TS_ASSERT_EQUALS((*a)[i][j][1], (*b)[i][j][1]);
+    }
+}
+
+/**
+ * @brief Tests the RepulsiveField class.
+ */
 class RepulsiveFieldTests : public CxxTest::TestSuite
 {
   public:
@@ -13,7 +51,7 @@ class RepulsiveFieldTests : public CxxTest::TestSuite
     {
       size_x = 10;
       size_y = 12;
-      R = 4;
+      R = 3;
 
       occ_grid.resize(size_x);
       for (int i = 0; i < size_x; i ++)
@@ -36,7 +74,53 @@ class RepulsiveFieldTests : public CxxTest::TestSuite
         occ_grid[size_x - 1][j] = true;
       }
 
-      occ_grid[5][5] = true;
+      // this should be the result after growing the repulsive field.
+      res_etalon.resize(size_x);
+      for (int i = 0; i < size_x; i ++)
+      {
+        res_etalon[i].resize(size_y);
+        for (int j = 0; j < size_y; j ++)
+          res_etalon[i][j] = 0;
+      }
+
+      // 1:
+      for (int i = 0; i < size_x; i ++)
+      {
+        res_etalon[i][0] = 1;
+        res_etalon[i][size_y - 1] = 1;
+      }
+
+      for (int j = 0; j < size_y; j ++)
+      {
+        res_etalon[0][j] = 1;
+        res_etalon[size_x - 1][j] = 1;
+      }
+
+      // 2:
+      for (int i = 1; i < (size_x - 1); i ++)
+      {
+        res_etalon[i][1] = 2;
+        res_etalon[i][size_y - 2] = 2;
+      }
+
+      for (int j = 1; j < (size_y - 1); j ++)
+      {
+        res_etalon[1][j] = 2;
+        res_etalon[size_x - 2][j] = 2;
+      }
+
+      // 3:
+      for (int i = 2; i < (size_x - 2); i ++)
+      {
+        res_etalon[i][2] = 3;
+        res_etalon[i][size_y - 3] = 3;
+      }
+
+      for (int j = 2; j < (size_y - 2); j ++)
+      {
+        res_etalon[2][j] = 3;
+        res_etalon[size_x - 3][j] = 3;
+      }
     }
 
     /**
@@ -48,14 +132,11 @@ class RepulsiveFieldTests : public CxxTest::TestSuite
       TS_ASSERT_EQUALS(R, rf.get_R());
       TS_ASSERT_EQUALS(size_x, rf.get_size_x());
       TS_ASSERT_EQUALS(size_y, rf.get_size_y());
-    }
 
-    /**
-     * @brief Tests the re_init_field() method.
-     */
-    void test_re_init_field()
-    {
-      TS_ASSERT_EQUALS(2, 2);
+      gradplanner::RepulsiveField rf2(rf);
+      TS_ASSERT_EQUALS(R, rf2.get_R());
+      TS_ASSERT_EQUALS(size_x, rf2.get_size_x());
+      TS_ASSERT_EQUALS(size_y, rf2.get_size_y());
     }
 
     /**
@@ -65,12 +146,34 @@ class RepulsiveFieldTests : public CxxTest::TestSuite
     {
       rf = gradplanner::RepulsiveField(&occ_grid, R);
       rf.update_field();
-      int a;
+
+      // checking whether the values are match with the expected values:
+      vector<vector<int >> values = rf.get_values();
+      check_values_in_matrix(&res_etalon, &values);
+
+      // placing an other obsticle in the occupancy grid:
+      occ_grid[7][8] = true;
+      rf.update_field();
+
+      // check some values:
+      values = rf.get_values();
+      TS_ASSERT_EQUALS(2, values[8][8]);
+      TS_ASSERT_EQUALS(2, values[7][7]);
+      TS_ASSERT_EQUALS(2, values[6][8]);
+      TS_ASSERT_EQUALS(2, values[7][9]);
+      TS_ASSERT_EQUALS(2, values[7][10]);
+
+      TS_ASSERT_EQUALS(3, values[7][6]);
+      TS_ASSERT_EQUALS(3, values[5][8]);
+      TS_ASSERT_EQUALS(3, values[5][6]);
+
+      TS_ASSERT_EQUALS(0, values[4][4]);
     }
 
   private:
     unsigned int size_x, size_y;
     unsigned int R;
     vector<vector<bool >> occ_grid;
+    vector<vector<int >> res_etalon;
     gradplanner::RepulsiveField rf;
 };
