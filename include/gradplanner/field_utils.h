@@ -19,6 +19,12 @@ namespace gradplanner
       Pixel();
 
       /**
+       * @brief Copy Constructor.
+       * @param other The other Pixel object to copy.
+       */
+      Pixel(const Pixel& other);
+
+      /**
        * @brief Contstructor of the Pixel class.
        * @param x The x position of the pixel
        * @param y The y position of the pixel
@@ -50,6 +56,12 @@ namespace gradplanner
        * @brief Destructor of the Pixel class.
        */
       ~Pixel() {}
+
+      /**
+       * @brief Copy assignment.
+       * @param other The other Pixel to copy.
+       */
+      Pixel& operator=(const Pixel& other);
 
       /**
        * @brief Get the x member of a Pixel.
@@ -137,11 +149,9 @@ namespace gradplanner
 
       /**
        * @brief Constructor of the Index class.
-       * @param shape Necessary, array containing the size of the field
-       *              in the x and y directions.
        * @param ind 2 member pointer, the indices.
        */
-      Index(unsigned int shape[2], int ind[2]=nullptr);
+      Index(int ind[2]);
 
       /**
        * @brief Default destructor of the Index class.
@@ -162,13 +172,13 @@ namespace gradplanner
        * @brief Copy assignment operator:
        * @param other Reference to another Index object to copy.
        */
-      Index& operator=(Index other);
+      Index& operator=(const Index& other);
 
       /**
        * @brief Assignment operator overloading.
        * @param new_ind New indices to set for the object.
        */
-      void operator=(int new_ind[2]);
+      Index& operator=(int new_ind[2]);
 
       /**
        * @brief Addition operation overloading.
@@ -176,16 +186,8 @@ namespace gradplanner
        */
       friend Index operator+(const Index& a, const Index& b);
 
-      /**
-       * @brief Returns true, if the index is valid, that is the index
-       * points within the boundaries of the field.
-       */
-      bool is_valid();
-
-
     private:
-      unsigned int* shape;  // size of the field.
-      int* ind;  // The indices.
+      int ind [2];  // The indices.
   };
 
 
@@ -208,15 +210,27 @@ namespace gradplanner
       Field(unsigned int N, unsigned int M);
 
       /**
+       * @brief Copy Contructor of the Field class.
+       * @param other The other Field object to copy from.
+       */
+      Field(const Field& other);
+
+      /**
        * @brief Default destructor of the Field class.
        */
       ~Field() {}
 
       /**
-       * @brief Gets an indexer object for this field:
-       * @return Indexer object with set shape that fits to this field.
+       * @brief copy assignment.
        */
-      Index get_indexer();
+      Field& operator=(const Field& other);
+
+      /**
+       * @brief Returns true, if the given index is valid, that is is points
+       * to within the boundaries of the field. 
+       * @param ind The Index object.
+       */
+      bool is_valid_index(Index ind);
 
       /**
        * @brief Returns the shape of the field as an array.
@@ -332,7 +346,8 @@ namespace gradplanner
     private:
       unsigned int N;
       unsigned int M;
-      vector<vector<Pixel* >> data;
+      unsigned int shape [2];
+      vector<vector<Pixel >> data;
   };
 
 

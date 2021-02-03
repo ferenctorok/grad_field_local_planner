@@ -13,19 +13,19 @@ namespace gradplanner
 
       // Constants for searching. (Representing the directions to the neighboring
       // cells.)
-      search_directions4.push_back(Index(field.get_shape(), new int [2] {1, 0}));
-      search_directions4.push_back(Index(field.get_shape(), new int [2] {0, 1}));
-      search_directions4.push_back(Index(field.get_shape(), new int [2] {-1, 0}));
-      search_directions4.push_back(Index(field.get_shape(), new int [2] {0, -1}));
+      search_directions4.push_back(Index(new int [2] {1, 0}));
+      search_directions4.push_back(Index(new int [2] {0, 1}));
+      search_directions4.push_back(Index(new int [2] {-1, 0}));
+      search_directions4.push_back(Index(new int [2] {0, -1}));
 
-      search_directions8.push_back(Index(field.get_shape(), new int [2] {1, 0}));
-      search_directions8.push_back(Index(field.get_shape(), new int [2] {1, 1}));
-      search_directions8.push_back(Index(field.get_shape(), new int [2] {0, 1}));
-      search_directions8.push_back(Index(field.get_shape(), new int [2] {-1, 1}));
-      search_directions8.push_back(Index(field.get_shape(), new int [2] {-1, 0}));
-      search_directions8.push_back(Index(field.get_shape(), new int [2] {-1, -1}));
-      search_directions8.push_back(Index(field.get_shape(), new int [2] {0, -1}));
-      search_directions8.push_back(Index(field.get_shape(), new int [2] {1, -1}));
+      search_directions8.push_back(Index(new int [2] {1, 0}));
+      search_directions8.push_back(Index(new int [2] {1, 1}));
+      search_directions8.push_back(Index(new int [2] {0, 1}));
+      search_directions8.push_back(Index(new int [2] {-1, 1}));
+      search_directions8.push_back(Index(new int [2] {-1, 0}));
+      search_directions8.push_back(Index(new int [2] {-1, -1}));
+      search_directions8.push_back(Index(new int [2] {0, -1}));
+      search_directions8.push_back(Index(new int [2] {1, -1}));
     }
 
   unsigned int GradFieldBase::get_size_x() {return size_x;}

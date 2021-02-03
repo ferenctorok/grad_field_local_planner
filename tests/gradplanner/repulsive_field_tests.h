@@ -15,12 +15,12 @@ class RepulsiveFieldTests : public CxxTest::TestSuite
       size_y = 12;
       R = 4;
 
-      // creating the occuancy grid:
+      occ_grid.resize(size_x);
       for (int i = 0; i < size_x; i ++)
       {
-        occ_grid.push_back(vector<bool > ());
+        occ_grid[i].resize(size_y);
         for (int j = 0; j < size_y; j ++)
-          occ_grid[i].push_back(false);
+          occ_grid[i][j] = false;
       }
 
       // adding frame and an obstacle to it.
@@ -48,6 +48,23 @@ class RepulsiveFieldTests : public CxxTest::TestSuite
       TS_ASSERT_EQUALS(R, rf.get_R());
       TS_ASSERT_EQUALS(size_x, rf.get_size_x());
       TS_ASSERT_EQUALS(size_y, rf.get_size_y());
+    }
+
+    /**
+     * @brief Tests the re_init_field() method.
+     */
+    void test_re_init_field()
+    {
+      TS_ASSERT_EQUALS(2, 2);
+    }
+
+    /**
+     * @brief Tests the update_field() method.
+     */
+    void test_update_field()
+    {
+      rf = gradplanner::RepulsiveField(&occ_grid, R);
+      rf.update_field();
     }
 
   private:

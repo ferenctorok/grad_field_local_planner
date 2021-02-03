@@ -10,18 +10,36 @@ namespace gradplanner
   Pixel::Pixel():
   x(0), y(0), value(0), grad{0, 0}, parent{0, 0} {}
 
+  Pixel::Pixel(const Pixel& other):
+  x(other.x), y(other.y), value(other.value)
+  {
+    grad[0] = other.grad[0];
+    grad[1] = other.grad[1];
+    parent[0] = other.parent[0];
+    parent[1] = other.parent[1];
+  }
 
   Pixel::Pixel(unsigned int x, unsigned int y, int value):
-  x(x), y(y), value(value), grad{0, 0}, parent{0, 0} {}
-
+    x(x), y(y), value(value), grad{0, 0}, parent{0, 0} {}
 
   Pixel::Pixel(unsigned int x, unsigned int y, int value, double grad[2]):
-  x(x), y(y), value(value), grad{grad[0], grad[1]}, parent{0, 0} {}
-
+    x(x), y(y), value(value), grad{grad[0], grad[1]}, parent{0, 0} {}
 
   Pixel::Pixel(unsigned int x, unsigned int y, int value, double grad[2], unsigned int parent[2]):
-  x(x), y(y), value(value), grad{grad[0], grad[1]}, parent{parent[0], parent[1]} {}
+    x(x), y(y), value(value), grad{grad[0], grad[1]}, parent{parent[0], parent[1]} {}
 
+  Pixel& Pixel::operator=(const Pixel& other)
+  {
+    x = other.x;
+    y = other.y;
+    value = other.value;
+    grad[0] = other.grad[0];
+    grad[1] = other.grad[1];
+    parent[0] = other.parent[0];
+    parent[1] = other.parent[1];
+
+    return *this;
+  }
 
   unsigned int Pixel::get_x() {return x;}
 

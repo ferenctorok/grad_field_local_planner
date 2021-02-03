@@ -6,17 +6,7 @@ namespace gradplanner
 {
   RepulsiveField::RepulsiveField(vector<vector<bool >>* occ_grid,
                                  unsigned int R):
-    GradFieldBase(occ_grid), R(R)
-    {
-      // index objects, with which it is convinient to index the field.
-      ind = field.get_indexer();
-      new_ind = field.get_indexer();
-      neighbour_ind = field.get_indexer();
-      ind0 = field.get_indexer();
-      ind1 = field.get_indexer();
-      ind2 = field.get_indexer();
-      ind3 = field.get_indexer();
-    }
+    GradFieldBase(occ_grid), R(R) {}
 
   unsigned int RepulsiveField::get_R() {return R;}
 
@@ -37,7 +27,7 @@ namespace gradplanner
       for (auto &direction: search_directions8)
       {
         new_ind = ind + direction;
-        if (new_ind.is_valid())
+        if (field.is_valid_index(new_ind))
           if (field.get_val(new_ind) == 0)
           {
             set_new_pixel();
@@ -50,7 +40,6 @@ namespace gradplanner
               q.push(Index(new_ind));
           }
       }
-
       q.pop();
     }
   }
@@ -62,7 +51,7 @@ namespace gradplanner
     {
       for (int j = 0; j < size_y; j ++)
         if ((*occ_grid)[i][j])
-          q.push(Index(field.get_shape(), new int [2] {i, j}));
+          q.push(Index(new int [2] {i, j}));
     }
   }
 
@@ -95,7 +84,7 @@ namespace gradplanner
     for (auto &direction: search_directions8)
     {
       neighbour_ind = new_ind + direction;
-      if (neighbour_ind.is_valid())
+      if (field.is_valid_index(neighbour_ind))
         if ((field.get_val(neighbour_ind) != 0) &&
            (field.get_val(neighbour_ind) < field.get_val(new_ind)))
         {
@@ -124,11 +113,11 @@ namespace gradplanner
       ind3 = new_ind + search_directions4[3];
 
       // checking if the 2-2 opposite pixels are occupied.
-      if (ind0.is_valid() && (field.get_val(ind0) == 1) &&
-          ind2.is_valid() && (field.get_val(ind2) == 1))
+      if (field.is_valid_index(ind0) && (field.get_val(ind0) == 1) &&
+          field.is_valid_index(ind2) && (field.get_val(ind2) == 1))
         return true;
-      else if (ind1.is_valid() && (field.get_val(ind1) == 1) &&
-               ind1.is_valid() && (field.get_val(ind1) == 1))
+      else if (field.is_valid_index(ind1) && (field.get_val(ind1) == 1) &&
+               field.is_valid_index(ind3) && (field.get_val(ind3) == 1))
         return true;
     }
 

@@ -150,26 +150,22 @@ class IndexTests : public CxxTest::TestSuite
 {
   public:
     /**
-    * @brief sets up the tests.
-    */
-    void setUp()
-    {
-      shape[0] = 5;
-      shape[1] = 6;
-    }
-
-    /**
-     * @brief tests the constructor.
+     * @brief tests the constructors.
      */
     void test_constr()
     {
-      ind = gradplanner::Index(shape);
+      ind = gradplanner::Index();
       TS_ASSERT_EQUALS(0, ind.get_x());
       TS_ASSERT_EQUALS(0, ind.get_y());
       
-      ind = gradplanner::Index(shape, new int [2] {2, 3});
+      ind = gradplanner::Index(new int [2] {2, 3});
       TS_ASSERT_EQUALS(2, ind.get_x());
       TS_ASSERT_EQUALS(3, ind.get_y());
+
+      gradplanner::Index ind2(ind);
+      ind = new int [2] {3, 4};
+      TS_ASSERT_EQUALS(2, ind2.get_x());
+      TS_ASSERT_EQUALS(3, ind2.get_y());
     }
 
     /**
@@ -177,18 +173,22 @@ class IndexTests : public CxxTest::TestSuite
      */
     void test_is_valid()
     {      
-      ind = gradplanner::Index(shape, new int [2] {0, 0});
-      TS_ASSERT_EQUALS(true, ind.is_valid());
+      gradplanner::Field f{5, 6};
+      ind = gradplanner::Index(new int [2] {0, 0});
+      TS_ASSERT_EQUALS(true, f.is_valid_index(ind));
 
-      ind = gradplanner::Index(shape, new int [2] {4, 5});
-      TS_ASSERT_EQUALS(true, ind.is_valid());
+      ind = gradplanner::Index(new int [2] {4, 5});
+      TS_ASSERT_EQUALS(true, f.is_valid_index(ind));
 
-      ind = gradplanner::Index(shape, new int [2] {4, 6});
-      TS_ASSERT_EQUALS(false, ind.is_valid());
+      ind = gradplanner::Index(new int [2] {-1, 0});
+      TS_ASSERT_EQUALS(false, f.is_valid_index(ind));
+
+      ind = gradplanner::Index(new int [2] {4, 6});
+      TS_ASSERT_EQUALS(false, f.is_valid_index(ind));
     }
 
     /**
-     * @brief Tests the assignment operator overloading.
+     * @brief Tests the copy assignment operator overloading.
      */
     void Test_assignment()
     {
@@ -196,13 +196,11 @@ class IndexTests : public CxxTest::TestSuite
       TS_ASSERT_EQUALS(2, ind.get_x());
       TS_ASSERT_EQUALS(3, ind.get_y());
 
-      queue<gradplanner::Index > q;
-      q.push(gradplanner::Index(ind));
+      gradplanner::Index ind2 = ind;
       ind = new int [2] {4, 5};
 
-      gradplanner::Index new_ind = q.front();
-      TS_ASSERT_EQUALS(2, new_ind.get_x());
-      TS_ASSERT_EQUALS(3, new_ind.get_y());
+      TS_ASSERT_EQUALS(2, ind2.get_x());
+      TS_ASSERT_EQUALS(3, ind2.get_y());
     }
 
     /**
@@ -210,8 +208,8 @@ class IndexTests : public CxxTest::TestSuite
      */
     void test_plus_operator()
     {
-      gradplanner::Index ind1(shape, new int [2] {2, 3});
-      gradplanner::Index ind2(shape, new int [2] {1, 1});
+      gradplanner::Index ind1(new int [2] {2, 3});
+      gradplanner::Index ind2(new int [2] {1, 1});
 
       ind = ind1 + ind2;
       
@@ -220,7 +218,6 @@ class IndexTests : public CxxTest::TestSuite
     }
 
   private:
-    unsigned int shape[2] {0, 0};
     gradplanner::Index ind;
 };
 
@@ -243,7 +240,7 @@ class FieldTests : public CxxTest::TestSuite
       // indices:
       x = 2;
       y = 4;
-      ind = f.get_indexer();
+      //ind = f.get_indexer();
     }
 
     /**
