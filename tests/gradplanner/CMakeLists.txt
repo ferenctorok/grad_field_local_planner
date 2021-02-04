@@ -9,7 +9,7 @@ target_link_libraries(field_utils_tests
   gradplanner
 )
 
-# tests of grad_field_base.h:
+# tests of repulsive_field.h:
 CXXTEST_ADD_TEST(repulsive_field_tests repulsive_field_tests.cc
   ${CMAKE_CURRENT_LIST_DIR}/repulsive_field_tests.h
 )
@@ -17,5 +17,16 @@ add_dependencies(repulsive_field_tests
   gradplanner
 )
 target_link_libraries(repulsive_field_tests
+  gradplanner
+)
+
+# tests of attractor_field.h:
+CXXTEST_ADD_TEST(attractor_field_tests attractor_field_tests.cc
+  ${CMAKE_CURRENT_LIST_DIR}/attractor_field_tests.h
+)
+add_dependencies(attractor_field_tests
+  gradplanner
+)
+target_link_libraries(attractor_field_tests
   gradplanner
 )

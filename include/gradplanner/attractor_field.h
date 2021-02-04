@@ -51,11 +51,21 @@ namespace gradplanner
       AttractorField& operator=(const AttractorField& other);
 
       /**
+       * @brief Sets a new goal.
+       * @param new_goal The new goal to set.
+       * @return Returns true if the goal was valid, that is, it
+       * lies within the boundaries of the AttractorField.
+       */
+      bool set_new_goal(double new_goal[2]);
+
+      /**
        * @brief updates the field values and gradients based on the occupancy grid.
        */
       void update_field();
 
     private:
+      double goal[2];
+      Index goal_ind;
 
   };
 } // namespace gradplanner
