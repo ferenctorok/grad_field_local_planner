@@ -32,7 +32,7 @@ namespace gradplanner
     {
       ind = q.front();
 
-      for (auto &direction: search_directions8)
+      for (auto &direction: search_directions_8)
       {
         new_ind = ind + direction;
         if (field.is_valid_index(new_ind))
@@ -46,6 +46,7 @@ namespace gradplanner
               q.push(Index(new_ind));
           }
       }
+      
       q.pop();
     }
   }
@@ -85,7 +86,7 @@ namespace gradplanner
     // else calculate the gradient of the new pixel from its neighbour:
     // The grad of a pixel is the sum of directions from a neighbour to this
     // pixel, if the neighbour is closer to an obstacle then this pixel. (Has smaller value)
-    for (auto &direction: search_directions8)
+    for (auto &direction: search_directions_8)
     {
       neighbour_ind = new_ind + direction;
       if (field.is_valid_index(neighbour_ind))
@@ -111,10 +112,10 @@ namespace gradplanner
     if (new_pix->get_val() == 2)
     {
       // creating the neigboring pixel indices:
-      ind0 = new_ind + search_directions4[0];
-      ind1 = new_ind + search_directions4[1];
-      ind2 = new_ind + search_directions4[2];
-      ind3 = new_ind + search_directions4[3];
+      ind0 = new_ind + search_directions_4[0];
+      ind1 = new_ind + search_directions_4[1];
+      ind2 = new_ind + search_directions_4[2];
+      ind3 = new_ind + search_directions_4[3];
 
       // checking if the 2-2 opposite pixels are occupied.
       if (field.is_valid_index(ind0) && (field.get_val(ind0) == 1) &&

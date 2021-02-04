@@ -53,21 +53,6 @@ namespace gradplanner
       void update_field();
 
       /**
-       * @brief Sets the value, parent and the gradient of a Pixel.
-       * The Index of the Pixel which's value will be set is "new_ind".
-       * This Pixel has been reached by expanding the Pixel indexed with "ind".
-       */
-      void set_new_pixel();
-
-      /**
-       * @brief Returns true, if the current Pixel "new_pix" lies on a special
-       * place, where we would like to return zero grad, no matter what. This is 
-       * the case, when the Pixel has 1-1 obstacles on 2 opposite side of it.
-       * @return true if the currecnt Pixel "new_pix" is special in this sense.
-       */
-      bool is_special_case();
-
-      /**
        * @brief Gets the R member of the class. 
        * @return The radius around obstacles which they infulence.
        */
@@ -85,6 +70,21 @@ namespace gradplanner
        * @param q Reference to the queue.
        */
       void init_queue(queue<Index >& q);
+
+      /**
+       * @brief Sets the value, parent and the gradient of a Pixel.
+       * The Index of the Pixel which's value will be set is "new_ind".
+       * This Pixel has been reached by expanding the Pixel indexed with "ind".
+       */
+      void set_new_pixel();
+
+      /**
+       * @brief Returns true, if the current Pixel "new_pix" lies on a special
+       * place, where we would like to return zero grad, no matter what. This is 
+       * the case, when the Pixel has 1-1 obstacles on 2 opposite side of it.
+       * @return true if the currecnt Pixel "new_pix" is special in this sense.
+       */
+      bool is_special_case();
   };
 }
 

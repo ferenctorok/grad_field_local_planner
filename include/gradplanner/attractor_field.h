@@ -64,9 +64,19 @@ namespace gradplanner
       void update_field();
 
     private:
-      double goal[2];
-      Index goal_ind;
+      double goal[2]; // the goal position
+      Index goal_ind; // The index of the Pixel in which the goal is.
+      Index ind, new_ind, neighbour_ind, tester_ind; // Indices which are used in update_field().
+      Pixel *pix, *new_pix; // Pixels corresponding to ind and new_ind used in update_field().
+      bool grad_is_zero, neighbour_is_occupied; // Some flags used in update_field().
+      double tester_ind_f[2]; // array used in update_field()
 
+      /**
+       * @brief Sets the value and the gradient of a Pixel.
+       * The Index of the Pixel which's value will be set is "new_ind".
+       * This Pixel has been reached by expanding the Pixel indexed with "ind".
+       */
+      void set_new_pixel();
   };
 } // namespace gradplanner
 
