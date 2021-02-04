@@ -1,6 +1,7 @@
 #include <cxxtest/TestSuite.h>
-
+#include <cmath>
 #include <gradplanner/repulsive_field.h>
+
 
 
 /**
@@ -20,22 +21,14 @@ void check_values_in_matrix(vector<vector<int >>* a,
 }
 
 /**
- * @brief Checks whether every gradients in the two matrices are equal.
- * @param a martix 1 to compare.
- * @param b matrix 2 to compare.
+ * @brief Checks whether the 2 gradients are equal.
+ * @param grad1 gradient1
+ * @param b gradient2
  */
-void check_gradients_in_matrix(vector<vector<double* >>* a,
-                            vector<vector<double* >>* b)
+void compare_gradients(double* grad1, double* grad2)
 {
-  int size_x = a->size();
-  int size_y = (*a)[0].size();
-
-  for (int i = 0; i < size_x; i ++)
-    for (int j = 0; j < size_y; j ++)
-    {
-      TS_ASSERT_EQUALS((*a)[i][j][0], (*b)[i][j][0]);
-      TS_ASSERT_EQUALS((*a)[i][j][1], (*b)[i][j][1]);
-    }
+  TS_ASSERT_DELTA(grad1[0], grad2[0], 1e-4);
+  TS_ASSERT_DELTA(grad1[1], grad2[1], 1e-4);
 }
 
 /**
@@ -151,6 +144,24 @@ class RepulsiveFieldTests : public CxxTest::TestSuite
       vector<vector<int >> values = rf.get_values();
       check_values_in_matrix(&res_etalon, &values);
 
+      // check some gradients:
+      vector<vector<double *>> grads = rf.get_grads();
+
+      compare_gradients(grads[1][5], new double [2] {1, 0});
+      compare_gradients(grads[5][1], new double [2] {0, 1});
+      compare_gradients(grads[8][5], new double [2] {-1, 0});
+      compare_gradients(grads[5][10], new double [2] {0, -1});
+
+      compare_gradients(grads[1][1], new double [2] {std::sqrt(2) / 2, std::sqrt(2) / 2});
+      compare_gradients(grads[1][10], new double [2] {std::sqrt(2) / 2, -std::sqrt(2) / 2});
+      compare_gradients(grads[7][2], new double [2] {-std::sqrt(2) / 2, std::sqrt(2) / 2});
+      compare_gradients(grads[7][9], new double [2] {-std::sqrt(2) / 2, -std::sqrt(2) / 2});
+
+      for (int i = 0; i < size_x; i ++)
+        for (int j = 0; j < size_y; j ++)
+          if (values[i][j] == 0)
+            compare_gradients(grads[i][j], new double [2] {0, 0});
+      
       // placing an other obsticle in the occupancy grid:
       occ_grid[7][8] = true;
       rf.update_field();
@@ -168,6 +179,18 @@ class RepulsiveFieldTests : public CxxTest::TestSuite
       TS_ASSERT_EQUALS(3, values[5][6]);
 
       TS_ASSERT_EQUALS(0, values[4][4]);
+
+      // checking some grads:
+
+      compare_gradients(grads[8][8], new double [2] {0, 0});
+      compare_gradients(grads[7][7], new double [2] {0, -1});
+      compare_gradients(grads[6][8], new double [2] {-1, 0});
+      compare_gradients(grads[7][9], new double [2] {0, 1});
+
+      for (int i = 0; i < size_x; i ++)
+        for (int j = 0; j < size_y; j ++)
+          if (values[i][j] == 0)
+            compare_gradients(grads[i][j], new double [2] {0, 0});
     }
 
   private:
