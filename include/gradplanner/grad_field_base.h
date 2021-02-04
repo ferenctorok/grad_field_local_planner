@@ -54,6 +54,32 @@ namespace gradplanner
       unsigned int get_size_y();
 
       /**
+       * @brief Returns the value of the gradient field at the given index.
+       * @param ind The Index object, from which cell we need the value.
+       */
+      const int get_val(Index ind);
+
+      /**
+       * @brief Returns the value of the gradient field at the given index.
+       * @param x The first coordinate of the index.
+       * @param y The second coordinate of the index.
+       */
+      const int get_val(unsigned int x, unsigned int y);
+
+      /**
+       * @brief Returns the gradient of the gradient field at the given index.
+       * @param ind The Index object, from which cell we need the value.
+       */
+      const double* get_grad(Index ind);
+
+      /**
+       * @brief Returns the gradient of the gradient field at the given index.
+       * @param x The first coordinate of the index.
+       * @param y The second coordinate of the index.
+       */
+      const double* get_grad(unsigned int x, unsigned int y);
+
+      /**
        * @brief updates the gradient field.
        *        Pure virtual function, has to be defined in child class.
        */

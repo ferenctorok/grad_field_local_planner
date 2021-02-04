@@ -1,10 +1,6 @@
 #ifndef REPULSIVE_FIELD_h
 #define REPULSIVE_FIELD_h
 
-/* ROS related includes: */
-// costmap & geometry
-#include <costmap_2d/costmap_2d_ros.h>
-
 /* gradplanner includes: */
 #include <gradplanner/field_utils.h>
 #include <gradplanner/grad_field_base.h>
@@ -21,7 +17,7 @@ namespace gradplanner
   {
     public:
       /**
-       * @brief Default constructor of the GradFieldBase class. 
+       * @brief Default constructor of the RepulsiveField class. 
        */
       RepulsiveField() {}
 
@@ -32,15 +28,16 @@ namespace gradplanner
       RepulsiveField(const RepulsiveField& other);
 
       /**
-       * @brief Constructor for the GradFieldBase class.
-       * @param costmap 2D ROS costmap about the enironment
+       * @brief Constructor for the RepulsiveField class.
+       * @param occ_grid Pointer to the occupancy grid. (The occ_grid is
+       * true in the entries which are occupied.)
        * @param R The radius in grid step, in which the obstacles have an effect
        */
       RepulsiveField(vector<vector<bool >>* occ_grid,
                      unsigned int R);
 
       /**
-       * Defualt destructor of the GradFieldBase class.
+       * Defualt destructor of the RepulsiveField class.
        */
       ~RepulsiveField() {}
 

@@ -46,9 +46,23 @@ namespace gradplanner
     return *this;
   }
 
-  unsigned int GradFieldBase::get_size_x() {return size_x;}
+  unsigned int GradFieldBase::get_size_x()
+    {return size_x;}
 
-  unsigned int GradFieldBase::get_size_y() {return size_y;}
+  unsigned int GradFieldBase::get_size_y()
+    {return size_y;}
+
+  const int GradFieldBase::get_val(Index ind)
+    {return field.get_val(ind);}
+
+  const int GradFieldBase::get_val(unsigned int x, unsigned int y)
+    {return field.get_val(x, y);}
+
+  const double* GradFieldBase::get_grad(Index ind)
+    {return field.get_grad(ind);}
+
+  const double* GradFieldBase::get_grad(unsigned int x, unsigned int y)
+    {return field.get_grad(x, y);}
 
   void GradFieldBase::re_init_field()
   {
