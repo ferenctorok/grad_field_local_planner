@@ -14,13 +14,16 @@ set(GRADPLANNER_SOURCES
   grad_field_base.cpp
   repulsive_field.cpp
   attractor_field.cpp
+  grad_field_controller.cpp
 )
+
 set(GRADPLANNER_HEADERS
   ${GRADPLANNER_INCLUDE_DIR}/field_utils.h
   ${GRADPLANNER_INCLUDE_DIR}/utils.h
   ${GRADPLANNER_INCLUDE_DIR}/grad_field_base.h
   ${GRADPLANNER_INCLUDE_DIR}/repulsive_field.h
   ${GRADPLANNER_INCLUDE_DIR}/attractor_field.h
+  ${GRADPLANNER_INCLUDE_DIR}/grad_field_controller.h
 )
 
 # constructing target library:

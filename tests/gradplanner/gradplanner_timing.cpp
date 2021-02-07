@@ -16,6 +16,7 @@ using namespace std::chrono;
  */
 vector<vector<bool >> get_occ_grid_rep();
 
+
 int main()
 {
   /* Timing the AttractorField.update_field() method. */
