@@ -30,3 +30,14 @@ add_dependencies(attractor_field_tests
 target_link_libraries(attractor_field_tests
   gradplanner
 )
+
+# Timing:
+add_executable(gradplanner_timing
+  gradplanner_timing.cpp
+)
+add_dependencies(gradplanner_timing
+  gradplanner
+)
+target_link_libraries(gradplanner_timing
+  gradplanner
+)
