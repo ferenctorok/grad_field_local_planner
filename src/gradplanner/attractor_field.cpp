@@ -116,7 +116,7 @@ namespace gradplanner
     // checking if the neighboring cell to which the gradient 
     // points is occupied.
     tester_ind_f[0] = new_ind.get_x() + 0.5 + new_grad[0];
-    tester_ind_f[1] = new_ind.get_x() + 0.5 + new_grad[1];
+    tester_ind_f[1] = new_ind.get_y() + 0.5 + new_grad[1];
     tester_ind = Index(new int [2] {int(tester_ind_f[0]), int(tester_ind_f[1])});
     neighbour_is_occupied = (field.get_val(tester_ind) == 1);
 

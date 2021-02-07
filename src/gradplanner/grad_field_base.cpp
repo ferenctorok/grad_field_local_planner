@@ -25,7 +25,6 @@ namespace gradplanner
       search_directions_4.push_back(Index(new int [2] {0, -1}));
 
       search_directions_8.push_back(Index(new int [2] {1, 0}));
-      search_directions_8.push_back(Index(new int [2] {1, 0}));
       search_directions_8.push_back(Index(new int [2] {1, 1}));
       search_directions_8.push_back(Index(new int [2] {0, 1}));
       search_directions_8.push_back(Index(new int [2] {-1, 1}));
