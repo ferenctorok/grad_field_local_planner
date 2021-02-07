@@ -74,6 +74,17 @@ namespace gradplanner
     };
     EndMode end_mode;
   };
+
+  /**
+   * @struct Pose structure for storing an x, y, psi pose,
+   * where psi is the orientation around the z axis.
+   */
+  struct Pose
+  {
+    double x; // x position coordinate in metres. 
+    double y; // y position coordinate in metres. 
+    double psi; // Orientation around the z axis in radians. Has values between pi and -pi.
+  };
 } // namespace gradplanner
 
 #endif // UTILS_H
