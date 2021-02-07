@@ -66,6 +66,7 @@ namespace gradplanner
     private:
       double goal[2]; // the goal position
       Index goal_ind; // The index of the Pixel in which the goal is.
+      bool goal_is_valid, goal_is_free; // Flags used in set_new_goal() method.
       Index ind, new_ind, neighbour_ind, tester_ind; // Indices which are used in update_field().
       Pixel *pix, *new_pix; // Pixels corresponding to ind and new_ind used in update_field().
       bool grad_is_zero, neighbour_is_occupied; // Some flags used in update_field().

@@ -54,7 +54,7 @@ class RepulsiveFieldTests : public CxxTest::TestSuite
           occ_grid[i][j] = false;
       }
 
-      // adding frame and an obstacle to it.
+      // adding frame obstacle to it.
       for (int i = 0; i < size_x; i ++)
       {
         occ_grid[i][0] = true;

@@ -60,8 +60,8 @@ namespace gradplanner
 
     private:
       unsigned int R; // The effective radius of an obstacle in number of pixels.
-      Index ind, new_ind, neighbour_ind; // Indices which are used during expansion.
-      Pixel *pix, *new_pix; // Pixels corresponding to ind and new_ind.
+      Index ind, new_ind, neighbour_ind; // Indices which are used in update_field().
+      Pixel *pix, *new_pix; // Pixels corresponding to ind and new_ind used in update_field().
       Index ind0, ind1, ind2, ind3; // Indices which are used in the is_special_case() method.
 
       /**

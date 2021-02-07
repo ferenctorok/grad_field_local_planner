@@ -30,7 +30,14 @@ namespace gradplanner
     goal[1] = new_goal[1];
     goal_ind = Index(new int [2] {int(goal[0]), int(goal[1])});
 
-    return field.is_valid_index(goal_ind);
+    if (field.is_valid_index(goal_ind))
+    {
+      goal_is_free = ! (*occ_grid)[goal_ind.get_x()][goal_ind.get_y()];
+      if (goal_is_free)
+        return true;
+    }
+    
+    return false;
   }
 
   void AttractorField::update_field()
@@ -110,7 +117,7 @@ namespace gradplanner
     // points is occupied.
     tester_ind_f[0] = new_ind.get_x() + 0.5 + new_grad[0];
     tester_ind_f[1] = new_ind.get_x() + 0.5 + new_grad[1];
-    tester_ind = Index(new int [2] {int(tester_ind_f), int(tester_ind_f)});
+    tester_ind = Index(new int [2] {int(tester_ind_f[0]), int(tester_ind_f[1])});
     neighbour_is_occupied = (field.get_val(tester_ind) == 1);
 
     // If any of the aboves is true, we have to change new_grad:
