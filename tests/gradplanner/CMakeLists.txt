@@ -31,6 +31,17 @@ target_link_libraries(attractor_field_tests
   gradplanner
 )
 
+# tests of grad_field_controller.h:
+CXXTEST_ADD_TEST(grad_field_controller_tests grad_field_controller_tests.cc
+  ${CMAKE_CURRENT_LIST_DIR}/grad_field_controller_tests.h
+)
+add_dependencies(grad_field_controller_tests
+  gradplanner
+)
+target_link_libraries(grad_field_controller_tests
+  gradplanner
+)
+
 # Timing:
 add_executable(gradplanner_timing
   gradplanner_timing.cpp
