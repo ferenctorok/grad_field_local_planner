@@ -15,6 +15,16 @@ namespace gradplanner
     attractor(occ_grid_attr), repulsive(occ_grid_rep, params->general.R),
     goal_is_valid(false), goal_pos_reached(false), goal_ang_reached(false)
   {
+    // Index where the robot is in the attractor field. (middle of the field.)
+    int x_attr = (attractor.get_size_x() - 1) / 2;
+    int y_attr = (attractor.get_size_y() - 1) / 2;
+    rob_ind_attr = Index(new int [2] {x_attr, y_attr});
+
+    // Index where the robot is in the repulsive field. (middle of the field.)
+    int x_rep = (repulsive.get_size_x() - 1) / 2;
+    int y_rep = (repulsive.get_size_y() - 1) / 2;
+    rob_ind_attr = Index(new int [2] {x_rep, y_rep});
+
     set_from_params();
   }
 
@@ -109,21 +119,13 @@ namespace gradplanner
 
   bool GradFieldController::robot_is_free()
   {
-    // the robot is always in the middle of the occupancy grid, 
-    // which hence must have odd size in both directions.
-    unsigned int x = (attractor.get_size_x() - 1) / 2;
-    unsigned int y = (attractor.get_size_y() - 1) / 2;
-    return ! (*occ_grid_rep)[x][y];
+    return ! (*occ_grid_rep)[rob_ind_rep.get_x()][rob_ind_rep.get_y()];
   }
 
 
   bool GradFieldController::goal_is_reachable()
   {
-    // the robot is always in the middle of the occupancy grid, 
-    // which hence must have odd size in both directions.
-    unsigned int x = (attractor.get_size_x() - 1) / 2;
-    unsigned int y = (attractor.get_size_y() - 1) / 2;
-    return (attractor.get_val(x, y) < 0);
+    return (attractor.get_val(rob_ind_attr) < 0);
   }
 
 
@@ -160,13 +162,32 @@ namespace gradplanner
   void GradFieldController::grad_controller(double& v_x,
                                             double& omega)
   {
-
+    
   }
 
 
   bool GradFieldController::is_direct_mode()
   {
+    // Check whether the robot is far enough from the nearest obstacle:
+    if ((0 < repulsive.get_val(rob_ind_rep)) &&
+        (repulsive.get_val(rob_ind_rep) < min_obst_direct)) 
+      return false;
+    else
+    {
+      // carrying out raytracing to check whether the
+      // path to the goal is free.
+      double distance = sqrt(pow(goal_rel.x, 2) + pow(goal_rel.y, 2));
+      double dx = goal_rel.x / distance;
+      double dy = goal_rel.y / distance;
+      double x = rob_ind_rep.get_x() + 0.5;
+      double y = rob_ind_rep.get_y() + 0.5;
+      
+      for (int i = 1; i <= int(distance); i ++)
+        if ((*occ_grid_rep)[int(x + i * dx)][int(y + i * dy)])
+          return false;
+    }
 
+    return true;
   }
 
 
@@ -192,14 +213,13 @@ namespace gradplanner
   {
     double v_x;
     
-    if (abs(ang_diff) < boundary_error_direct)
+    if (abs(ang_diff) < boundary_error)
       v_x = max_trans_vel;
     else
     {
-      if(abs(ang_diff) < max_error_direct)
+      if(abs(ang_diff) < max_error)
       {
-        double ratio = (abs(ang_diff) - boundary_error_direct)
-          / (max_error_direct - boundary_error_direct);
+        double ratio = (abs(ang_diff) - boundary_error) / (max_error - boundary_error);
         v_x = max_trans_vel * (1 - ratio);
       }
       else

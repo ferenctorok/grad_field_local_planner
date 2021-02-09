@@ -87,7 +87,9 @@ namespace gradplanner
       bool goal_is_valid; // Flag to indicate that a valid goal is set for the Robot.
       bool goal_pos_reached; // Flag to indicate whether the goal position was reached with the tolerance.
       bool goal_ang_reached; // Flag to indicate whether the goal orientation was reached with the tolerance.
-
+      Index rob_ind_attr;  // The index of the cell in the attractor field where the robot is.
+      Index rob_ind_rep;   // The index of the cell in the attractor field where the robot is.
+      
       // params which are set up from the given params:
       // general:
       double Ts; // Time step in seconds.
