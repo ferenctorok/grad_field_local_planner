@@ -25,12 +25,6 @@ namespace gradplanner
       GradFieldController() {}
 
       /**
-       * @brief Copy constructor of the GradFieldController class.
-       * @param other The other object to copy from.
-       */
-      GradFieldController(const GradFieldController& other);
-
-      /**
        * @brief Constructor of the of the GradFieldController class.
        * @param occ_grid_attr The occupancy grid for the attractor field.
        * @param occ_grid_attr The occupancy grid for the repulsive field.
@@ -42,19 +36,13 @@ namespace gradplanner
                           ControlParams* params);
 
       /**
-       * @brief Copy assignment.
-       * @param other The other object to copy from.
-       */
-      GradFieldController& operator=(const GradFieldController& other);
-
-      /**
        * @brief Default Destructor of the GradFieldController class.
        */
       ~GradFieldController() {}
 
       /**
        * @brief Sets the state of the robot.
-       * @param stae the State to set.
+       * @param state the State to set.
        */
       void set_state(const State& state);
 
@@ -100,18 +88,6 @@ namespace gradplanner
        * @param omega Reference ot the angular velocity around the z axis.
        */
       void grad_controller(double& v_x, double& omega);
-
-      /**
-       * @brief Checks if the robot is in free space.
-       * @return True if the robot is in free space.
-       */
-      bool robot_is_free();
-
-      /**
-       * @brief Checks if the goal is reachable.
-       * @return True if the goal is reachable.
-       */
-      bool goal_is_reachable();
 
       /**
        * @brief Checks whether the controller should be the
@@ -196,6 +172,18 @@ namespace gradplanner
        * on the given parameters.
        */
       void set_from_params();
+
+      /**
+       * @brief Checks if the robot is in free space.
+       * @return True if the robot is in free space.
+       */
+      bool robot_is_free();
+
+      /**
+       * @brief Checks if the goal is reachable.
+       * @return True if the goal is reachable.
+       */
+      bool goal_is_reachable();
   };
 } // namespace gradplanner
 
