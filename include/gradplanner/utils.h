@@ -3,6 +3,7 @@
 
 #include <cmath>
 
+const double PI = 3.141592;
 
 namespace gradplanner
 {
@@ -85,6 +86,16 @@ namespace gradplanner
     double y; // y position coordinate in metres. 
     double psi; // Orientation around the z axis in radians. Has values between pi and -pi.
   };
+
+  /**
+   * @brief Gets the orientation difference between two angles. 
+   * The returned orientation difference is always between -pi and pi.
+   * @param real The angle that the robot has
+   * @param desired The desired angle that the robot should have.
+   * @return The orientation difference ang_diff = real - desired,
+   * hence it always points from the desired to the real angle.
+   */
+  double get_ang_diff(const double real, const double desired);
 } // namespace gradplanner
 
 #endif // UTILS_H
