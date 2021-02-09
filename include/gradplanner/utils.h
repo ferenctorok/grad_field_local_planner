@@ -26,6 +26,7 @@ namespace gradplanner
      */
     struct General
     {
+      double Ts = 0.1; // Time step in seconds. Default: 0.1 [s]
       unsigned int R = 16; // Effective radius of the RepulsiveField in grid step. Default: 16 [grid cell]
       double end_pos_tol = 0.1; // Goal position tolerance in meters. Default: 0.1 [m]
       double end_ang_tol = 0.2; // Goal orientation tolerance in rad. Default: 0.2 [rad]
@@ -99,6 +100,14 @@ namespace gradplanner
     double psi = 0; // orientation around the z axis.
     double omega = 0; // angular velocity around the z axis.
   };
+
+  /**
+   * @brief Implements the sign function as a template.
+   * @param val Value of type T.
+   * @return 1 if val > 0, 0 if val == 0 and -1 otherwise.
+   */
+  template <typename T>
+  int sgn(const T& val);
 
   /**
    * @brief Gets the orientation difference between two angles. 

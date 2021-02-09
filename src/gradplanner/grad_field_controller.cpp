@@ -13,7 +13,35 @@ namespace gradplanner
                                            ControlParams* params):
     occ_grid_attr(occ_grid_attr), occ_grid_rep(occ_grid_rep), params(params), 
     attractor(occ_grid_attr), repulsive(occ_grid_rep, params->general.R),
-    goal_is_valid(false), goal_pos_reached(false), goal_ang_reached(false) {}
+    goal_is_valid(false), goal_pos_reached(false), goal_ang_reached(false)
+  {
+    set_from_params();
+  }
+
+  void GradFieldController::set_from_params()
+  {
+    // general:
+    Ts = params->general.Ts;
+    R = params->general.R;
+    end_pos_tol = params->general.end_pos_tol;
+    end_ang_tol = params->general.end_ang_tol;
+    max_trans_vel = params->general.max_trans_vel;
+    max_trans_acc = params->general.max_trans_acc;
+    max_ang_vel = params->general.max_ang_vel;
+    max_ang_acc = params->general.max_ang_acc;
+    deceleration_radius = params->general.deceleration_radius;
+
+    // grad mode:
+    K_grad = params->grad_mode.K;
+    boundary_error_grad = params->grad_mode.boundary_error;
+    max_error_grad = params->grad_mode.max_error;
+
+    // direct mode:
+    min_obst_direct = params->direct_mode.min_obst_dist;
+    K_direct = params->direct_mode.K;
+    boundary_error_direct = params->direct_mode.boundary_error;
+    max_error_direct = params->direct_mode.max_error;
+  }
 
   void GradFieldController::set_state(const State& state)
   {
@@ -96,8 +124,8 @@ namespace gradplanner
 
     // proportional omega velocity based on the error:
     double ang_diff = get_ang_diff(state.psi, goal.psi);
-    if (abs(ang_diff) > params->general.end_ang_tol)
-      omega = get_ang_vel(ang_diff, params->end_mode.K);
+    if (abs(ang_diff) > end_ang_tol)
+      omega = get_ang_vel(ang_diff, K_end);
     else
     {
       omega = 0;
@@ -126,7 +154,14 @@ namespace gradplanner
                                           const double K)
   {
     double omega = - K * ang_diff;
+    double epsilon = (state.omega - state_old.omega) / Ts;
+    
+    if (abs(epsilon) > max_ang_acc)
+      omega = state_old.omega + sgn<double >(epsilon) * max_ang_acc * Ts;
 
+    if (abs(omega) > max_ang_vel)
+      omega = sgn<double >(omega) * max_ang_vel;
+    
     return omega;
   }
 } // namespace gradplanner

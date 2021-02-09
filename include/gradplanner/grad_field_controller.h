@@ -88,6 +88,39 @@ namespace gradplanner
       bool goal_pos_reached; // Flag to indicate whether the goal position was reached with the tolerance.
       bool goal_ang_reached; // Flag to indicate whether the goal orientation was reached with the tolerance.
 
+      // params which are set up from the given params:
+      // general:
+      double Ts; // Time step in seconds.
+      unsigned int R; // Effective radius of the RepulsiveField in grid step.
+      double end_pos_tol; // Goal position tolerance in meters.
+      double end_ang_tol; // Goal orientation tolerance in rad.
+      double max_trans_vel; // Maximal translational velocity in m/s.
+      double max_trans_acc; // Maximal translational acceleration in m/s²
+      double max_ang_vel; // Maximal angular velocity in rad/s. Default:
+      double max_ang_acc; // Maximal angular acceleration in rad/s².
+      double deceleration_radius; // If the robot is inside this radius, it starts to decelerate. In metres.
+      
+      // grad mode:
+      double K_grad; // Proportional control parameter. Defualt: 0.8 [-]
+      double boundary_error_grad; // param for calculating translational command velocity in rad.
+      double max_error_grad; // param for calculating translational command velocity in rad.
+      
+      // direct mode:
+      double min_obst_direct; // If the robot is closer to an obstacle then this -> grad_mode control.
+      double K_direct; // Proportional control parameter.
+      double boundary_error_direct; // param for calculating translational command velocity in rad.
+      double max_error_direct; // param for calculating translational command velocity in rad.
+
+      // end mode:
+      double K_end; // Proportional control parameter.
+
+
+      /**
+       * @brief sets up some member variables of the object based
+       * on the given parameters.
+       */
+      void set_from_params();
+
       /**
        * @brief Checks if the robot is in free space.
        * @return True if the robot is in free space.
