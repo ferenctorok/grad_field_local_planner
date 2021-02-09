@@ -31,8 +31,8 @@ namespace gradplanner
       double end_ang_tol = 0.2; // Goal orientation tolerance in rad. Default: 0.2 [rad]
       double max_trans_vel = 4.0; // Maximal translational velocity in m/s. Default: 4 [m/s]
       double max_trans_acc = 2.0; // Maximal translational acceleration in m/s². Default: 2 [m/a²]
-      double ang_trans_vel = 1.5708; // Maximal angular velocity in rad/s. Default: 1.5708 [rad/s]
-      double ang_trans_acc = 3.1415; // Maximal angular acceleration in rad/s². Default: 3.1415 [rad/s²]
+      double max_ang_vel = 1.5708; // Maximal angular velocity in rad/s. Default: 1.5708 [rad/s]
+      double max_ang_acc = 3.1415; // Maximal angular acceleration in rad/s². Default: 3.1415 [rad/s²]
       double deceleration_radius = 1.0; // If the robot is inside this radius, it starts to decelerate. In metres. Default: 1 [m] 
     };
     General general;
@@ -82,9 +82,22 @@ namespace gradplanner
    */
   struct Pose
   {
-    double x; // x position coordinate in metres. 
-    double y; // y position coordinate in metres. 
-    double psi; // Orientation around the z axis in radians. Has values between pi and -pi.
+    double x = 0; // x position coordinate in metres. 
+    double y = 0; // y position coordinate in metres. 
+    double psi = 0; // Orientation around the z axis in radians. Has values between pi and -pi.
+  };
+
+  /**
+   * @struct Structure to contain the state of the robot.
+   * the state vector contains: [x, y, v, psi, omega]
+   */
+  struct State
+  {
+    double x = 0; // x position
+    double y = 0; // y position
+    double v = 0; // translational velocity
+    double psi = 0; // orientation around the z axis.
+    double omega = 0; // angular velocity around the z axis.
   };
 
   /**

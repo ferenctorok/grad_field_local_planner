@@ -8,45 +8,16 @@ using namespace std;
 
 namespace gradplanner
 {
-  GradFieldController::GradFieldController(const GradFieldController& other):
-    occ_grid_attr(other.occ_grid_attr), occ_grid_rep(other.occ_grid_rep),
-    params(other.params), goal_is_valid(other.goal_is_valid),
-    attractor(other.attractor), repulsive(other.repulsive),
-    pose(other.pose), pose_old(other.pose_old), goal(other.goal),
-    goal_pos_reached(other.goal_pos_reached), goal_ang_reached(other.goal_ang_reached)
-  {
-    goal_pos_rel[0] = other.goal_pos_rel[0];
-    goal_pos_rel[1] = other.goal_pos_rel[1];
-  }
-
   GradFieldController::GradFieldController(vector<vector<bool >>* occ_grid_attr,
                                            vector<vector<bool >>* occ_grid_rep,
                                            ControlParams* params):
-    occ_grid_attr(occ_grid_attr), occ_grid_rep(occ_grid_rep),
-    params(params), goal_is_valid(false),
+    occ_grid_attr(occ_grid_attr), occ_grid_rep(occ_grid_rep), params(params), 
     attractor(occ_grid_attr), repulsive(occ_grid_rep, params->general.R),
-    goal_pos_reached(false), goal_ang_reached(false) {}
+    goal_is_valid(false), goal_pos_reached(false), goal_ang_reached(false) {}
 
-  GradFieldController& GradFieldController::operator=(const GradFieldController& other)
+  void GradFieldController::set_state(const State& state)
   {
-    occ_grid_attr = other.occ_grid_attr;
-    occ_grid_rep = other.occ_grid_rep;
-    params = other.params;
-    goal_is_valid = other.goal_is_valid;
-    attractor = other.attractor;
-    repulsive = other.repulsive;
-    pose = other.pose;
-    pose_old = other.pose_old;
-    goal = other.goal;
-    goal_pos_rel[0] = other.goal_pos_rel[0];
-    goal_pos_rel[1] = other.goal_pos_rel[1];
-    goal_pos_reached = other.goal_pos_reached;
-    goal_ang_reached = other.goal_ang_reached;
-  }
-
-  void GradFieldController::set_pose(const Pose& pose)
-  {
-    this->pose = pose;
+    this->state = state;
   }
 
   bool GradFieldController::set_new_goal(const Pose& goal)
@@ -57,10 +28,11 @@ namespace gradplanner
 
     // calculating the relative position of the goal, that is
     // the position of the goal in the potential field.
-    goal_pos_rel[0] = goal.x - pose.x + attractor.get_size_x() / 2;
-    goal_pos_rel[1] = goal.y - pose.y + attractor.get_size_y() / 2;
+    goal_rel.x = goal.x - state.x + attractor.get_size_x() / 2;
+    goal_rel.y = goal.y - state.y + attractor.get_size_y() / 2;
 
-    goal_is_valid = attractor.set_new_goal(goal_pos_rel);
+    goal_is_valid = attractor.set_new_goal(new double [2]
+      {goal_rel.x, goal_rel.y});
     return goal_is_valid;
   }
 
@@ -123,7 +95,7 @@ namespace gradplanner
     v_x = 0;
 
     // proportional omega velocity based on the error:
-    double ang_diff = get_ang_diff(pose.psi, goal.psi);
+    double ang_diff = get_ang_diff(state.psi, goal.psi);
     if (abs(ang_diff) > params->general.end_ang_tol)
       omega = get_ang_vel(ang_diff, params->end_mode.K);
     else
@@ -133,12 +105,14 @@ namespace gradplanner
     }
   }
 
-  void GradFieldController::direct_controller(double& v_x, double& omega)
+  void GradFieldController::direct_controller(double& v_x,
+                                              double& omega)
   {
 
   }
 
-  void GradFieldController::grad_controller(double& v_x, double& omega)
+  void GradFieldController::grad_controller(double& v_x,
+                                            double& omega)
   {
 
   }
@@ -146,5 +120,13 @@ namespace gradplanner
   bool GradFieldController::is_direct_mode()
   {
 
+  }
+
+  double GradFieldController::get_ang_vel(const double ang_diff,
+                                          const double K)
+  {
+    double omega = - K * ang_diff;
+
+    return omega;
   }
 } // namespace gradplanner

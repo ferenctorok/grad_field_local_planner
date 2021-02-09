@@ -53,10 +53,10 @@ namespace gradplanner
       ~GradFieldController() {}
 
       /**
-       * @brief Sets the pose of the robot.
-       * @param pose the Pose to set.
+       * @brief Sets the state of the robot.
+       * @param stae the State to set.
        */
-      void set_pose(const Pose& pose);
+      void set_state(const State& state);
 
       /**
        * @brief Sets a new goal pose for the robot.
@@ -80,10 +80,10 @@ namespace gradplanner
       ControlParams* params;  // ControlParams struct for storing parameters that the controller needs.
       AttractorField attractor; // The AttractorField object of the controller.
       RepulsiveField repulsive; // The RepulsiveField object of the controller.
-      Pose pose;  // Actual Pose.
-      Pose pose_old; // Pose in the previous timestep.
+      State state;  // Actual State.
+      State state_old; // State in the previous timestep.
       Pose goal; // Goal pose.
-      double goal_pos_rel[2];  // The goal position in the potential field. (Relative position to the robot.)
+      Pose goal_rel;  // The goal position in the potential field. (Relative position to the robot.)
       bool goal_is_valid; // Flag to indicate that a valid goal is set for the Robot.
       bool goal_pos_reached; // Flag to indicate whether the goal position was reached with the tolerance.
       bool goal_ang_reached; // Flag to indicate whether the goal orientation was reached with the tolerance.
