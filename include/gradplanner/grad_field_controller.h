@@ -178,6 +178,23 @@ namespace gradplanner
        * @return The angular velocity command.
        */
       double get_ang_vel(const double ang_diff, const double K);
+
+      /**
+       * @brief Gets the translational velocity command. It considers
+       * the maximal translational velocity and acceleration values
+       * and also the orientation error of the robot.
+       * If the orientation error is smaller than the boundary error value
+       * this value, the robot tries to go as fast as possible. 
+       * If the robot is between the boundary and the max errors,
+       * the velocity is linearly decreesing with the error.
+       * @param ang_diff The orientation error.
+       * @param boundary_error The boundary error.
+       * @param max_error The max error.
+       * @return The translational velocity command.
+       */
+      double get_trans_vel(const double ang_diff,
+                           const double boundary_error,
+                           const double max_error);
   };
 } // namespace gradplanner
 

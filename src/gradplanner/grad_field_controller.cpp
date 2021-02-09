@@ -18,6 +18,7 @@ namespace gradplanner
     set_from_params();
   }
 
+
   void GradFieldController::set_from_params()
   {
     // general:
@@ -41,12 +42,17 @@ namespace gradplanner
     K_direct = params->direct_mode.K;
     boundary_error_direct = params->direct_mode.boundary_error;
     max_error_direct = params->direct_mode.max_error;
+
+    // end mode:
+    K_end = params->end_mode.K;
   }
+
 
   void GradFieldController::set_state(const State& state)
   {
     this->state = state;
   }
+
 
   bool GradFieldController::set_new_goal(const Pose& goal)
   {
@@ -63,6 +69,7 @@ namespace gradplanner
       {goal_rel.x, goal_rel.y});
     return goal_is_valid;
   }
+
 
   bool GradFieldController::get_cmd_vel(double& v_x, double& omega)
   {
@@ -99,6 +106,7 @@ namespace gradplanner
     return false;
   }
 
+
   bool GradFieldController::robot_is_free()
   {
     // the robot is always in the middle of the occupancy grid, 
@@ -108,6 +116,7 @@ namespace gradplanner
     return ! (*occ_grid_rep)[x][y];
   }
 
+
   bool GradFieldController::goal_is_reachable()
   {
     // the robot is always in the middle of the occupancy grid, 
@@ -116,6 +125,7 @@ namespace gradplanner
     unsigned int y = (attractor.get_size_y() - 1) / 2;
     return (attractor.get_val(x, y) < 0);
   }
+
 
   void GradFieldController::end_controller(double& v_x, double& omega)
   {
@@ -133,11 +143,19 @@ namespace gradplanner
     }
   }
 
+
   void GradFieldController::direct_controller(double& v_x,
                                               double& omega)
   {
+    double des_orient = atan2(goal_rel.y, goal_rel.x);
+    double ang_diff = get_ang_diff(state.psi, des_orient);
 
+    // calculating the desired translational and angular velocities:
+    v_x = get_trans_vel(ang_diff, boundary_error_direct,
+                        max_error_direct);
+    omega = get_ang_vel(ang_diff, K_direct);
   }
+
 
   void GradFieldController::grad_controller(double& v_x,
                                             double& omega)
@@ -145,17 +163,19 @@ namespace gradplanner
 
   }
 
+
   bool GradFieldController::is_direct_mode()
   {
 
   }
+
 
   double GradFieldController::get_ang_vel(const double ang_diff,
                                           const double K)
   {
     double omega = - K * ang_diff;
     double epsilon = (state.omega - state_old.omega) / Ts;
-    
+
     if (abs(epsilon) > max_ang_acc)
       omega = state_old.omega + sgn<double >(epsilon) * max_ang_acc * Ts;
 
@@ -163,5 +183,34 @@ namespace gradplanner
       omega = sgn<double >(omega) * max_ang_vel;
     
     return omega;
+  }
+
+
+  double GradFieldController::get_trans_vel(const double ang_diff,
+                                            const double boundary_error,
+                                            const double max_error)
+  {
+    double v_x;
+    
+    if (abs(ang_diff) < boundary_error_direct)
+      v_x = max_trans_vel;
+    else
+    {
+      if(abs(ang_diff) < max_error_direct)
+      {
+        double ratio = (abs(ang_diff) - boundary_error_direct)
+          / (max_error_direct - boundary_error_direct);
+        v_x = max_trans_vel * (1 - ratio);
+      }
+      else
+        v_x = 0;
+    }
+      
+    // saturating it with the max accelearation:
+    double acc = (v_x - state_old.v) / Ts;
+    if (abs(acc) > max_trans_acc)
+      v_x = state.v + sgn<double >(acc) * max_trans_acc * Ts;
+
+    return v_x;
   }
 } // namespace gradplanner
