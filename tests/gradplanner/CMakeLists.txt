@@ -9,6 +9,17 @@ target_link_libraries(field_utils_tests
   gradplanner
 )
 
+# tests of utils.h:
+CXXTEST_ADD_TEST(utils_tests utils_tests.cc
+  ${CMAKE_CURRENT_LIST_DIR}/utils_tests.h
+)
+add_dependencies(utils_tests
+  gradplanner
+)
+target_link_libraries(utils_tests
+  gradplanner
+)
+
 # tests of repulsive_field.h:
 CXXTEST_ADD_TEST(repulsive_field_tests repulsive_field_tests.cc
   ${CMAKE_CURRENT_LIST_DIR}/repulsive_field_tests.h

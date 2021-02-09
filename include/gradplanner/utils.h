@@ -15,6 +15,14 @@ namespace gradplanner
   double get_length(double v[2]);
 
   /**
+   * @brief Returns the length of a vector given by coordinates.
+   * @param x The first coordinate of the vector.
+   * @param y The second coordinate of the vector.
+   * @return The length of the vector.
+   */
+  double get_length(const double x, const double y);
+
+  /**
    * @struct Structure for storing parameters that a GradFieldController
    * controller would need.
    */
@@ -107,7 +115,12 @@ namespace gradplanner
    * @return 1 if val > 0, 0 if val == 0 and -1 otherwise.
    */
   template <typename T>
-  int sgn(const T& val);
+  int sgn(const T& val)
+  {
+    if (val > 0) return 1;
+    else if (val == 0) return 0;
+    else return -1;
+  }
 
   /**
    * @brief Gets the orientation difference between two angles. 

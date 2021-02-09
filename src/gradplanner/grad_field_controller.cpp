@@ -94,7 +94,7 @@ namespace gradplanner
 
   bool GradFieldController::goal_pos_reached()
   {
-    double dist = sqrt(pow((goal.x - state.x), 2) + pow((goal.y - state.y), 2));
+    double dist = get_length((goal.x - state.x), (goal.y - state.y));
     return (dist < end_pos_tol);
   }
 
@@ -230,7 +230,7 @@ namespace gradplanner
     {
       // carrying out raytracing to check whether the
       // path to the goal is free.
-      double distance = sqrt(pow(goal_rel.x, 2) + pow(goal_rel.y, 2));
+      double distance = get_length(goal_rel.x, goal_rel.y);
       double dx = goal_rel.x / distance;
       double dy = goal_rel.y / distance;
       double x = rob_ind_rep.get_x() + 0.5;

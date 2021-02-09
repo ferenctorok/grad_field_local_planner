@@ -11,14 +11,11 @@ namespace gradplanner
   }
 
 
-  template <typename T>
-  int sgn(const T& val)
+  double get_length(const double x, const double y)
   {
-    if (val > 0) return 1;
-    else if (val == 0) return 0;
-    else return -1;
+    return sqrt(pow(x, 2) + pow(y, 2));
   }
-  
+
 
   double get_ang_diff(const double real, const double desired)
   {
@@ -28,4 +25,4 @@ namespace gradplanner
     
     return ang_diff;
   }
-}
+} // namespace gradplanner

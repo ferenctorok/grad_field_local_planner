@@ -95,7 +95,7 @@ class GradFieldControllerTests: public CxxTest::TestSuite
       TS_ASSERT_EQUALS(0, cmd_v);
       TS_ASSERT_EQUALS(-params.end_mode.K, cmd_omega);
 
-
+      
     }
 
   private:
