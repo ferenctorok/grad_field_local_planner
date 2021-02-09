@@ -162,7 +162,49 @@ namespace gradplanner
   void GradFieldController::grad_controller(double& v_x,
                                             double& omega)
   {
-    
+    // We chose 2 neighboring Pixel next to the robot and sum up
+    // their gradients. This gradient will be the desired orientation.
+    // The choice of the 2 neighboring Pixels depends on the orientation of the robot.
+    Index ind1_rep, ind1_attr;
+    Index ind2_rep, ind2_attr;
+    if (state.psi > 0)
+    {
+      ind1_rep = Index(new int [2] {rob_ind_rep.get_x(), rob_ind_rep.get_y() + 1});
+      ind1_attr = Index(new int [2] {rob_ind_attr.get_x(), rob_ind_attr.get_y() + 1});
+    }
+    else
+    {
+      ind1_rep = Index(new int [2] {rob_ind_rep.get_x(), rob_ind_rep.get_y() - 1});
+      ind1_attr = Index(new int [2] {rob_ind_attr.get_x(), rob_ind_attr.get_y() - 1});
+    }
+      
+    if ((state.psi + PI / 2) > 0)
+    {
+      ind2_rep = Index(new int [2] {rob_ind_rep.get_x() + 1, rob_ind_rep.get_y()});
+      ind2_attr = Index(new int [2] {rob_ind_attr.get_x() + 1, rob_ind_attr.get_y()});
+    }
+    else
+    {
+      ind2_rep = Index(new int [2] {rob_ind_rep.get_x() - 1, rob_ind_rep.get_y()});
+      ind2_attr = Index(new int [2] {rob_ind_attr.get_x() - 1, rob_ind_attr.get_y()});
+    }
+
+    const double* grad1_rep = repulsive.get_grad(ind1_rep);
+    const double* grad1_attr = attractor.get_grad(ind1_attr);
+    const double* grad2_rep = repulsive.get_grad(ind2_rep);
+    const double* grad2_attr = attractor.get_grad(ind2_attr);
+
+    // summing up the gradients and calculate its orientation:
+    int dx = grad1_rep[0] + grad1_attr[0] + grad2_rep[0] + grad2_attr[0];
+    int dy = grad1_rep[1] + grad1_attr[1] + grad2_rep[1] + grad2_attr[1];
+
+    double des_orient = atan2(dy, dx);
+    double ang_diff = get_ang_diff(state.psi, des_orient);
+
+    // based on this, calculating the command velocities:
+    v_x = get_trans_vel(ang_diff, boundary_error_grad,
+                        max_error_grad);
+    omega = get_ang_vel(ang_diff, K_grad);
   }
 
 
