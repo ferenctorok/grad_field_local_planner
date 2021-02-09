@@ -63,33 +63,6 @@ namespace gradplanner
       bool get_cmd_vel(double& v_x, double& omega);
 
       /**
-       * @brief The controller of the last period. It is used,
-       * when the goal position is already reached, only the 
-       * orientation of the robot has to be adjusted.
-       * @param v_x Reference to the x translational velocity.
-       * @param omega Reference ot the angular velocity around the z axis.
-       */
-      void end_controller(double& v_x, double& omega);
-
-      /**
-       * @brief The controller that is used if the goal is 
-       * visible from the robot and the robot is further away from
-       * an obstacle than a specified threshold. In this case the robot
-       * tries to go directly towards the goal.
-       * @param v_x Reference to the x translational velocity.
-       * @param omega Reference ot the angular velocity around the z axis.
-       */
-      void direct_controller(double& v_x, double& omega);
-
-      /**
-       * @brief Controller for navigating in the gradient field.
-       * It uses the attractor and the repulsive gradient fields.
-       * @param v_x Reference to the x translational velocity.
-       * @param omega Reference ot the angular velocity around the z axis.
-       */
-      void grad_controller(double& v_x, double& omega);
-
-      /**
        * @brief Checks whether the controller should be the
        * direct_controller().
        * @return True, if the goal is visible and the robot is
@@ -136,8 +109,6 @@ namespace gradplanner
       Pose goal; // Goal pose.
       Pose goal_rel;  // The goal position in the potential field. (Relative position to the robot.)
       bool goal_is_valid; // Flag to indicate that a valid goal is set for the Robot.
-      bool goal_pos_reached; // Flag to indicate whether the goal position was reached with the tolerance.
-      bool goal_ang_reached; // Flag to indicate whether the goal orientation was reached with the tolerance.
       Index rob_ind_attr;  // The index of the cell in the attractor field where the robot is.
       Index rob_ind_rep;   // The index of the cell in the attractor field where the robot is.
       
@@ -184,6 +155,45 @@ namespace gradplanner
        * @return True if the goal is reachable.
        */
       bool goal_is_reachable();
+
+      /**
+       * @brief Checks whether the goal position is reached with the tolerance.
+       * @return True if the goal position is reached.
+       */
+      bool goal_pos_reached();
+
+      /**
+       * @brief Checks whether the goal orientation is reached with the tolerance.
+       * @return True if the goal orientation is reached.
+       */
+      bool goal_ang_reached();
+
+      /**
+       * @brief The controller of the last period. It is used,
+       * when the goal position is already reached, only the 
+       * orientation of the robot has to be adjusted.
+       * @param v_x Reference to the x translational velocity.
+       * @param omega Reference ot the angular velocity around the z axis.
+       */
+      void end_controller(double& v_x, double& omega);
+
+      /**
+       * @brief The controller that is used if the goal is 
+       * visible from the robot and the robot is further away from
+       * an obstacle than a specified threshold. In this case the robot
+       * tries to go directly towards the goal.
+       * @param v_x Reference to the x translational velocity.
+       * @param omega Reference ot the angular velocity around the z axis.
+       */
+      void direct_controller(double& v_x, double& omega);
+
+      /**
+       * @brief Controller for navigating in the gradient field.
+       * It uses the attractor and the repulsive gradient fields.
+       * @param v_x Reference to the x translational velocity.
+       * @param omega Reference ot the angular velocity around the z axis.
+       */
+      void grad_controller(double& v_x, double& omega);
   };
 } // namespace gradplanner
 

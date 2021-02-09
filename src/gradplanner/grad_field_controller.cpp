@@ -13,7 +13,7 @@ namespace gradplanner
                                            ControlParams* params):
     occ_grid_attr(occ_grid_attr), occ_grid_rep(occ_grid_rep), params(params), 
     attractor(occ_grid_attr), repulsive(occ_grid_rep, params->general.R),
-    goal_is_valid(false), goal_pos_reached(false), goal_ang_reached(false)
+    goal_is_valid(false)
   {
     // Index where the robot is in the attractor field. (middle of the field.)
     int x_attr = (attractor.get_size_x() - 1) / 2;
@@ -60,6 +60,7 @@ namespace gradplanner
 
   void GradFieldController::set_state(const State& state)
   {
+    this->state_old = this->state;
     this->state = state;
   }
 
@@ -67,8 +68,6 @@ namespace gradplanner
   bool GradFieldController::set_new_goal(const Pose& goal)
   {
     this->goal = goal;
-    goal_pos_reached = false;
-    goal_ang_reached = false;
 
     // calculating the relative position of the goal, that is
     // the position of the goal in the potential field.
@@ -78,6 +77,31 @@ namespace gradplanner
     goal_is_valid = attractor.set_new_goal(new double [2]
       {goal_rel.x, goal_rel.y});
     return goal_is_valid;
+  }
+
+
+  bool GradFieldController::robot_is_free()
+  {
+    return ! (*occ_grid_rep)[rob_ind_rep.get_x()][rob_ind_rep.get_y()];
+  }
+
+
+  bool GradFieldController::goal_is_reachable()
+  {
+    return (attractor.get_val(rob_ind_attr) < 0);
+  }
+
+
+  bool GradFieldController::goal_pos_reached()
+  {
+    double dist = sqrt(pow((goal.x - state.x), 2) + pow((goal.y - state.y), 2));
+    return (dist < end_pos_tol);
+  }
+
+
+  bool GradFieldController::goal_ang_reached()
+  {
+    return (abs(get_ang_diff(state.psi, goal.psi)) < end_ang_tol);
   }
 
 
@@ -92,9 +116,9 @@ namespace gradplanner
       if (goal_is_reachable())
       {
         // decide which controller to be used:
-        if (goal_pos_reached)
+        if (goal_pos_reached())
         {
-          if (goal_ang_reached)
+          if (goal_ang_reached())
           {
             v_x = 0;
             omega = 0;
@@ -117,18 +141,6 @@ namespace gradplanner
   }
 
 
-  bool GradFieldController::robot_is_free()
-  {
-    return ! (*occ_grid_rep)[rob_ind_rep.get_x()][rob_ind_rep.get_y()];
-  }
-
-
-  bool GradFieldController::goal_is_reachable()
-  {
-    return (attractor.get_val(rob_ind_attr) < 0);
-  }
-
-
   void GradFieldController::end_controller(double& v_x, double& omega)
   {
     // the translational velocity is in either case 0.
@@ -139,10 +151,7 @@ namespace gradplanner
     if (abs(ang_diff) > end_ang_tol)
       omega = get_ang_vel(ang_diff, K_end);
     else
-    {
       omega = 0;
-      goal_ang_reached = true;
-    }
   }
 
 
@@ -163,7 +172,8 @@ namespace gradplanner
                                             double& omega)
   {
     // We chose 2 neighboring Pixel next to the robot and sum up
-    // their gradients. This gradient will be the desired orientation.
+    // their gradients together with the gradient of the Pixel where
+    // the robot is. This gradient will be the desired orientation.
     // The choice of the 2 neighboring Pixels depends on the orientation of the robot.
     Index ind1_rep, ind1_attr;
     Index ind2_rep, ind2_attr;
@@ -189,14 +199,16 @@ namespace gradplanner
       ind2_attr = Index(new int [2] {rob_ind_attr.get_x() - 1, rob_ind_attr.get_y()});
     }
 
-    const double* grad1_rep = repulsive.get_grad(ind1_rep);
-    const double* grad1_attr = attractor.get_grad(ind1_attr);
-    const double* grad2_rep = repulsive.get_grad(ind2_rep);
-    const double* grad2_attr = attractor.get_grad(ind2_attr);
+    const double* g0_r = repulsive.get_grad(rob_ind_rep);
+    const double* g0_a = attractor.get_grad(rob_ind_attr);
+    const double* g1_r = repulsive.get_grad(ind1_rep);
+    const double* g1_a = attractor.get_grad(ind1_attr);
+    const double* g2_r = repulsive.get_grad(ind2_rep);
+    const double* g2_a = attractor.get_grad(ind2_attr);
 
     // summing up the gradients and calculate its orientation:
-    int dx = grad1_rep[0] + grad1_attr[0] + grad2_rep[0] + grad2_attr[0];
-    int dy = grad1_rep[1] + grad1_attr[1] + grad2_rep[1] + grad2_attr[1];
+    int dx = g0_r[0] + g0_a[0] + g1_r[0] + g1_a[0] + g2_r[0] + g2_a[0];
+    int dy = g0_r[1] + g0_a[1] + g1_r[1] + g1_a[1] + g2_r[1] + g2_a[1];
 
     double des_orient = atan2(dy, dx);
     double ang_diff = get_ang_diff(state.psi, des_orient);
