@@ -69,6 +69,7 @@ namespace grad_field_local_planner
     if (ros::param::has("/move_base/GradFieldPlannerROS/attractor/search_dir_8"))
       ros::param::get("/move_base/GradFieldPlannerROS/attractor/search_dir_8", params.attractor.search_dir_8);
 
+
     // Attractor field sizes:
     if (ros::param::has("/move_base/GradFieldPlannerROS/attractor/size_x"))
     {
@@ -88,6 +89,7 @@ namespace grad_field_local_planner
     }
     else size_y_attr = 33;  // Default
 
+    
     // Repulsive field sizes:
     // It's enough the field to see every obstacle that is within
     // the effective radius. The others will don't have an effect anyways.
