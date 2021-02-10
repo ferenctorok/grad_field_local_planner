@@ -5,14 +5,30 @@ namespace gradplanner
 {
   AttractorField::AttractorField(const AttractorField& other):
     GradFieldBase(other)
-    {
-      goal[0] = other.goal[0];
-      goal[1] = other.goal[1];
-      goal_ind = other.goal_ind;
-    }
+  {
+    goal[0] = other.goal[0];
+    goal[1] = other.goal[1];
+    goal_ind = other.goal_ind;
+    params = other.params;
 
-  AttractorField::AttractorField(vector<vector<bool >>* occ_grid):
-    GradFieldBase(occ_grid), goal{0.0, 0.0}, goal_ind(new int [2] {0, 0}) {}
+    // chosing how many search directions to use.
+    if ((params != nullptr) && params->attractor_params.search_dir_8)
+      search_directions = &search_directions_8;
+    else
+      search_directions = &search_directions_4;
+  }
+
+  AttractorField::AttractorField(vector<vector<bool >>* occ_grid,
+                                 ControlParams* params):
+    GradFieldBase(occ_grid), goal{0.0, 0.0},
+    goal_ind(new int [2] {0, 0}), params(params)
+  {
+    // chosing how many search directions to use.
+    if ((params != nullptr) && params->attractor_params.search_dir_8)
+      search_directions = &search_directions_8;
+    else
+      search_directions = &search_directions_4;
+  }
 
   AttractorField& AttractorField::operator=(const AttractorField& other)
   {
@@ -20,6 +36,13 @@ namespace gradplanner
     goal[0] = other.goal[0];
     goal[1] = other.goal[1];
     goal_ind = other.goal_ind;
+    params = params;
+
+    // chosing how many search directions to use.
+    if ((params != nullptr) && params->attractor_params.search_dir_8)
+      search_directions = &search_directions_8;
+    else
+      search_directions = &search_directions_4;
 
     return *this;
   }
@@ -56,8 +79,7 @@ namespace gradplanner
     {
       ind = q.front();
 
-      // for (auto &direction: search_directions_8)
-      for (auto &direction: search_directions_4)
+      for (auto &direction: *search_directions)
       {
         new_ind = ind + direction;
         if (field.is_valid_index(new_ind))

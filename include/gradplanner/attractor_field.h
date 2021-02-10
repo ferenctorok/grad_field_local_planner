@@ -3,6 +3,7 @@
 
 /* gradplanner includes: */
 #include <gradplanner/field_utils.h>
+#include <gradplanner/utils.h>
 #include <gradplanner/grad_field_base.h>
 
 /* standarnd includes: */
@@ -37,7 +38,8 @@ namespace gradplanner
        * @param occ_grid Pointer to the occupancy grid. (The occ_grid is
        * true in the entries which are occupied.)
        */
-      AttractorField(vector<vector<bool >>* occ_grid);
+      AttractorField(vector<vector<bool >>* occ_grid,
+                     ControlParams* params=nullptr);
 
       /**
        * Defualt destructor of the AttractorField class.
@@ -71,6 +73,8 @@ namespace gradplanner
       Pixel *pix, *new_pix; // Pixels corresponding to ind and new_ind used in update_field().
       bool grad_is_zero, neighbour_is_occupied; // Some flags used in update_field().
       double tester_ind_f[2]; // array used in update_field()
+      ControlParams* params; // params
+      vector<Index >* search_directions; // The search directions which are going to be used for expansion.
 
       /**
        * @brief Sets the value and the gradient of a Pixel.

@@ -54,8 +54,8 @@ namespace gradplanner
     struct GradMode
     {
       double K = 0.8; // Proportional control parameter. Defualt: 0.8 [-]
-      double boundary_error = 0.2; // param for calculating translational command velocity in rad. Default: 0.2 [rad]
-      double max_error = 1.0473; // param for calculating translational command velocity in rad. Default: 1.0473 [rad]
+      double boundary_error = 0.5; // param for calculating translational command velocity in rad. Default: 0.5 [rad]
+      double max_error = 2 / 3 * PI; // param for calculating translational command velocity in rad. Default: 2/3 PI [rad]
     };
     GradMode grad_mode;
 
@@ -83,6 +83,16 @@ namespace gradplanner
       double K = 0.8; // Proportional control parameter. Defualt: 0.8 [-]
     };
     EndMode end_mode;
+
+    /**
+     * @struct Struct for storing some params within the
+     * ControlParams struct, which are related to the AttractorField.
+     */
+    struct AttractorFieldParams
+    {
+      bool search_dir_8 = false; // whether to use 8 search directions during update. Default: false
+    };
+    AttractorFieldParams attractor_params;
   };
 
   /**
