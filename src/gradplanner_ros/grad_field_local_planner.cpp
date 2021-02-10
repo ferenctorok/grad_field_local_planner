@@ -9,22 +9,35 @@ PLUGINLIB_EXPORT_CLASS(grad_field_local_planner::GradFieldPlannerROS,
 
 namespace grad_field_local_planner
 {
-  GradFieldPlannerROS::GradFieldPlannerROS()
+  GradFieldPlannerROS::GradFieldPlannerROS():
+  costmap_ros(NULL), tf_buffer(NULL), initialized(false) {}
+
+
+  GradFieldPlannerROS::GradFieldPlannerROS(std::string name,
+                                           tf2_ros::Buffer* tf_buffer,
+                                           costmap_2d::Costmap2DROS* costmap_ros):
+  costmap_ros(NULL), tf_buffer(NULL), initialized(false)
   {
-
-  }
-
-
-  GradFieldPlannerROS::~GradFieldPlannerROS()
-  {
-
+    initialize(name, tf_buffer, costmap_ros);
   }
 
 
   void GradFieldPlannerROS::initialize(std::string name,
-                                  tf2_ros::Buffer* tf,
-                                  costmap_2d::Costmap2DROS* costmap_ros)
+                                       tf2_ros::Buffer* tf_buffer_,
+                                       costmap_2d::Costmap2DROS* costmap_ros_)
   {
+    if (! initialized)
+    {
+      costmap_ros = costmap_ros_;
+      tf_buffer = tf_buffer_;
+
+      // create ROS nodehandler and create subscribers and publishers:
+      ros::NodeHandle nh;
+      amcl_sub = nh.subscribe("amcl_pose", 100, &GradFieldPlannerROS::amclCallback, this);
+
+
+      initialized = true;
+    }      
     
   }
 
@@ -53,4 +66,20 @@ namespace grad_field_local_planner
   {
     return false;
   }
+
+
+  void GradFieldPlannerROS::setup_from_param_sever()
+  {
+
+  }
+
+
+  void GradFieldPlannerROS::amclCallback(
+    const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg)
+  {
+    state.x = msg->pose.pose.position.x;
+    state.y = msg->pose.pose.position.y;
+    state.psi = msg->pose.pose.orientation.w;
+  }
+
 } // namespace grad_field_local_planner
