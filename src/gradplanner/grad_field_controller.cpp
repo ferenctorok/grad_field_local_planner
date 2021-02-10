@@ -60,22 +60,22 @@ namespace gradplanner
 
   void GradFieldController::set_state(const State& state)
   {
-    this->state_old = this->state;
     this->state = state;
+    set_rel_goal_pose();
   }
 
 
   bool GradFieldController::set_new_goal(const Pose& goal)
   {
     this->goal = goal;
+    set_rel_goal_pose();
 
-    // calculating the relative position of the goal, that is
-    // the position of the goal in the potential field.
-    goal_rel.x = goal.x - state.x + attractor.get_size_x() / 2;
-    goal_rel.y = goal.y - state.y + attractor.get_size_y() / 2;
+    // calculating the position of the goal in the attractor field
+    goal_attr.x = goal.x - state.x + attractor.get_size_x() / 2;
+    goal_attr.y = goal.y - state.y + attractor.get_size_y() / 2;
 
     goal_is_valid = attractor.set_new_goal(new double [2]
-      {goal_rel.x, goal_rel.y});
+      {goal_attr.x, goal_attr.y});
     return goal_is_valid;
   }
 
@@ -147,9 +147,8 @@ namespace gradplanner
     v_x = 0;
 
     // proportional omega velocity based on the error:
-    double ang_diff = get_ang_diff(state.psi, goal.psi);
-    if (abs(ang_diff) > end_ang_tol)
-      omega = get_ang_vel(ang_diff, K_end);
+    if (abs(goal_rel.psi) > end_ang_tol)
+      omega = get_ang_vel(goal_rel.psi, K_end);
     else
       omega = 0;
   }
@@ -249,10 +248,10 @@ namespace gradplanner
                                           const double K)
   {
     double omega = - K * ang_diff;
-    double epsilon = (state.omega - state_old.omega) / Ts;
+    double epsilon = (omega - state.omega) / Ts;
 
     if (abs(epsilon) > max_ang_acc)
-      omega = state_old.omega + sgn<double >(epsilon) * max_ang_acc * Ts;
+      omega = state.omega + sgn<double >(epsilon) * max_ang_acc * Ts;
 
     if (abs(omega) > max_ang_vel)
       omega = sgn<double >(omega) * max_ang_vel;
@@ -281,10 +280,18 @@ namespace gradplanner
     }
       
     // saturating it with the max accelearation:
-    double acc = (v_x - state_old.v) / Ts;
+    double acc = (v_x - state.v) / Ts;
     if (abs(acc) > max_trans_acc)
       v_x = state.v + sgn<double >(acc) * max_trans_acc * Ts;
 
     return v_x;
+  }
+
+
+  void GradFieldController::set_rel_goal_pose()
+  {
+    goal_rel.x = goal.x - state.x;
+    goal_rel.y = goal.y - state.y;
+    goal_rel.psi = get_ang_diff(state.psi, goal.psi);
   }
 } // namespace gradplanner

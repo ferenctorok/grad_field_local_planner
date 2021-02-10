@@ -63,15 +63,6 @@ namespace gradplanner
       bool get_cmd_vel(double& v_x, double& omega);
 
       /**
-       * @brief Checks whether the controller should be the
-       * direct_controller().
-       * @return True, if the goal is visible and the robot is
-       * further away from the neares obstacle than a specified
-       * threshold.
-       */
-      bool is_direct_mode();
-
-      /**
        * @brief Gets the angular velocity command based on the
        * orientation error and a proportional constant. It also
        * considers the angular velocity and acceleration constraints.
@@ -105,9 +96,9 @@ namespace gradplanner
       AttractorField attractor; // The AttractorField object of the controller.
       RepulsiveField repulsive; // The RepulsiveField object of the controller.
       State state;  // Actual State.
-      State state_old; // State in the previous timestep.
       Pose goal; // Goal pose.
-      Pose goal_rel;  // The goal position in the potential field. (Relative position to the robot.)
+      Pose goal_rel; // Goal position relative to the robot.
+      Pose goal_attr;  // The goal position in the attractor potential field. (Relative position to the robot.)
       bool goal_is_valid; // Flag to indicate that a valid goal is set for the Robot.
       Index rob_ind_attr;  // The index of the cell in the attractor field where the robot is.
       Index rob_ind_rep;   // The index of the cell in the attractor field where the robot is.
@@ -169,6 +160,15 @@ namespace gradplanner
       bool goal_ang_reached();
 
       /**
+       * @brief Checks whether the controller should be the
+       * direct_controller().
+       * @return True, if the goal is visible and the robot is
+       * further away from the neares obstacle than a specified
+       * threshold.
+       */
+      bool is_direct_mode();
+
+      /**
        * @brief The controller of the last period. It is used,
        * when the goal position is already reached, only the 
        * orientation of the robot has to be adjusted.
@@ -194,6 +194,11 @@ namespace gradplanner
        * @param omega Reference ot the angular velocity around the z axis.
        */
       void grad_controller(double& v_x, double& omega);
+
+      /**
+       * @brief sets the relative goal position to the state.
+       */
+      void set_rel_goal_pose();
   };
 } // namespace gradplanner
 

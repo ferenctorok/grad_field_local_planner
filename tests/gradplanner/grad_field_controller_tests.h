@@ -15,6 +15,7 @@ class GradFieldControllerTests: public CxxTest::TestSuite
      */
     void setUp()
     {
+      eps = 1e-4;
       size_x = 11;
       size_y = 13;
       R = 2;
@@ -36,7 +37,7 @@ class GradFieldControllerTests: public CxxTest::TestSuite
       state.y = 2.0;
       state.v = 1.0;
       state.psi = 0;
-      state.omega = 1.0;
+      state.omega = 0.0;
 
       // goal:
       goal.x = 5.3;
@@ -47,8 +48,7 @@ class GradFieldControllerTests: public CxxTest::TestSuite
                                                     &occ_grid,
                                                     &params);
 
-      // setting the state and by the second call the old_state:
-      controller.set_state(state);
+      // setting the state:
       controller.set_state(state);
     }
     
@@ -83,18 +83,63 @@ class GradFieldControllerTests: public CxxTest::TestSuite
       // these tests should use the end_controller() //
       goal.x = state.x + 0.09;
       goal.y = state.y;
-      goal.psi = 1.0;
+      goal.psi = 0.3;
       controller.set_new_goal(goal);
       controller.get_cmd_vel(cmd_v, cmd_omega);
       TS_ASSERT_EQUALS(0, cmd_v);
-      TS_ASSERT_EQUALS(params.end_mode.K, cmd_omega);
+      TS_ASSERT_EQUALS(0.24, cmd_omega);
 
-      goal.psi = -1.0;
+      goal.psi = -0.3;
       controller.set_new_goal(goal);
       controller.get_cmd_vel(cmd_v, cmd_omega);
       TS_ASSERT_EQUALS(0, cmd_v);
-      TS_ASSERT_EQUALS(-params.end_mode.K, cmd_omega);
+      TS_ASSERT_EQUALS(-0.24, cmd_omega);
 
+      goal.x = state.x + 0.09;
+      goal.y = state.y;
+      goal.psi = 1;
+      controller.set_new_goal(goal);
+      controller.get_cmd_vel(cmd_v, cmd_omega);
+      TS_ASSERT_EQUALS(0, cmd_v);
+      TS_ASSERT_DELTA(0.31415, cmd_omega, eps);
+
+      goal.psi = -1;
+      controller.set_new_goal(goal);
+      controller.get_cmd_vel(cmd_v, cmd_omega);
+      TS_ASSERT_EQUALS(0, cmd_v);
+      TS_ASSERT_DELTA(-0.31415, cmd_omega, eps);
+
+      // Should be in direct mode //
+      params.direct_mode.min_obst_dist = 0;
+      controller = gradplanner::GradFieldController(&occ_grid,
+                                                    &occ_grid,
+                                                    &params);
+      goal.x = state.x + 3;
+      goal.y = state.y;
+      state.psi = 0.1;
+      controller.set_state(state);
+      controller.set_new_goal(goal);
+      controller.get_cmd_vel(cmd_v, cmd_omega);
+      TS_ASSERT_EQUALS(1.2, cmd_v);
+      TS_ASSERT_DELTA(-0.08, cmd_omega, eps);
+
+      state.psi = -0.1;
+      controller.set_state(state);
+      controller.get_cmd_vel(cmd_v, cmd_omega);
+      TS_ASSERT_EQUALS(1.2, cmd_v);
+      TS_ASSERT_DELTA(0.08, cmd_omega, eps);
+
+      state.psi = 1.2;
+      controller.set_state(state);
+      controller.get_cmd_vel(cmd_v, cmd_omega);
+      TS_ASSERT_EQUALS(0.8, cmd_v);
+      TS_ASSERT_DELTA(-0.31415, cmd_omega, eps);
+
+      state.psi = -1.2;
+      controller.set_state(state);
+      controller.get_cmd_vel(cmd_v, cmd_omega);
+      TS_ASSERT_EQUALS(0.8, cmd_v);
+      TS_ASSERT_DELTA(0.31415, cmd_omega, eps);
       
     }
 
@@ -108,4 +153,5 @@ class GradFieldControllerTests: public CxxTest::TestSuite
     gradplanner::Pose goal;
     double cmd_omega;
     double cmd_v;
+    double eps;
 };
