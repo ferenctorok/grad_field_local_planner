@@ -187,7 +187,7 @@ namespace gradplanner
       ind1_attr = Index(new int [2] {rob_ind_attr.get_x(), rob_ind_attr.get_y() - 1});
     }
       
-    if ((state.psi + PI / 2) > 0)
+    if (state.psi < (PI / 2) && state.psi > (-PI / 2))
     {
       ind2_rep = Index(new int [2] {rob_ind_rep.get_x() + 1, rob_ind_rep.get_y()});
       ind2_attr = Index(new int [2] {rob_ind_attr.get_x() + 1, rob_ind_attr.get_y()});
@@ -206,8 +206,8 @@ namespace gradplanner
     const double* g2_a = attractor.get_grad(ind2_attr);
 
     // summing up the gradients and calculate its orientation:
-    int dx = g0_r[0] + g0_a[0] + g1_r[0] + g1_a[0] + g2_r[0] + g2_a[0];
-    int dy = g0_r[1] + g0_a[1] + g1_r[1] + g1_a[1] + g2_r[1] + g2_a[1];
+    double dx = g0_r[0] + g0_a[0] + g1_r[0] + g1_a[0] + g2_r[0] + g2_a[0];
+    double dy = g0_r[1] + g0_a[1] + g1_r[1] + g1_a[1] + g2_r[1] + g2_a[1];
 
     double des_orient = atan2(dy, dx);
     double ang_diff = get_ang_diff(state.psi, des_orient);

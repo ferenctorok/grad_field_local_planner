@@ -18,7 +18,6 @@ class GradFieldControllerTests: public CxxTest::TestSuite
       eps = 1e-4;
       size_x = 11;
       size_y = 13;
-      R = 2;
 
       // creating the occupancy grid:
       occ_grid.resize(size_x);
@@ -165,15 +164,60 @@ class GradFieldControllerTests: public CxxTest::TestSuite
       controller.get_cmd_vel(cmd_v, cmd_omega);
       TS_ASSERT(abs(cmd_omega + 0.08) > eps);
 
-      
-      
+      // setting the occ_grid back:
+      occ_grid[5][7] = false;
+
+      // These should be in grad_mode //
+      // setting the radius different from the default:
+      params.general.R = 2;
+      controller = gradplanner::GradFieldController(&occ_grid,
+                                                    &occ_grid,
+                                                    &params);
+
+      // setting an extra obstacle.
+      for (int i = 4; i <= 7; i ++)
+        occ_grid[i][9] = true;
+
+      goal.x = state.x;
+      goal.y = state.y + 4.2;
+      state.psi = 2.5533; // The desired orientation will be around 2.6533
+      controller.set_state(state);
+      controller.set_new_goal(goal);
+      controller.get_cmd_vel(cmd_v, cmd_omega);
+
+      // creting an attractor and repulsive fields for being able to test:
+      gradplanner::RepulsiveField rf(&occ_grid, params.general.R);
+      rf.update_field();
+      gradplanner::AttractorField af(&occ_grid);
+      af.set_new_goal(new double [2]{5.0, 10.2});
+      af.update_field();
+
+      vector<vector<double* >> grads_rep = rf.get_grads();
+      vector<vector<double* >> grads_attr = af.get_grads();
+
+      double* g0_r = grads_rep[5][6];
+      double* g0_a = grads_attr[5][6];
+      double* g1_r = grads_rep[4][6];
+      double* g1_a = grads_attr[4][6];
+      double* g2_r = grads_rep[5][7];
+      double* g2_a = grads_attr[5][7];
+
+      double dx = g0_r[0] + g0_a[0] + g1_r[0] + g1_a[0] + g2_r[0] + g2_a[0];
+      double dy = g0_r[1] + g0_a[1] + g1_r[1] + g1_a[1] + g2_r[1] + g2_a[1];
+
+      // des_orient should be around 2.6533 and hence ang_diff around -0.1
+      double des_orient = std::atan2(dy, dx);
+      double ang_diff = gradplanner::get_ang_diff(state.psi, des_orient);
+
+      TS_ASSERT_EQUALS(1.2, cmd_v);
+      TS_ASSERT_DELTA(-ang_diff * params.grad_mode.K, cmd_omega, eps);
+
     }
 
   private:
     gradplanner::GradFieldController controller;
     gradplanner::ControlParams params;
     unsigned int size_x, size_y;
-    unsigned int R;
     vector<vector<bool >> occ_grid;
     gradplanner::State state;
     gradplanner::Pose goal;

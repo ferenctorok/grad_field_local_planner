@@ -56,6 +56,7 @@ namespace gradplanner
     {
       ind = q.front();
 
+      // for (auto &direction: search_directions_8)
       for (auto &direction: search_directions_4)
       {
         new_ind = ind + direction;
