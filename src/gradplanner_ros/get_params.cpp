@@ -75,7 +75,7 @@ namespace grad_field_local_planner
     {
       ros::param::get("/move_base/GradFieldPlannerROS/attractor/size_x", size_x_attr);
       // the size should be odd:
-      if (int(size_x_attr / 2) == (size_x_attr / 2))
+      if ((size_x_attr / 2) == ((size_x_attr + 1) / 2))
         size_x_attr ++;
     }
     else size_x_attr = 33;  // Default
@@ -84,16 +84,67 @@ namespace grad_field_local_planner
     {
       ros::param::get("/move_base/GradFieldPlannerROS/attractor/size_y", size_y_attr);
       // the size should be odd:
-      if (int(size_y_attr / 2) == (size_y_attr / 2))
+      if ((size_y_attr / 2) == ((size_y_attr + 1) / 2))
         size_y_attr ++;
     }
     else size_y_attr = 33;  // Default
 
-    
+
     // Repulsive field sizes:
     // It's enough the field to see every obstacle that is within
     // the effective radius. The others will don't have an effect anyways.
     size_x_rep = 2 * params.general.R + 3;
-    size_x_rep = 2 * params.general.R + 3;
+    size_y_rep = 2 * params.general.R + 3;
+
+    // Printing summary:
+    printSummary();
+  }
+
+
+  void GradFieldPlannerROS::printSummary()
+  {
+    ROS_INFO("");
+    ROS_INFO("--- GradFieldPlannerROS Summary Begin ---");
+
+    // Gradient field sizes:
+    ROS_INFO_STREAM("- size_x_attr: " << size_x_attr);
+    ROS_INFO_STREAM("- size_y_attr: " << size_y_attr);
+    ROS_INFO_STREAM("- size_x_rep: " << size_x_rep);
+    ROS_INFO_STREAM("- size_y_rep: " << size_y_rep);
+    ROS_INFO("");
+
+    // params //
+    // general //
+    ROS_INFO_STREAM("- params.general.Ts: " << params.general.Ts);
+    ROS_INFO_STREAM("- params.general.R: " << params.general.R);
+    ROS_INFO_STREAM("- params.general.end_pos_tol: " << params.general.end_pos_tol);
+    ROS_INFO_STREAM("- params.general.end_ang_tol: " << params.general.end_ang_tol);
+    ROS_INFO_STREAM("- params.general.max_trans_vel: " << params.general.max_trans_vel);
+    ROS_INFO_STREAM("- params.general.max_trans_acc: " << params.general.max_trans_acc);
+    ROS_INFO_STREAM("- params.general.max_ang_vel: " << params.general.max_ang_vel);
+    ROS_INFO_STREAM("- params.general.max_ang_acc: " << params.general.max_ang_acc);
+    ROS_INFO_STREAM("- params.general.decel_ratio: " << params.general.decel_ratio);
+    ROS_INFO("");
+
+    // grad_mode //
+    ROS_INFO_STREAM("- params.grad_mode.K: " << params.grad_mode.K);
+    ROS_INFO_STREAM("- params.grad_mode.boundary_error: " << params.grad_mode.boundary_error);
+    ROS_INFO_STREAM("- params.grad_mode.max_error: " << params.grad_mode.max_error);
+    ROS_INFO("");
+
+    // direct_mode //
+    ROS_INFO_STREAM("- params.direct_mode.min_obst_dist: " << params.direct_mode.min_obst_dist);
+    ROS_INFO_STREAM("- params.direct_mode.K: " << params.direct_mode.K);
+    ROS_INFO_STREAM("- params.direct_mode.boundary_error: " << params.direct_mode.boundary_error);
+    ROS_INFO_STREAM("- params.direct_mode.max_error: " << params.direct_mode.max_error);
+    ROS_INFO("");
+
+    // end mode //
+    ROS_INFO_STREAM("- params.end_mode.K: " << params.end_mode.K);
+    ROS_INFO("");
+
+    // attractor //
+    ROS_INFO_STREAM("- params.attractor.search_dir_8: " << params.attractor.search_dir_8);
+    ROS_INFO("--- GradFieldPlannerROS Summary End ---\n");
   }
 } // namespace grad_field_local_planner

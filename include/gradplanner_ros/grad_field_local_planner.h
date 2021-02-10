@@ -120,6 +120,10 @@ namespace grad_field_local_planner
        */
       void getParams();
 
+      /**
+       * @brief Prints the set up params to ROS_INFO
+       */
+      void printSummary();
   };
 
 } // namespace grad_field_local_planner

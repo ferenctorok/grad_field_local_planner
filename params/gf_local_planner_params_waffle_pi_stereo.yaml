@@ -18,13 +18,13 @@ GradFieldPlannerROS:
   grad_mode:
     K: 0.8 # Proportional control parameter. Defualt: 0.8 [-]
     boundary_error: 0.5 # param for calculating translational command velocity in rad. Default: 0.5 [rad]
-    double max_error: 2.0944 # param for calculating translational command velocity in rad. Default: 2/3 PI [rad]
-
+    max_error: 2.0944 # param for calculating translational command velocity in rad. Default: 2/3 PI [rad]
+    
   direct_mode:
     min_obst_dist: 6 # If the robot is closer to an obstacle then this -> grad_mode control. Default: 6 [grid cell]
-    double K: 0.8 # Proportional control parameter. Defualt: 0.8 [-]
-    double boundary_error: 0.2 # param for calculating translational command velocity in rad. Default: 0.2 [rad]
-    double max_error: 1.0473 # param for calculating translational command velocity in rad. Default: 1.0473 [rad]
+    K: 0.8 # Proportional control parameter. Defualt: 0.8 [-]
+    boundary_error: 0.2 # param for calculating translational command velocity in rad. Default: 0.2 [rad]
+    max_error: 1.0473 # param for calculating translational command velocity in rad. Default: 1.0473 [rad]
   
   end_mode:
     K: 0.8 # Proportional control parameter. Defualt: 0.8 [-]
