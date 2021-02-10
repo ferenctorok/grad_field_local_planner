@@ -75,6 +75,7 @@ namespace gradplanner
       bool goal_is_valid; // Flag to indicate that a valid goal is set for the Robot.
       Index rob_ind_attr;  // The index of the cell in the attractor field where the robot is.
       Index rob_ind_rep;   // The index of the cell in the attractor field where the robot is.
+      double decel_distance; // The distance from the goal, where the robot should start decelerating.
       
       // params which are set up from the given params:
       // general:
@@ -86,7 +87,7 @@ namespace gradplanner
       double max_trans_acc; // Maximal translational acceleration in m/s²
       double max_ang_vel; // Maximal angular velocity in rad/s. Default:
       double max_ang_acc; // Maximal angular acceleration in rad/s².
-      double deceleration_radius; // If the robot is inside this radius, it starts to decelerate. In metres.
+      double decel_ratio; // During deceleration the robot uses this partition of its maximal acceleration.
       
       // grad mode:
       double K_grad; // Proportional control parameter. Defualt: 0.8 [-]

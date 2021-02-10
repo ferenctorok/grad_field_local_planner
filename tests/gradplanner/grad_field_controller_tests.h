@@ -113,7 +113,7 @@ class GradFieldControllerTests: public CxxTest::TestSuite
       controller = gradplanner::GradFieldController(&occ_grid,
                                                     &occ_grid,
                                                     &params);
-      goal.x = state.x + 3;
+      goal.x = state.x + 3.5;
       goal.y = state.y;
       state.psi = 0.1;
       controller.set_state(state);
@@ -211,6 +211,22 @@ class GradFieldControllerTests: public CxxTest::TestSuite
 
       TS_ASSERT_EQUALS(1.2, cmd_v);
       TS_ASSERT_DELTA(-ang_diff * params.grad_mode.K, cmd_omega, eps);
+
+
+      // Testing the deceleration //
+      params.direct_mode.min_obst_dist = 0;
+      controller = gradplanner::GradFieldController(&occ_grid,
+                                                    &occ_grid,
+                                                    &params);
+      goal.x = state.x + 0.5;
+      goal.y = state.y;
+      state.psi = 0.1;
+      state.v = 0.45;
+      controller.set_state(state);
+      controller.set_new_goal(goal);
+      controller.get_cmd_vel(cmd_v, cmd_omega);
+      TS_ASSERT_EQUALS(0.4, cmd_v);
+      TS_ASSERT_DELTA(-0.08, cmd_omega, eps);
 
     }
 

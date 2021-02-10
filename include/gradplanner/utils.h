@@ -42,7 +42,7 @@ namespace gradplanner
       double max_trans_acc = 2.0; // Maximal translational acceleration in m/s². Default: 2 [m/a²]
       double max_ang_vel = 1.5708; // Maximal angular velocity in rad/s. Default: 1.5708 [rad/s]
       double max_ang_acc = 3.1415; // Maximal angular acceleration in rad/s². Default: 3.1415 [rad/s²]
-      double deceleration_radius = 1.0; // If the robot is inside this radius, it starts to decelerate. In metres. Default: 1 [m] 
+      double decel_ratio = 0.8; // During deceleration the robot uses this partition of its maximal acceleration. Default: 0.8
     };
     General general;
 

@@ -12,9 +12,12 @@ namespace gradplanner
                                            vector<vector<bool >>* occ_grid_rep,
                                            ControlParams* params):
     occ_grid_attr(occ_grid_attr), occ_grid_rep(occ_grid_rep), params(params), 
-    attractor(occ_grid_attr), repulsive(occ_grid_rep, params->general.R),
+    attractor(occ_grid_attr, params), repulsive(occ_grid_rep, params->general.R),
     goal_is_valid(false)
   {
+    // setting up some member variables from the params:
+    set_from_params();
+
     // Index where the robot is in the attractor field. (middle of the field.)
     int x_attr = (attractor.get_size_x() - 1) / 2;
     int y_attr = (attractor.get_size_y() - 1) / 2;
@@ -25,7 +28,8 @@ namespace gradplanner
     int y_rep = (repulsive.get_size_y() - 1) / 2;
     rob_ind_rep = Index(new int [2] {x_rep, y_rep});
 
-    set_from_params();
+    // calculating the deceleration distance:
+    decel_distance = pow(max_trans_vel, 2) / (2 * decel_ratio * max_trans_acc);
   }
 
 
@@ -40,7 +44,7 @@ namespace gradplanner
     max_trans_acc = params->general.max_trans_acc;
     max_ang_vel = params->general.max_ang_vel;
     max_ang_acc = params->general.max_ang_acc;
-    deceleration_radius = params->general.deceleration_radius;
+    decel_ratio = params->general.decel_ratio;
 
     // grad mode:
     K_grad = params->grad_mode.K;
@@ -274,15 +278,26 @@ namespace gradplanner
                                             const double max_error)
   {
     double v_x;
+    double v_max;
+    double dist_to_goal = get_length(goal_rel.x, goal_rel.y);
+
+    // setting the max allowed velocity based on whether we should
+    // already decelerate or not.
+    if (dist_to_goal > decel_distance)
+      v_max = max_trans_vel;
+    else
+      v_max = max_trans_vel * (dist_to_goal / decel_distance);
     
+    // calculating the velocity based on the max allowed velocity
+    // and the orientation error:
     if (abs(ang_diff) < boundary_error)
-      v_x = max_trans_vel;
+      v_x = v_max;
     else
     {
       if(abs(ang_diff) < max_error)
       {
         double ratio = (abs(ang_diff) - boundary_error) / (max_error - boundary_error);
-        v_x = max_trans_vel * (1 - ratio);
+        v_x = v_max * (1 - ratio);
       }
       else
         v_x = 0;
