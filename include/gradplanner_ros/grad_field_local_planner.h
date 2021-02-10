@@ -108,17 +108,17 @@ namespace grad_field_local_planner
       vector<vector<bool >> occ_grid_attr;  // The occupancy grid of the attractor field.
       vector<vector<bool >> occ_grid_rep;   // The occupancy grid of the repulsive field.
       gradplanner::ControlParams params;  // The parameters of the planner and the controller.  
-      unsigned int size_x_attr; // The x size of the attractive field.
-      unsigned int size_y_attr; // The y size of the attractive field.
-      unsigned int size_x_rep; // The x size of the repulsive field.
-      unsigned int size_y_rep; // The y size of the repulsive field.
+      int size_x_attr; // The x size of the attractive field.
+      int size_y_attr; // The y size of the attractive field.
+      int size_x_rep; // The x size of the repulsive field.
+      int size_y_rep; // The y size of the repulsive field.
       gradplanner::State state; // The state of the robot.
 
 
       /**
        * @brief Sets up the variables based on the parameter server.
        */
-      void setup_from_param_sever();
+      void getParams();
 
   };
 

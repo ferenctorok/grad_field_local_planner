@@ -2,6 +2,8 @@
 
 #include <pluginlib/class_list_macros.h>
 
+using namespace std;
+
 // Exporting the class as a plugin
 PLUGINLIB_EXPORT_CLASS(grad_field_local_planner::GradFieldPlannerROS,
                        nav_core::BaseLocalPlanner)
@@ -31,9 +33,13 @@ namespace grad_field_local_planner
       costmap_ros = costmap_ros_;
       tf_buffer = tf_buffer_;
 
-      // create ROS nodehandler and create subscribers and publishers:
+      // create ROS node handler and set up variables from ParamServer:
       ros::NodeHandle nh;
-      amcl_sub = nh.subscribe("amcl_pose", 100, &GradFieldPlannerROS::amclCallback, this);
+      getParams();
+
+      // subscribers and publishers:
+      amcl_sub = nh.subscribe("amcl_pose", 100,
+        &GradFieldPlannerROS::amclCallback, this);
 
 
       initialized = true;
@@ -50,8 +56,8 @@ namespace grad_field_local_planner
 
   bool GradFieldPlannerROS::computeVelocityCommands(geometry_msgs::Twist& cmd_vel)
   {
-    ROS_INFO("--- PUBLISHED CMD_VEL ---");
-    cmd_vel.linear.x = 1.0;
+    ROS_INFO("--- PUBLISHED CMD_VEL ---\n");
+    cmd_vel.linear.x = 0.0;
     cmd_vel.linear.y = 0.0;
     cmd_vel.linear.z = 0.0;
     cmd_vel.angular.x = 0.0;
@@ -68,12 +74,6 @@ namespace grad_field_local_planner
   }
 
 
-  void GradFieldPlannerROS::setup_from_param_sever()
-  {
-
-  }
-
-
   void GradFieldPlannerROS::amclCallback(
     const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg)
   {
@@ -81,5 +81,4 @@ namespace grad_field_local_planner
     state.y = msg->pose.pose.position.y;
     state.psi = msg->pose.pose.orientation.w;
   }
-
 } // namespace grad_field_local_planner

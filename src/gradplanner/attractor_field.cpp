@@ -12,7 +12,7 @@ namespace gradplanner
     params = other.params;
 
     // chosing how many search directions to use.
-    if ((params != nullptr) && params->attractor_params.search_dir_8)
+    if ((params != nullptr) && params->attractor.search_dir_8)
       search_directions = &search_directions_8;
     else
       search_directions = &search_directions_4;
@@ -24,7 +24,7 @@ namespace gradplanner
     goal_ind(new int [2] {0, 0}), params(params)
   {
     // chosing how many search directions to use.
-    if ((params != nullptr) && params->attractor_params.search_dir_8)
+    if ((params != nullptr) && params->attractor.search_dir_8)
       search_directions = &search_directions_8;
     else
       search_directions = &search_directions_4;
@@ -39,7 +39,7 @@ namespace gradplanner
     params = params;
 
     // chosing how many search directions to use.
-    if ((params != nullptr) && params->attractor_params.search_dir_8)
+    if ((params != nullptr) && params->attractor.search_dir_8)
       search_directions = &search_directions_8;
     else
       search_directions = &search_directions_4;

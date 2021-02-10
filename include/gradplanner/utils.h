@@ -35,7 +35,7 @@ namespace gradplanner
     struct General
     {
       double Ts = 0.1; // Time step in seconds. Default: 0.1 [s]
-      unsigned int R = 16; // Effective radius of the RepulsiveField in grid step. Default: 16 [grid cell]
+      int R = 16; // Effective radius of the RepulsiveField in grid step. Default: 16 [grid cell]
       double end_pos_tol = 0.1; // Goal position tolerance in meters. Default: 0.1 [m]
       double end_ang_tol = 0.2; // Goal orientation tolerance in rad. Default: 0.2 [rad]
       double max_trans_vel = 4.0; // Maximal translational velocity in m/s. Default: 4 [m/s]
@@ -92,7 +92,7 @@ namespace gradplanner
     {
       bool search_dir_8 = false; // whether to use 8 search directions during update. Default: false
     };
-    AttractorFieldParams attractor_params;
+    AttractorFieldParams attractor;
   };
 
   /**
