@@ -62,33 +62,6 @@ namespace gradplanner
        */
       bool get_cmd_vel(double& v_x, double& omega);
 
-      /**
-       * @brief Gets the angular velocity command based on the
-       * orientation error and a proportional constant. It also
-       * considers the angular velocity and acceleration constraints.
-       * @param ang_diff The orientation error.
-       * @param K The proportional constant.
-       * @return The angular velocity command.
-       */
-      double get_ang_vel(const double ang_diff, const double K);
-
-      /**
-       * @brief Gets the translational velocity command. It considers
-       * the maximal translational velocity and acceleration values
-       * and also the orientation error of the robot.
-       * If the orientation error is smaller than the boundary error value
-       * this value, the robot tries to go as fast as possible. 
-       * If the robot is between the boundary and the max errors,
-       * the velocity is linearly decreesing with the error.
-       * @param ang_diff The orientation error.
-       * @param boundary_error The boundary error.
-       * @param max_error The max error.
-       * @return The translational velocity command.
-       */
-      double get_trans_vel(const double ang_diff,
-                           const double boundary_error,
-                           const double max_error);
-
     private:
       vector<vector<bool >>* occ_grid_rep;  // occupancy grid.
       vector<vector<bool >>* occ_grid_attr;  // occupancy grid.
@@ -169,6 +142,11 @@ namespace gradplanner
       bool is_direct_mode();
 
       /**
+       * @brief sets the relative goal position to the state.
+       */
+      void set_rel_goal_pose();
+
+      /**
        * @brief The controller of the last period. It is used,
        * when the goal position is already reached, only the 
        * orientation of the robot has to be adjusted.
@@ -196,9 +174,31 @@ namespace gradplanner
       void grad_controller(double& v_x, double& omega);
 
       /**
-       * @brief sets the relative goal position to the state.
+       * @brief Gets the angular velocity command based on the
+       * orientation error and a proportional constant. It also
+       * considers the angular velocity and acceleration constraints.
+       * @param ang_diff The orientation error.
+       * @param K The proportional constant.
+       * @return The angular velocity command.
        */
-      void set_rel_goal_pose();
+      double get_ang_vel(const double ang_diff, const double K);
+
+      /**
+       * @brief Gets the translational velocity command. It considers
+       * the maximal translational velocity and acceleration values
+       * and also the orientation error of the robot.
+       * If the orientation error is smaller than the boundary error value
+       * this value, the robot tries to go as fast as possible. 
+       * If the robot is between the boundary and the max errors,
+       * the velocity is linearly decreesing with the error.
+       * @param ang_diff The orientation error.
+       * @param boundary_error The boundary error.
+       * @param max_error The max error.
+       * @return The translational velocity command.
+       */
+      double get_trans_vel(const double ang_diff,
+                           const double boundary_error,
+                           const double max_error);
   };
 } // namespace gradplanner
 

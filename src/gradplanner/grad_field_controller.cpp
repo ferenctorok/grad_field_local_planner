@@ -245,6 +245,14 @@ namespace gradplanner
   }
 
 
+  void GradFieldController::set_rel_goal_pose()
+  {
+    goal_rel.x = goal.x - state.x;
+    goal_rel.y = goal.y - state.y;
+    goal_rel.psi = get_ang_diff(state.psi, goal.psi);
+  }
+
+
   double GradFieldController::get_ang_vel(const double ang_diff,
                                           const double K)
   {
@@ -286,13 +294,5 @@ namespace gradplanner
       v_x = state.v + sgn<double >(acc) * max_trans_acc * Ts;
 
     return v_x;
-  }
-
-
-  void GradFieldController::set_rel_goal_pose()
-  {
-    goal_rel.x = goal.x - state.x;
-    goal_rel.y = goal.y - state.y;
-    goal_rel.psi = get_ang_diff(state.psi, goal.psi);
   }
 } // namespace gradplanner
