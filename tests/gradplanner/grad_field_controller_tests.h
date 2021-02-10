@@ -140,6 +140,32 @@ class GradFieldControllerTests: public CxxTest::TestSuite
       controller.get_cmd_vel(cmd_v, cmd_omega);
       TS_ASSERT_EQUALS(0.8, cmd_v);
       TS_ASSERT_DELTA(0.31415, cmd_omega, eps);
+
+      // should NOT be in direct mode //
+      // goal is behind an obstacle:
+      goal.x = state.x;
+      goal.y = state.y + 4.2;
+      state.psi = PI / 2 + 0.1;
+      controller.set_state(state);
+      controller.set_new_goal(goal);
+      controller.get_cmd_vel(cmd_v, cmd_omega);
+      TS_ASSERT(abs(cmd_omega + 0.08) > eps);
+
+      // robot is too close to an obstacle:
+      params.direct_mode.min_obst_dist = 3;
+      controller = gradplanner::GradFieldController(&occ_grid,
+                                                    &occ_grid,
+                                                    &params);
+      goal.x = state.x + 3;
+      goal.y = state.y;
+      state.psi = 0.1;
+      controller.set_state(state);
+      controller.set_new_goal(goal);
+      occ_grid[5][7] = true;
+      controller.get_cmd_vel(cmd_v, cmd_omega);
+      TS_ASSERT(abs(cmd_omega + 0.08) > eps);
+
+      
       
     }
 

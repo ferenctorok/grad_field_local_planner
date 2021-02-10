@@ -23,7 +23,7 @@ namespace gradplanner
     // Index where the robot is in the repulsive field. (middle of the field.)
     int x_rep = (repulsive.get_size_x() - 1) / 2;
     int y_rep = (repulsive.get_size_y() - 1) / 2;
-    rob_ind_attr = Index(new int [2] {x_rep, y_rep});
+    rob_ind_rep = Index(new int [2] {x_rep, y_rep});
 
     set_from_params();
   }
@@ -222,8 +222,9 @@ namespace gradplanner
   bool GradFieldController::is_direct_mode()
   {
     // Check whether the robot is far enough from the nearest obstacle:
+    int vall = repulsive.get_val(rob_ind_rep);
     if ((0 < repulsive.get_val(rob_ind_rep)) &&
-        (repulsive.get_val(rob_ind_rep) < min_obst_direct)) 
+        (repulsive.get_val(rob_ind_rep) < (min_obst_direct + 1))) 
       return false;
     else
     {
