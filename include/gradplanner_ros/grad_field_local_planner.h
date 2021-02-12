@@ -97,7 +97,8 @@ namespace grad_field_local_planner
       bool initialized; // true if the object is already initialized.
 
       // Pointers to external objects received from move_base:
-      costmap_2d::Costmap2DROS* costmap_ros; // costmap
+      costmap_2d::Costmap2DROS* costmap_ros; // Pointer to the costmap ROS wrapper.
+      costmap_2d::Costmap2D* costmap; // Pointer to the costmap.
       tf2_ros::Buffer* tf_buffer; // transform buffer
 
       // Topics & Services
@@ -108,10 +109,10 @@ namespace grad_field_local_planner
       vector<vector<bool >> occ_grid_attr;  // The occupancy grid of the attractor field.
       vector<vector<bool >> occ_grid_rep;   // The occupancy grid of the repulsive field.
       gradplanner::ControlParams params;  // The parameters of the planner and the controller.  
-      int size_x_attr; // The x size of the attractive field.
-      int size_y_attr; // The y size of the attractive field.
-      int size_x_rep; // The x size of the repulsive field.
-      int size_y_rep; // The y size of the repulsive field.
+      unsigned int size_x_attr; // The x size of the attractive field.
+      unsigned int size_y_attr; // The y size of the attractive field.
+      unsigned int size_x_rep; // The x size of the repulsive field.
+      unsigned int size_y_rep; // The y size of the repulsive field.
       gradplanner::State state; // The state of the robot.
 
 
@@ -124,6 +125,14 @@ namespace grad_field_local_planner
        * @brief Prints the set up params to ROS_INFO
        */
       void printSummary();
+
+      /**
+       * @brief Calculates the yaw angle from the quatiernion in the 
+       * AMCL message.
+       * @param msg the Pointer to the AMCL message
+       * @return The Yaw orientation of the robot.
+       */
+      double getYaw(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
   };
 
 } // namespace grad_field_local_planner

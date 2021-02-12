@@ -31,17 +31,20 @@ namespace grad_field_local_planner
     if (! initialized)
     {
       costmap_ros = costmap_ros_;
+      costmap = costmap_ros->getCostmap();
       tf_buffer = tf_buffer_;
 
-      // create ROS node handler and set up variables from ParamServer:
-      ros::NodeHandle nh;
+      // setting up some params mostly based on the parameter server:
       getParams();
+
+      // create ROS node handler:
+      ros::NodeHandle nh;
 
       // subscribers and publishers:
       amcl_sub = nh.subscribe("amcl_pose", 100,
         &GradFieldPlannerROS::amclCallback, this);
 
-
+      costmap_2d::NO_INFORMATION;
       initialized = true;
     }      
     
@@ -79,6 +82,35 @@ namespace grad_field_local_planner
   {
     state.x = msg->pose.pose.position.x;
     state.y = msg->pose.pose.position.y;
-    state.psi = msg->pose.pose.orientation.w;
+    state.psi = getYaw(msg);
+
+    ROS_INFO_STREAM("x: " << state.x);
+    ROS_INFO_STREAM("y: " << state.y);
+    ROS_INFO_STREAM("psi: " << state.psi);
+
+    unsigned int mx, my;
+    costmap->worldToMap(state.x, state.y, mx, my);
+    ROS_INFO_STREAM("attractor_size: " << size_x_attr);
+    ROS_INFO_STREAM("mx: " << mx);
+    ROS_INFO_STREAM("my: " << my);
   }
+
+
+  double GradFieldPlannerROS::getYaw(
+    const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg)
+	{
+
+		double q[4];
+		q[0]= msg->pose.pose.orientation.x;
+		q[1]= msg->pose.pose.orientation.y;
+		q[2]= msg->pose.pose.orientation.z;
+		q[3]= msg->pose.pose.orientation.w;
+
+		double t3 = +2.0 * (q[3] * q[2] + q[0] * q[1]);
+		double t4 = +1.0 - 2.0 * (q[1] * q[1] + q[2] * q[2]);  
+
+		return std::atan2(t3, t4);
+
+	}
+
 } // namespace grad_field_local_planner
