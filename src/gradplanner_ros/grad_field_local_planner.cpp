@@ -75,7 +75,7 @@ namespace grad_field_local_planner
       updateOccGrids();
 
       // updating the controller state with the most recent available:
-      controller.set_state(state);
+      controller.set_state(state, costmap->getOriginX(), costmap->getOriginY());
 
       // calculating the new goal:
       goal_attr.x = state.x + (size_x_attr - 1) / 2;
@@ -83,7 +83,7 @@ namespace grad_field_local_planner
       goal_attr.psi = 0;
 
       // setting the new goal to the controller and control:
-      if (controller.set_new_goal(goal_attr))
+      if (controller.set_new_goal(goal_attr, costmap->getOriginX(), costmap->getOriginY()))
       {
         double v_x, omega;
         if (controller.get_cmd_vel(v_x, omega))
@@ -131,8 +131,8 @@ namespace grad_field_local_planner
   void GradFieldPlannerROS::amclCallback(
     const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg)
   {
-    state.x = msg->pose.pose.position.x / grid_size;
-    state.y = msg->pose.pose.position.y / grid_size;
+    state.x = msg->pose.pose.position.x;
+    state.y = msg->pose.pose.position.y;
     state.psi = getYaw(msg);
 
     /*ROS_INFO_STREAM("x: " << state.x);
