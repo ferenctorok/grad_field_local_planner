@@ -99,6 +99,16 @@ namespace grad_field_local_planner
       ROS_WARN("Had to resize repulsive field size in y direction because it was bigger than the occupancy grid.");
     }
 
+    // The inflation radius:
+    if (ros::param::has("/move_base/local_costmap/robot_radius"))
+    {
+      double R;
+      ros::param::get("/move_base/local_costmap/robot_radius", R);
+      safety_R = int(R) + 1;
+    }
+    else
+      safety_R = 0;
+
     // Printing summary:
     printSummary();
   }
@@ -148,6 +158,9 @@ namespace grad_field_local_planner
 
     // attractor //
     ROS_INFO_STREAM("- params.attractor.search_dir_8: " << params.attractor.search_dir_8);
+
+    ROS_INFO_STREAM("- Safety inflation radius: " << safety_R);
+
     ROS_INFO("--- GradFieldPlannerROS Summary End ---\n");
   }
 } // namespace grad_field_local_planner

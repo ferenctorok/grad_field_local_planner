@@ -29,6 +29,9 @@ using namespace std;
 
 // costmap & geometry
 #include <costmap_2d/costmap_2d_ros.h>
+#include <costmap_2d/costmap_2d.h>
+#include <costmap_2d/layered_costmap.h>
+#include <costmap_2d/layer.h>
 
 
 namespace grad_field_local_planner
@@ -99,6 +102,8 @@ namespace grad_field_local_planner
       // Pointers to external objects received from move_base:
       costmap_2d::Costmap2DROS* costmap_ros; // Pointer to the costmap ROS wrapper.
       costmap_2d::Costmap2D* costmap; // Pointer to the costmap.
+      costmap_2d::LayeredCostmap* lay_costmap;  // Pointer to the layered costmap.
+      vector<boost::shared_ptr<costmap_2d::Layer> >* layers; // Pointer to the vector of layers.
       tf2_ros::Buffer* tf_buffer; // transform buffer
 
       // Topics & Services
@@ -113,6 +118,7 @@ namespace grad_field_local_planner
       unsigned int size_y_attr; // The y size of the attractive field.
       unsigned int size_x_rep; // The x size of the repulsive field.
       unsigned int size_y_rep; // The y size of the repulsive field.
+      int safety_R; // The radius to inflate the obstacles with so that the robot can be viewed as a point.
       gradplanner::State state; // The state of the robot.
 
 
@@ -133,6 +139,21 @@ namespace grad_field_local_planner
        * @return The Yaw orientation of the robot.
        */
       double getYaw(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
+
+      /**
+       * @brief Initializes an occupancy grid and fills it up with false values.
+       * @param size_x The x size of the occupancy grid.
+       * @param size_y The y size of the occupancy grid.
+       * @param occ_grid Reference to the occupancy grid to be initialized.
+       */
+      void initOccGrid(const unsigned int size_x, const unsigned int size_y,
+                      vector<vector<bool >>& occ_grid);
+
+      /**
+       * @brief Updates the occupancy grids based on the costmap
+       * provided by ROS.
+       */
+      void updateOccGrids();
   };
 
 } // namespace grad_field_local_planner
