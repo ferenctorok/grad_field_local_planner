@@ -118,8 +118,10 @@ namespace grad_field_local_planner
       unsigned int size_y_attr; // The y size of the attractive field.
       unsigned int size_x_rep; // The x size of the repulsive field.
       unsigned int size_y_rep; // The y size of the repulsive field.
+      double grid_size; // The size of a grid cell.
       int safety_R; // The radius to inflate the obstacles with so that the robot can be viewed as a point.
       gradplanner::State state; // The state of the robot.
+      gradplanner::Pose goal_attr; // The goal to give the attractor.
 
 
       /**

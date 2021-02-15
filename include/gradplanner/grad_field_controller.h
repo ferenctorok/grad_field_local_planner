@@ -43,15 +43,35 @@ namespace gradplanner
       /**
        * @brief Sets the state of the robot.
        * @param state the State to set.
+       * @param origin_x_attr The x coordinate of the origin of the attractor field.
+       * @param origin_y_attr The y coordinate of the origin of the attractor field.
        */
-      void set_state(const State& state);
+      void set_state(const State& state,
+                     const double origin_x_attr,
+                     const double origin_y_attr);
 
       /**
        * @brief Sets a new goal pose for the robot.
        * @param goal the goal pose to set.
+       * @param origin_x_attr The x coordinate of the origin of the attractor field.
+       * @param origin_y_attr The y coordinate of the origin of the attractor field.
        * @return True if the given goal was valid.
        */
-      bool set_new_goal(const Pose& goal);
+      bool set_new_goal(const Pose& goal,
+                        const double origin_x_attr,
+                        const double origin_y_attr);
+
+      /**
+       * @brief Checks if the robot is in free space.
+       * @return True if the robot is in free space.
+       */
+      bool robot_is_free();
+
+      /**
+       * @brief Checks if the goal is reachable.
+       * @return True if the goal is reachable.
+       */
+      bool goal_is_reachable();
 
       /**
        * @brief Gets the command velocity cmd_vel.
@@ -68,10 +88,12 @@ namespace gradplanner
       ControlParams* params;  // ControlParams struct for storing parameters that the controller needs.
       AttractorField attractor; // The AttractorField object of the controller.
       RepulsiveField repulsive; // The RepulsiveField object of the controller.
-      State state;  // Actual State.
-      Pose goal; // Goal pose.
-      Pose goal_rel; // Goal position relative to the robot.
-      Pose goal_attr;  // The goal position in the attractor potential field. (Relative position to the robot.)
+      State state;  // Actual State in global frame
+      Pose state_attr;  // Pose in the attractor field.
+      Pose state_rep; // Pose in the repulsive field.
+      Pose goal; // Goal pose in the global frame.
+      Pose goal_rel; // Goal position relative to the robot in the global frame.
+      Pose goal_attr;  // The goal position in the attractor potential field.
       bool goal_is_valid; // Flag to indicate that a valid goal is set for the Robot.
       Index rob_ind_attr;  // The index of the cell in the attractor field where the robot is.
       Index rob_ind_rep;   // The index of the cell in the attractor field where the robot is.
@@ -79,6 +101,7 @@ namespace gradplanner
       
       // params which are set up from the given params:
       // general:
+      double cell_size; // The cell size of the grid.
       double Ts; // Time step in seconds.
       unsigned int R; // Effective radius of the RepulsiveField in grid step.
       double end_pos_tol; // Goal position tolerance in meters.
@@ -108,18 +131,6 @@ namespace gradplanner
        * on the given parameters.
        */
       void set_from_params();
-
-      /**
-       * @brief Checks if the robot is in free space.
-       * @return True if the robot is in free space.
-       */
-      bool robot_is_free();
-
-      /**
-       * @brief Checks if the goal is reachable.
-       * @return True if the goal is reachable.
-       */
-      bool goal_is_reachable();
 
       /**
        * @brief Checks whether the goal position is reached with the tolerance.

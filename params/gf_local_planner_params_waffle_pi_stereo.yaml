@@ -9,10 +9,10 @@ GradFieldPlannerROS:
     R: 10
     end_pos_tol: 0.1 # Goal position tolerance in meters. Default: 0.1 [m]
     end_ang_tol: 0.2 # Goal orientation tolerance in rad. Default: 0.2 [rad]
-    max_trans_vel: 4.0 # Maximal translational velocity in m/s. Default: 4 [m/s]
-    max_trans_acc: 2.0 # Maximal translational acceleration in m/s². Default: 2 [m/a²]
+    max_trans_vel: 1.0 # Maximal translational velocity in m/s. Default: 4 [m/s]
+    max_trans_acc: 1.0 # Maximal translational acceleration in m/s². Default: 2 [m/a²]
     max_ang_vel: 1.5708 # Maximal angular velocity in rad/s. Default: 1.5708 [rad/s]
-    max_ang_acc: 3.1415 # Maximal angular acceleration in rad/s². Default: 3.1415 [rad/s²]
+    max_ang_acc: 1.5708 # Maximal angular acceleration in rad/s². Default: 3.1415 [rad/s²]
     decel_ratio: 0.8 # During deceleration the robot uses this partition of its maximal acceleration. Default: 0.8
 
   grad_mode:

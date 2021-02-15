@@ -18,6 +18,7 @@ namespace gradplanner
     // setting up some member variables from the params:
     set_from_params();
 
+    /*
     // Index where the robot is in the attractor field. (middle of the field.)
     int x_attr = (attractor.get_size_x() - 1) / 2;
     int y_attr = (attractor.get_size_y() - 1) / 2;
@@ -27,6 +28,7 @@ namespace gradplanner
     int x_rep = (repulsive.get_size_x() - 1) / 2;
     int y_rep = (repulsive.get_size_y() - 1) / 2;
     rob_ind_rep = Index(new int [2] {x_rep, y_rep});
+    */
 
     // calculating the deceleration distance:
     decel_distance = pow(max_trans_vel, 2) / (2 * decel_ratio * max_trans_acc);
@@ -36,6 +38,7 @@ namespace gradplanner
   void GradFieldController::set_from_params()
   {
     // general:
+    cell_size = params->general.cell_size;
     Ts = params->general.Ts;
     R = params->general.R;
     end_pos_tol = params->general.end_pos_tol;
@@ -62,22 +65,49 @@ namespace gradplanner
   }
 
 
-  void GradFieldController::set_state(const State& state)
+  void GradFieldController::set_state(const State& state,
+                                      const double origin_x_attr,
+                                      const double origin_y_attr)
   {
+    // state in the global frame:
     this->state = state;
+
+    // goal relative to the state in the global frame:
     set_rel_goal_pose();
+
+    // calculating the state in the normalized coordinate frame of
+    // the attractor field.
+    state_attr.x = (state.x - origin_x_attr) / cell_size;
+    state_attr.y = (state.y - origin_y_attr) / cell_size;
+    state_attr.psi = state.psi;
+
+    rob_ind_attr = Index(new int [2] {int(state_attr.x), int(state_attr.y)});
+
+    // calculating the state in the normalized coordinate frame of
+    // the attractor field.
+    state_rep.x = state_attr.x - (attractor.get_size_x() - repulsive.get_size_x()) / 2;
+    state_rep.y = state_attr.y - (attractor.get_size_y() - repulsive.get_size_y()) / 2;
+    state_rep.psi = state.psi;
+
+    rob_ind_rep = Index(new int [2] {int(state_rep.x), int(state_rep.y)});
   }
 
 
-  bool GradFieldController::set_new_goal(const Pose& goal)
+  bool GradFieldController::set_new_goal(const Pose& goal,
+                                         const double origin_x_attr,
+                                         const double origin_y_attr)
   {
+    // goal in the global frame:
     this->goal = goal;
+
+    // goal relative to the state in the global frame.
     set_rel_goal_pose();
 
     // calculating the position of the goal in the attractor field
-    goal_attr.x = goal.x - state.x + attractor.get_size_x() / 2;
-    goal_attr.y = goal.y - state.y + attractor.get_size_y() / 2;
+    goal_attr.x = (goal.x - origin_x_attr) / cell_size;
+    goal_attr.y = (goal.y - origin_y_attr) / cell_size;
 
+    // set the new goal to the attractor and return true if it is correct.
     goal_is_valid = attractor.set_new_goal(new double [2]
       {goal_attr.x, goal_attr.y});
     return goal_is_valid;
@@ -98,14 +128,14 @@ namespace gradplanner
 
   bool GradFieldController::goal_pos_reached()
   {
-    double dist = get_length((goal.x - state.x), (goal.y - state.y));
+    double dist = get_length(goal_rel.x, goal_rel.y);
     return (dist < end_pos_tol);
   }
 
 
   bool GradFieldController::goal_ang_reached()
   {
-    return (abs(get_ang_diff(state.psi, goal.psi)) < end_ang_tol);
+    return (abs(goal_rel.psi) < end_ang_tol);
   }
 
 
@@ -180,7 +210,7 @@ namespace gradplanner
     // The choice of the 2 neighboring Pixels depends on the orientation of the robot.
     Index ind1_rep, ind1_attr;
     Index ind2_rep, ind2_attr;
-    if (state.psi > 0)
+    /*if (state.psi > 0)
     {
       ind1_rep = Index(new int [2] {rob_ind_rep.get_x(), rob_ind_rep.get_y() + 1});
       ind1_attr = Index(new int [2] {rob_ind_attr.get_x(), rob_ind_attr.get_y() + 1});
@@ -200,7 +230,31 @@ namespace gradplanner
     {
       ind2_rep = Index(new int [2] {rob_ind_rep.get_x() - 1, rob_ind_rep.get_y()});
       ind2_attr = Index(new int [2] {rob_ind_attr.get_x() - 1, rob_ind_attr.get_y()});
+    }*/
+
+    if ((state_attr.x - rob_ind_attr.get_x()) > 0.5)
+    {
+      ind2_rep = Index(new int [2] {rob_ind_rep.get_x() + 1, rob_ind_rep.get_y()});
+      ind2_attr = Index(new int [2] {rob_ind_attr.get_x() + 1, rob_ind_attr.get_y()});
     }
+    else
+    {
+      ind2_rep = Index(new int [2] {rob_ind_rep.get_x() - 1, rob_ind_rep.get_y()});
+      ind2_attr = Index(new int [2] {rob_ind_attr.get_x() - 1, rob_ind_attr.get_y()});
+    }
+
+    if ((state_attr.y - rob_ind_attr.get_y()) > 0.5)
+    {
+      ind1_rep = Index(new int [2] {rob_ind_rep.get_x(), rob_ind_rep.get_y() + 1});
+      ind1_attr = Index(new int [2] {rob_ind_attr.get_x(), rob_ind_attr.get_y() + 1});
+    }
+    else
+    {
+      ind1_rep = Index(new int [2] {rob_ind_rep.get_x(), rob_ind_rep.get_y() - 1});
+      ind1_attr = Index(new int [2] {rob_ind_attr.get_x(), rob_ind_attr.get_y() - 1});
+    }
+
+    //ind1_rep = Index(new int [2] {})
 
     const double* g0_r = repulsive.get_grad(rob_ind_rep);
     const double* g0_a = attractor.get_grad(rob_ind_attr);
@@ -225,8 +279,7 @@ namespace gradplanner
 
   bool GradFieldController::is_direct_mode()
   {
-    // Check whether the robot is far enough from the nearest obstacle:
-    int vall = repulsive.get_val(rob_ind_rep);
+    // Check whether the robot is too close to an obstacle:
     if ((0 < repulsive.get_val(rob_ind_rep)) &&
         (repulsive.get_val(rob_ind_rep) < (min_obst_direct + 1))) 
       return false;

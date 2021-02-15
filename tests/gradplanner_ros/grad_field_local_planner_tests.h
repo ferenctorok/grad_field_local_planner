@@ -24,5 +24,4 @@ class GradFieldLocalPlannerTests : public CxxTest::TestSuite
 
   private:
     grad_field_local_planner::GradFieldPlannerROS planner;
-    costmap_2d::Costmap2DROS costmap_ros;
 };

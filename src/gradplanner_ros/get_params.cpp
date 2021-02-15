@@ -14,6 +14,9 @@ namespace grad_field_local_planner
       params.general.Ts = 1 / control_freq;
     }
 
+    if (ros::param::has("/move_base/local_costmap/resolution"))
+      ros::param::get("/move_base/local_costmap/resolution", params.general.cell_size);
+
     if (ros::param::has("/move_base/GradFieldPlannerROS/general/R"))
       ros::param::get("/move_base/GradFieldPlannerROS/general/R", params.general.R);
     
@@ -109,6 +112,7 @@ namespace grad_field_local_planner
     else
       safety_R = 0;
 
+
     // Printing summary:
     printSummary();
   }
@@ -128,6 +132,7 @@ namespace grad_field_local_planner
 
     // params //
     // general //
+    ROS_INFO_STREAM("- params.general.cell_size: " << params.general.cell_size);
     ROS_INFO_STREAM("- params.general.Ts: " << params.general.Ts);
     ROS_INFO_STREAM("- params.general.R: " << params.general.R);
     ROS_INFO_STREAM("- params.general.end_pos_tol: " << params.general.end_pos_tol);
@@ -159,7 +164,9 @@ namespace grad_field_local_planner
     // attractor //
     ROS_INFO_STREAM("- params.attractor.search_dir_8: " << params.attractor.search_dir_8);
 
+    // other //
     ROS_INFO_STREAM("- Safety inflation radius: " << safety_R);
+    ROS_INFO_STREAM("- Grid cell size: " << grid_size);
 
     ROS_INFO("--- GradFieldPlannerROS Summary End ---\n");
   }

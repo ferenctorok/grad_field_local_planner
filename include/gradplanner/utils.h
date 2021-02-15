@@ -34,6 +34,7 @@ namespace gradplanner
      */
     struct General
     {
+      double cell_size = 1.0; // The size of a grid cell in metres. Default: 1 [m]
       double Ts = 0.1; // Time step in seconds. Default: 0.1 [s]
       int R = 16; // Effective radius of the RepulsiveField in grid step. Default: 16 [grid cell]
       double end_pos_tol = 0.1; // Goal position tolerance in meters. Default: 0.1 [m]

@@ -55,13 +55,6 @@ namespace grad_field_local_planner
       initOccGrid(size_x_attr, size_y_attr, occ_grid_attr);
       initOccGrid(size_x_rep, size_y_rep, occ_grid_rep);
 
-      occ_grid_attr.resize(size_x_attr);
-      for(int i = 0; i < size_x_attr; i ++)
-      {
-        occ_grid_attr[i].resize(size_y_attr);
-        for(int j = 0; j < size_x_attr; j ++)
-          occ_grid_attr[i][j] = false;
-      }
       initialized = true;
     }      
   }
@@ -76,12 +69,54 @@ namespace grad_field_local_planner
   bool GradFieldPlannerROS::computeVelocityCommands(geometry_msgs::Twist& cmd_vel)
   {
     ROS_INFO("--- PUBLISHED CMD_VEL ---\n");
-    cmd_vel.linear.x = 0.0;
-    cmd_vel.linear.y = 0.0;
-    cmd_vel.linear.z = 0.0;
-    cmd_vel.angular.x = 0.0;
-    cmd_vel.angular.y = 0.0;
-    cmd_vel.angular.z = 0.0;
+    if (initialized)
+    {
+      // updating the occupancy grids based on the actual costmap from ROS:
+      updateOccGrids();
+
+      // updating the controller state with the most recent available:
+      controller.set_state(state);
+
+      // calculating the new goal:
+      goal_attr.x = state.x + (size_x_attr - 1) / 2;
+      goal_attr.y = state.y + (size_y_attr - 1) / 2;
+      goal_attr.psi = 0;
+
+      // setting the new goal to the controller and control:
+      if (controller.set_new_goal(goal_attr))
+      {
+        double v_x, omega;
+        if (controller.get_cmd_vel(v_x, omega))
+        {
+          cmd_vel.linear.x = v_x;
+          cmd_vel.linear.y = 0.0;
+          cmd_vel.linear.z = 0.0;
+          cmd_vel.angular.x = 0.0;
+          cmd_vel.angular.y = 0.0;
+          cmd_vel.angular.z = omega;
+          ROS_INFO("Set velocity commands!");
+          ROS_INFO_STREAM("v_x: " << v_x);
+          ROS_INFO_STREAM("omega: " << omega);
+        }
+        else
+        {
+          ROS_WARN("Cmd_vel calculation was unsuccessful!");
+          return false;
+        }
+      }
+      else
+      {
+        ROS_WARN("Setting the goal was unsuccessful!");
+        ROS_INFO_STREAM("robot is free: " << controller.robot_is_free());
+        ROS_INFO_STREAM("goal is reachable: " << controller.goal_is_reachable());
+        return false;
+      }
+    }
+    else
+    {
+      ROS_WARN("GradFieldPlannerROS is not initialized can not provide cmd_vel.");
+      return false;
+    }
 
     return true;
   }
@@ -96,11 +131,11 @@ namespace grad_field_local_planner
   void GradFieldPlannerROS::amclCallback(
     const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg)
   {
-    state.x = msg->pose.pose.position.x;
-    state.y = msg->pose.pose.position.y;
+    state.x = msg->pose.pose.position.x / grid_size;
+    state.y = msg->pose.pose.position.y / grid_size;
     state.psi = getYaw(msg);
 
-    ROS_INFO_STREAM("x: " << state.x);
+    /*ROS_INFO_STREAM("x: " << state.x);
     ROS_INFO_STREAM("y: " << state.y);
     ROS_INFO_STREAM("psi: " << state.psi);
 
@@ -113,6 +148,7 @@ namespace grad_field_local_planner
 
     ROS_INFO_STREAM("origin_x: " << costmap->getOriginX());
     ROS_INFO_STREAM("origin_y: " << costmap->getOriginY());
+    */
   }
 
 
@@ -153,7 +189,7 @@ namespace grad_field_local_planner
     for (int i = 0; i < size_x_attr; i ++)
       for (int j = 0; j < size_y_attr; j ++)
       {
-        if (costmap->getCost(i, j) == costmap_2d::LETHAL_OBSTACLE)
+        if (costmap->getCost(i, j) != costmap_2d::FREE_SPACE)
         {
           occ_grid_attr[i][j] == true;
           q.push(new int [2] {i, j});
@@ -193,5 +229,4 @@ namespace grad_field_local_planner
       for (int j = 0; j < size_y_rep; j ++)
         occ_grid_rep[i][j] = occ_grid_attr[i + x_diff][j + y_diff];
   }
-
 } // namespace grad_field_local_planner
