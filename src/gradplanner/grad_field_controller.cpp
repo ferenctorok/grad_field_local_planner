@@ -18,18 +18,6 @@ namespace gradplanner
     // setting up some member variables from the params:
     set_from_params();
 
-    /*
-    // Index where the robot is in the attractor field. (middle of the field.)
-    int x_attr = (attractor.get_size_x() - 1) / 2;
-    int y_attr = (attractor.get_size_y() - 1) / 2;
-    rob_ind_attr = Index(new int [2] {x_attr, y_attr});
-
-    // Index where the robot is in the repulsive field. (middle of the field.)
-    int x_rep = (repulsive.get_size_x() - 1) / 2;
-    int y_rep = (repulsive.get_size_y() - 1) / 2;
-    rob_ind_rep = Index(new int [2] {x_rep, y_rep});
-    */
-
     // calculating the deceleration distance:
     decel_distance = pow(max_trans_vel, 2) / (2 * decel_ratio * max_trans_acc);
   }
@@ -67,7 +55,9 @@ namespace gradplanner
 
   bool GradFieldController::set_state(const State& state,
                                       const double origin_x_attr,
-                                      const double origin_y_attr)
+                                      const double origin_y_attr,
+                                      const double origin_x_rep,
+                                      const double origin_y_rep)
   {
     // state in the global frame:
     this->state = state;
@@ -85,8 +75,8 @@ namespace gradplanner
 
     // calculating the state in the normalized coordinate frame of
     // the attractor field.
-    state_rep.x = state_attr.x - (attractor.get_size_x() - repulsive.get_size_x()) / 2;
-    state_rep.y = state_attr.y - (attractor.get_size_y() - repulsive.get_size_y()) / 2;
+    state_rep.x = (state.x - origin_x_rep) / cell_size;
+    state_rep.y = (state.y - origin_y_rep) / cell_size;
     state_rep.psi = state.psi;
 
     rob_ind_rep = Index(new int [2] {int(state_rep.x), int(state_rep.y)});
@@ -234,6 +224,7 @@ namespace gradplanner
       ind2_attr = Index(new int [2] {rob_ind_attr.get_x() - 1, rob_ind_attr.get_y()});
     }*/
 
+    // we choose the neighbouring pixels based on the position of the robot.
     if ((state_attr.x - rob_ind_attr.get_x()) > 0.5)
     {
       ind2_rep = Index(new int [2] {rob_ind_rep.get_x() + 1, rob_ind_rep.get_y()});
@@ -255,8 +246,6 @@ namespace gradplanner
       ind1_rep = Index(new int [2] {rob_ind_rep.get_x(), rob_ind_rep.get_y() - 1});
       ind1_attr = Index(new int [2] {rob_ind_attr.get_x(), rob_ind_attr.get_y() - 1});
     }
-
-    //ind1_rep = Index(new int [2] {})
 
     const double* g0_r = repulsive.get_grad(rob_ind_rep);
     const double* g0_a = attractor.get_grad(rob_ind_attr);

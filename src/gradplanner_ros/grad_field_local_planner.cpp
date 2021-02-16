@@ -67,8 +67,10 @@ namespace grad_field_local_planner
   }
 
 
-  bool GradFieldPlannerROS::setPlan(const std::vector<geometry_msgs::PoseStamped>& plan)
+  bool GradFieldPlannerROS::setPlan(const vector<geometry_msgs::PoseStamped>& plan)
   {
+    ROS_INFO_STREAM("plan frame: " << plan[0].header.frame_id);
+    plan_ptr = &plan;
     return true;
   }
 
@@ -78,14 +80,14 @@ namespace grad_field_local_planner
     if (initialized)
     {
       // updating the state and the origin of the attractor field:
-      geometry_msgs::PoseStamped rob_pose;
-      costmap_ros->getRobotPose(rob_pose);
-      state.x = rob_pose.pose.position.x;
-      state.y = rob_pose.pose.position.y;
-      state.psi = 0;
+      if (! getState())
+        return false;
+      
+      getOrigin();
 
-      origin_x_attr = costmap->getOriginX();
-      origin_y_attr = costmap->getOriginX();
+      // setting the actual goal based on the plan.
+      if (! getGoal())
+        return false;
 
       ROS_INFO_STREAM("x: " << state.x);
       ROS_INFO_STREAM("y: " << state.y);
@@ -94,13 +96,12 @@ namespace grad_field_local_planner
       ROS_INFO_STREAM("origin_x: " << origin_x_attr);
       ROS_INFO_STREAM("origin_y: " << origin_y_attr);
 
-
-
       // updating the occupancy grids based on the actual costmap from ROS:
       updateOccGrids();
 
       // updating the controller state with the most recent available:
-      if (controller.set_state(state, origin_x_attr, origin_y_attr))
+      if (controller.set_state(state, origin_x_attr, origin_y_attr,
+                               origin_x_rep, origin_y_rep))
       {
         // calculating the new goal:
         goal_attr.x = state.x + 1.5;
@@ -207,13 +208,13 @@ namespace grad_field_local_planner
 
 
   double GradFieldPlannerROS::getYaw(
-    const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg)
+    const geometry_msgs::PoseStamped* pose)
 	{
 		double q[4];
-		q[0]= msg->pose.pose.orientation.x;
-		q[1]= msg->pose.pose.orientation.y;
-		q[2]= msg->pose.pose.orientation.z;
-		q[3]= msg->pose.pose.orientation.w;
+		q[0]= pose->pose.orientation.x;
+		q[1]= pose->pose.orientation.y;
+		q[2]= pose->pose.orientation.z;
+		q[3]= pose->pose.orientation.w;
 
 		double t3 = +2.0 * (q[3] * q[2] + q[0] * q[1]);
 		double t4 = +1.0 - 2.0 * (q[1] * q[1] + q[2] * q[2]);  
@@ -285,5 +286,37 @@ namespace grad_field_local_planner
 
     // getting the actual origin of the attractor field:
     costmap->mapToWorld(0, 0, origin_x_attr, origin_y_attr);
+  }
+
+
+  bool GradFieldPlannerROS::getState()
+  {
+    if (costmap_ros->getRobotPose(rob_pose))
+    {
+      state.x = rob_pose.pose.position.x;
+      state.y = rob_pose.pose.position.y;
+      state.psi = getYaw(&rob_pose);
+      return true;
+    }
+    else
+      return false;
+  }
+
+
+  void GradFieldPlannerROS::getOrigin()
+  {
+    origin_x_attr = costmap->getOriginX();
+    origin_y_attr = costmap->getOriginX();
+  }
+
+
+  bool GradFieldPlannerROS::getGoal()
+  {
+    // TODO: transform the plan before finding the goal.
+    // now it only works if the plan and the costmap are in the same frame.
+    for (const auto& point: *plan_ptr)
+    {
+            
+    }
   }
 } // namespace grad_field_local_planner

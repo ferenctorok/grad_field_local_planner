@@ -105,6 +105,7 @@ namespace grad_field_local_planner
       costmap_2d::LayeredCostmap* lay_costmap;  // Pointer to the layered costmap.
       vector<boost::shared_ptr<costmap_2d::Layer> >* layers; // Pointer to the vector of layers.
       tf2_ros::Buffer* tf_buffer; // transform buffer
+      const vector<geometry_msgs::PoseStamped>* plan_ptr; // pointer to the plan.
 
       // Topics & Services
       ros::Subscriber amcl_sub; // subscribes to the amcl topic
@@ -116,12 +117,15 @@ namespace grad_field_local_planner
       gradplanner::ControlParams params;  // The parameters of the planner and the controller.
       double origin_x_attr; // The x coordinate of the origin of the attractor field.
       double origin_y_attr; // The y coordinate of the origin of the attractor field.
+      double origin_x_rep; // The x coordinate of the origin of the repulsive field.
+      double origin_y_rep; // The y coordinate of the origin of the repulsive field.
       unsigned int size_x_attr; // The x size of the attractive field.
       unsigned int size_y_attr; // The y size of the attractive field.
       unsigned int size_x_rep; // The x size of the repulsive field.
       unsigned int size_y_rep; // The y size of the repulsive field.
       double grid_size; // The size of a grid cell.
       int safety_R; // The radius to inflate the obstacles with so that the robot can be viewed as a point.
+      geometry_msgs::PoseStamped rob_pose; // The pose of the robot in the costmap.
       gradplanner::State state; // The state of the robot.
       gradplanner::Pose goal_attr; // The goal to give the attractor.
 
@@ -142,7 +146,7 @@ namespace grad_field_local_planner
        * @param msg the Pointer to the AMCL message
        * @return The Yaw orientation of the robot.
        */
-      double getYaw(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
+      double getYaw(const geometry_msgs::PoseStamped* pose);
 
       /**
        * @brief Initializes an occupancy grid and fills it up with false values.
@@ -158,6 +162,26 @@ namespace grad_field_local_planner
        * provided by ROS.
        */
       void updateOccGrids();
+
+      /**
+       * @brief Gets the state based on the ROS costmap.
+       * @return True if the state was updated successfuly.
+       */
+      bool getState();
+
+      /**
+       * @brief Gets the attractor field origin based on
+       * the ROS costmap.
+       */
+      void getOrigin();
+
+      /**
+       * @brief Gets the goal for the attractor field. The goal is
+       * the pose in the pose_plan, which is the furthest from the 
+       * robot but is still in the costmap.
+       * @return True if the goal was set successfuly.
+       */
+      bool getGoal();
   };
 
 } // namespace grad_field_local_planner
