@@ -290,8 +290,8 @@ namespace gradplanner
       double distance = get_length(goal_rel.x, goal_rel.y);
       double dx = goal_rel.x / distance;
       double dy = goal_rel.y / distance;
-      double x = rob_ind_rep.get_x() + 0.5;
-      double y = rob_ind_rep.get_y() + 0.5;
+      double x = state_rep.x;
+      double y = state_rep.y;
       
       for (int i = 1; i <= int(distance); i ++)
         if ((*occ_grid_rep)[int(x + i * dx)][int(y + i * dy)])

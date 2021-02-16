@@ -36,7 +36,7 @@ class GradFieldControllerTests: public CxxTest::TestSuite
 
       // state:
       state.x = 5.5;
-      state.y = 5.5;
+      state.y = 6.5;
       state.v = 1.0;
       state.psi = 0;
       state.omega = 0.0;
@@ -184,7 +184,7 @@ class GradFieldControllerTests: public CxxTest::TestSuite
       goal.x = 5.4;
       goal.y = 10.2;
       state.x = 5.2;
-      state.y = 5.7;
+      state.y = 6.7;
       state.psi = 2.5533; // The desired orientation will be around 2.6533
       controller.set_state(state, 0, 0);
       controller.set_new_goal(goal, 0, 0);
