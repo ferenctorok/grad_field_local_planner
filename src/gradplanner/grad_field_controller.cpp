@@ -22,6 +22,12 @@ namespace gradplanner
 
     // calculating the deceleration distance:
     decel_distance = pow(max_trans_vel, 2) / (2 * decel_ratio * max_trans_acc);
+
+    // initializing the difference between goal and state to be something bigger than the
+    // tolerance for the case when goal_is_reached() is called first without setting state and goal.
+    goal_rel.x = end_pos_tol * 2;
+    goal_rel.y = end_pos_tol * 2;
+    goal_rel.psi = end_ang_tol * 2;
   }
 
 
@@ -167,6 +173,12 @@ namespace gradplanner
     }
 
     return false;
+  }
+
+
+  bool GradFieldController::goal_is_reached()
+  {
+    return (goal_pos_reached() && goal_ang_reached());
   }
 
 

@@ -88,14 +88,6 @@ namespace grad_field_local_planner
        */
       bool isGoalReached();
 
-      /**
-       * @brief Amcl Callback. It is called every time a new pose estimate
-       * is available on the amcl_pose topic.
-       * @param Pointer to the received message
-       */
-      void amclCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
-
-
     private:
       bool initialized; // true if the object is already initialized.
 
@@ -106,9 +98,6 @@ namespace grad_field_local_planner
       vector<boost::shared_ptr<costmap_2d::Layer> >* layers; // Pointer to the vector of layers.
       tf2_ros::Buffer* tf_buffer; // transform buffer
       const vector<geometry_msgs::PoseStamped>* plan_ptr; // pointer to the plan.
-
-      // Topics & Services
-      ros::Subscriber amcl_sub; // subscribes to the amcl topic
 
       // Controller related
       gradplanner::GradFieldController controller;  // The gradient field based controller.

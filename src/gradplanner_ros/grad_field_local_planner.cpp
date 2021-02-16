@@ -45,13 +45,8 @@ namespace grad_field_local_planner
       // setting up some params mostly based on the parameter server:
       getParams();
 
-      ROS_INFO_STREAM("Costmap name: ");
       // create ROS node handler:
       ros::NodeHandle nh;
-
-      // subscribers and publishers:
-      amcl_sub = nh.subscribe("amcl_pose", 100,
-        &GradFieldPlannerROS::amclCallback, this);
 
       // initializing the occupancy grids:
       initOccGrid(size_x_attr, size_y_attr, occ_grid_attr);
@@ -139,6 +134,10 @@ namespace grad_field_local_planner
         ROS_INFO("Set velocity commands!");
         ROS_INFO_STREAM("v_x: " << v_x);
         ROS_INFO_STREAM("omega: " << omega);
+
+        // for now setting back the velocities in the state:
+        state.v = v_x;
+        state.omega = omega;
       }
       else
       {
@@ -165,46 +164,8 @@ namespace grad_field_local_planner
 
   bool GradFieldPlannerROS::isGoalReached()
   {
-    return false;
-  }
-
-
-  void GradFieldPlannerROS::amclCallback(
-    const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg)
-  {
-    /*state.x = msg->pose.pose.position.x;
-    state.y = msg->pose.pose.position.y;
-    state.psi = getYaw(msg);*/
-
-    // getting the origin of thecostmap attractor field:
-    // Unfortunatelly costmap->MapToWorld(0, 0, origin_x_attr, origin_y_attr)
-    // does not always work, since for example when setting initial
-    // position of the robot from rviz, the costmap is somehow not updated.
-    // Hence after setting the initial condition the origin would
-    // be placed incorrectly. This is why this complicated shit is needed.
-    /*int orig_x = costmap->getOriginX(); // relative to the 
-    int orig_y = costmap->getOriginY();
-
-    double x_grid, y_grid;
-    x_grid = floor(state.x / params.general.cell_size) * params.general.cell_size;
-    y_grid = floor(state.y / params.general.cell_size) * params.general.cell_size;
-
-    origin_x_attr = x_grid + orig_x * params.general.cell_size;
-    origin_y_attr = y_grid + orig_y * params.general.cell_size;*/
-
-    /*costmap->mapToWorld(0, 0, origin_x_attr, origin_y_attr);
-
-    ROS_INFO("--- AMCL CALLBACK ---");
-    ROS_INFO_STREAM("x: " << state.x);
-    ROS_INFO_STREAM("y: " << state.y);
-    ROS_INFO_STREAM("psi: " << state.psi);
-
-    ROS_INFO_STREAM("origin_x: " << origin_x_attr);
-    ROS_INFO_STREAM("origin_y: " << origin_y_attr);
-
-    ROS_INFO_STREAM("costmap_ros name: " << costmap_ros->getName());
-    ROS_INFO_STREAM("local frame id: " << costmap_ros->getBaseFrameID());
-    ROS_INFO_STREAM("global frame id: " << costmap_ros->getGlobalFrameID());*/
+    ROS_INFO_STREAM("GOAL IS REACHED");
+    return controller.goal_is_reached();
   }
 
 

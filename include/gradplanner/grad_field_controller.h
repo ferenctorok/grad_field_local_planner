@@ -87,6 +87,12 @@ namespace gradplanner
        */
       bool get_cmd_vel(double& v_x, double& omega);
 
+      /**
+       * @brief returns whether the goal is reached.
+       * @return True if the goal was reached.
+       */
+      bool goal_is_reached();
+
     private:
       vector<vector<bool >>* occ_grid_rep;  // occupancy grid.
       vector<vector<bool >>* occ_grid_attr;  // occupancy grid.
