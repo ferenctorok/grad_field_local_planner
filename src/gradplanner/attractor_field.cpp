@@ -1,5 +1,7 @@
 #include <gradplanner/attractor_field.h>
 
+#include <ros/ros.h>
+
 
 namespace gradplanner
 {

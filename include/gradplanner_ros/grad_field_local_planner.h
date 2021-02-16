@@ -127,7 +127,7 @@ namespace grad_field_local_planner
       int safety_R; // The radius to inflate the obstacles with so that the robot can be viewed as a point.
       geometry_msgs::PoseStamped rob_pose; // The pose of the robot in the costmap.
       gradplanner::State state; // The state of the robot.
-      gradplanner::Pose goal_attr; // The goal to give the attractor.
+      gradplanner::Pose goal; // The goal to give the attractor.
 
 
       /**
@@ -170,10 +170,10 @@ namespace grad_field_local_planner
       bool getState();
 
       /**
-       * @brief Gets the attractor field origin based on
-       * the ROS costmap.
+       * @brief Gets the attractor and repulsive field origins based on
+       * the ROS costmap and the robot position.
        */
-      void getOrigin();
+      void getOrigins();
 
       /**
        * @brief Gets the goal for the attractor field. The goal is

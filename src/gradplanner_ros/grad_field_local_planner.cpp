@@ -58,8 +58,13 @@ namespace grad_field_local_planner
       initOccGrid(size_x_rep, size_y_rep, occ_grid_rep);
 
       // initializing the controller:
+      /*
       controller = gradplanner::GradFieldController(&occ_grid_attr,
                                                     &occ_grid_rep,
+                                                    &params);
+      */
+      controller = gradplanner::GradFieldController(&occ_grid_attr,
+                                                    &occ_grid_attr,
                                                     &params);
 
       initialized = true;
@@ -83,7 +88,7 @@ namespace grad_field_local_planner
       if (! getState())
         return false;
       
-      getOrigin();
+      getOrigins();
 
       // setting the actual goal based on the plan.
       if (! getGoal())
@@ -96,61 +101,57 @@ namespace grad_field_local_planner
       ROS_INFO_STREAM("origin_x: " << origin_x_attr);
       ROS_INFO_STREAM("origin_y: " << origin_y_attr);
 
+      ROS_INFO_STREAM("goal.x: " << goal.x);
+      ROS_INFO_STREAM("goal.y: " << goal.y);
+      ROS_INFO_STREAM("goal.psi: " << goal.psi);
+
       // updating the occupancy grids based on the actual costmap from ROS:
       updateOccGrids();
+      for (auto& row: occ_grid_attr)
+        ROS_INFO_STREAM(row[0] << row[1] << row[2] << row[3] << row[4] << row[5]);
 
       // updating the controller state with the most recent available:
-      if (controller.set_state(state, origin_x_attr, origin_y_attr,
-                               origin_x_rep, origin_y_rep))
+      if (! controller.set_state(state, origin_x_attr, origin_y_attr,
+                                 origin_x_rep, origin_y_rep))
       {
-        // calculating the new goal:
-        goal_attr.x = state.x + 1.5;
-        goal_attr.y = state.y;
-        goal_attr.psi = 0;
+        ROS_WARN("Setting the state to the controller was unsuccessful!");
+        return false;
+      }
 
-        // setting the new goal to the controller and control:
-        if (controller.set_new_goal(goal_attr, origin_x_attr, origin_y_attr))
-        {
-          double v_x, omega;
-          if (controller.get_cmd_vel(v_x, omega))
-          {
-            cmd_vel.linear.x = v_x;
-            cmd_vel.linear.y = 0.0;
-            cmd_vel.linear.z = 0.0;
-            cmd_vel.angular.x = 0.0;
-            cmd_vel.angular.y = 0.0;
-            cmd_vel.angular.z = omega;
-            ROS_INFO("Set velocity commands!");
-            ROS_INFO_STREAM("v_x: " << v_x);
-            ROS_INFO_STREAM("omega: " << omega);
-          }
-          else
-          {
-            ROS_WARN("Cmd_vel calculation was unsuccessful!");
-            return false;
-          }
-        }
-        else
-        {
-          ROS_WARN("Setting the goal was unsuccessful!");
-          ROS_INFO_STREAM("robot is free: " << controller.robot_is_free());
-          ROS_INFO_STREAM("goal is reachable: " << controller.goal_is_reachable());
-          return false;
-        }
+      // setting the new goal to the controller and control:
+      if (! controller.set_new_goal(goal, origin_x_attr, origin_y_attr))
+      {
+        ROS_WARN("Setting the goal was unsuccessful!");
+        ROS_INFO_STREAM("robot is free: " << controller.robot_is_free());
+        ROS_INFO_STREAM("goal is reachable: " << controller.goal_is_reachable());
+        return false;
+      }
+
+      double v_x, omega;
+      if (controller.get_cmd_vel(v_x, omega))
+      {
+        cmd_vel.linear.x = v_x;
+        cmd_vel.linear.y = 0.0;
+        cmd_vel.linear.z = 0.0;
+        cmd_vel.angular.x = 0.0;
+        cmd_vel.angular.y = 0.0;
+        cmd_vel.angular.z = omega;
+        ROS_INFO("Set velocity commands!");
+        ROS_INFO_STREAM("v_x: " << v_x);
+        ROS_INFO_STREAM("omega: " << omega);
       }
       else
       {
-        ROS_WARN("Setting the state to the controller was unsuccessful!");
-
-        ROS_INFO_STREAM("x: " << state.x);
-        ROS_INFO_STREAM("y: " << state.y);
-        ROS_INFO_STREAM("psi: " << state.psi);
-
-        ROS_INFO_STREAM("origin_x: " << costmap->getOriginX());
-        ROS_INFO_STREAM("origin_y: " << costmap->getOriginY());
-
+        ROS_WARN("Cmd_vel calculation was unsuccessful!");
+        cmd_vel.linear.x = 0.0;
+        cmd_vel.linear.y = 0.0;
+        cmd_vel.linear.z = 0.0;
+        cmd_vel.angular.x = 0.0;
+        cmd_vel.angular.y = 0.0;
+        cmd_vel.angular.z = 0.0;
         return false;
       }
+      
     }
     else
     {
@@ -239,18 +240,20 @@ namespace grad_field_local_planner
   void GradFieldPlannerROS::updateOccGrids()
   {
     queue<int* > q;
-
+    
     // filling up the attractor field:
     for (int i = 0; i < size_x_attr; i ++)
       for (int j = 0; j < size_y_attr; j ++)
       {
         if (costmap->getCost(i, j) != costmap_2d::FREE_SPACE)
         {
-          occ_grid_attr[i][j] == true;
+          occ_grid_attr[i][j] = true;
           q.push(new int [2] {i, j});
         }
         else
-          occ_grid_attr[i][j] == false;
+        {
+          occ_grid_attr[i][j] = false;
+        }
       }
 
     // inflating the obstacles with the robot radius:
@@ -277,15 +280,16 @@ namespace grad_field_local_planner
     }
 
     // copying the relevant part to the repulsive occupancy grid:
+    // For now the attractor field has the same occupancy grid as the repulsive field.
+    // this is why it is commented out.
+    /*
     int x_diff = (size_x_attr - size_x_rep) / 2;
     int y_diff = (size_y_attr - size_y_rep) / 2;
 
     for (int i = 0; i < size_x_rep; i ++)
       for (int j = 0; j < size_y_rep; j ++)
         occ_grid_rep[i][j] = occ_grid_attr[i + x_diff][j + y_diff];
-
-    // getting the actual origin of the attractor field:
-    costmap->mapToWorld(0, 0, origin_x_attr, origin_y_attr);
+    */
   }
 
 
@@ -303,20 +307,44 @@ namespace grad_field_local_planner
   }
 
 
-  void GradFieldPlannerROS::getOrigin()
+  void GradFieldPlannerROS::getOrigins()
   {
+    // The attractor field origin matches with the costmap origin:
     origin_x_attr = costmap->getOriginX();
-    origin_y_attr = costmap->getOriginX();
+    origin_y_attr = costmap->getOriginY();
+
+    // The repulsive field is for now the same as the attractor field:
+    origin_x_rep = origin_x_attr;
+    origin_y_rep = origin_y_attr;
   }
 
 
   bool GradFieldPlannerROS::getGoal()
   {
+    if (plan_ptr->size() == 0)
+      return false;
+
     // TODO: transform the plan before finding the goal.
     // now it only works if the plan and the costmap are in the same frame.
-    for (const auto& point: *plan_ptr)
+    geometry_msgs::PoseStamped candidate;
+    unsigned int mx, my;
+
+    for (int i = 0; i < plan_ptr->size(); i ++)
     {
-            
+      candidate = (*plan_ptr)[i];
+      costmap->worldToMap(candidate.pose.position.x, candidate.pose.position.y, mx, my);
+      if ((mx == 0) || (mx == (size_x_attr - 1)) ||
+          (my == 0) || (my == (size_y_attr - 1)))
+        break;
     }
+
+    ROS_INFO_STREAM("mx: " << mx);
+    ROS_INFO_STREAM("my: " << my);
+
+    goal.x = candidate.pose.position.x;
+    goal.y = candidate.pose.position.y;
+    goal.psi = getYaw(&candidate);
+
+    return true;
   }
 } // namespace grad_field_local_planner

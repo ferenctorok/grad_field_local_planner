@@ -75,32 +75,30 @@ namespace grad_field_local_planner
 
     // Attractor field sizes:
     size_x_attr = costmap->getSizeInCellsX();
-    // the size should be odd:
-    if ((size_x_attr / 2) == ((size_x_attr + 1) / 2))
-      size_x_attr --;
-    
-    if (ros::param::has("/move_base/GradFieldPlannerROS/attractor/size_y"))
     size_y_attr = costmap->getSizeInCellsY();
-    // the size should be odd:
-    if ((size_y_attr / 2) == ((size_y_attr + 1) / 2))
-      size_y_attr --;
 
 
     // Repulsive field sizes:
     // It's enough for the repulsive field to see every obstacle that is within
     // the effective radius. The others will don't have an effect anyways.
-    size_x_rep = 2 * params.general.R + 3;
+    /*
+    size_x_rep = 2 * params.general.R + 2;
     if (size_x_rep > size_x_attr)
     {
       size_x_rep = size_y_attr;
       ROS_WARN("Had to resize repulsive field size in x direction because it was bigger than the occupancy grid.");
     }
-    size_y_rep = 2 * params.general.R + 3;
+    size_y_rep = 2 * params.general.R + 2;
     if (size_y_rep > size_y_attr)
     {
       size_y_rep = size_y_attr;
       ROS_WARN("Had to resize repulsive field size in y direction because it was bigger than the occupancy grid.");
     }
+    */
+
+    // For now the repulsive and the attractor fields have the same size:
+    size_x_rep = size_x_attr;
+    size_y_rep = size_y_attr;
 
     // The inflation radius:
     if (ros::param::has("/move_base/local_costmap/robot_radius"))

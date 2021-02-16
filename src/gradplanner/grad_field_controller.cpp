@@ -5,6 +5,8 @@
 
 using namespace std;
 
+#include <ros/ros.h>
+
 
 namespace gradplanner
 {
@@ -81,7 +83,8 @@ namespace gradplanner
 
     rob_ind_rep = Index(new int [2] {int(state_rep.x), int(state_rep.y)});
 
-    return repulsive.is_valid_index(rob_ind_rep);
+    return attractor.is_valid_index(rob_ind_attr) && 
+           repulsive.is_valid_index(rob_ind_rep);
   }
 
 
