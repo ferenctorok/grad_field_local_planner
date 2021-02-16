@@ -120,15 +120,13 @@ namespace grad_field_local_planner
 
   void GradFieldPlannerROS::printSummary()
   {
-    ROS_INFO("");
-    ROS_INFO("--- GradFieldPlannerROS Summary Begin ---");
+    ROS_INFO_STREAM(std::endl << "--- GradFieldPlannerROS Summary Begin ---");
 
     // Gradient field sizes:
     ROS_INFO_STREAM("- size_x_attr: " << size_x_attr);
     ROS_INFO_STREAM("- size_y_attr: " << size_y_attr);
     ROS_INFO_STREAM("- size_x_rep: " << size_x_rep);
-    ROS_INFO_STREAM("- size_y_rep: " << size_y_rep);
-    ROS_INFO("");
+    ROS_INFO_STREAM("- size_y_rep: " << size_y_rep << std::endl);
 
     // params //
     // general //
@@ -141,32 +139,27 @@ namespace grad_field_local_planner
     ROS_INFO_STREAM("- params.general.max_trans_acc: " << params.general.max_trans_acc);
     ROS_INFO_STREAM("- params.general.max_ang_vel: " << params.general.max_ang_vel);
     ROS_INFO_STREAM("- params.general.max_ang_acc: " << params.general.max_ang_acc);
-    ROS_INFO_STREAM("- params.general.decel_ratio: " << params.general.decel_ratio);
-    ROS_INFO("");
+    ROS_INFO_STREAM("- params.general.decel_ratio: " << params.general.decel_ratio << std::endl);
 
     // grad_mode //
     ROS_INFO_STREAM("- params.grad_mode.K: " << params.grad_mode.K);
     ROS_INFO_STREAM("- params.grad_mode.boundary_error: " << params.grad_mode.boundary_error);
-    ROS_INFO_STREAM("- params.grad_mode.max_error: " << params.grad_mode.max_error);
-    ROS_INFO("");
+    ROS_INFO_STREAM("- params.grad_mode.max_error: " << params.grad_mode.max_error << std::endl);
 
     // direct_mode //
     ROS_INFO_STREAM("- params.direct_mode.min_obst_dist: " << params.direct_mode.min_obst_dist);
     ROS_INFO_STREAM("- params.direct_mode.K: " << params.direct_mode.K);
     ROS_INFO_STREAM("- params.direct_mode.boundary_error: " << params.direct_mode.boundary_error);
-    ROS_INFO_STREAM("- params.direct_mode.max_error: " << params.direct_mode.max_error);
-    ROS_INFO("");
+    ROS_INFO_STREAM("- params.direct_mode.max_error: " << params.direct_mode.max_error << std::endl);
 
     // end mode //
-    ROS_INFO_STREAM("- params.end_mode.K: " << params.end_mode.K);
-    ROS_INFO("");
+    ROS_INFO_STREAM("- params.end_mode.K: " << params.end_mode.K << std::endl);
 
     // attractor //
     ROS_INFO_STREAM("- params.attractor.search_dir_8: " << params.attractor.search_dir_8);
 
     // other //
-    ROS_INFO_STREAM("- Safety inflation radius: " << safety_R);
-    ROS_INFO_STREAM("- Grid cell size: " << grid_size);
+    ROS_INFO_STREAM("- Safety inflation radius: " << safety_R << std::endl);
 
     ROS_INFO("--- GradFieldPlannerROS Summary End ---\n");
   }

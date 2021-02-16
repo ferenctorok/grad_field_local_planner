@@ -113,7 +113,9 @@ namespace grad_field_local_planner
       gradplanner::GradFieldController controller;  // The gradient field based controller.
       vector<vector<bool >> occ_grid_attr;  // The occupancy grid of the attractor field.
       vector<vector<bool >> occ_grid_rep;   // The occupancy grid of the repulsive field.
-      gradplanner::ControlParams params;  // The parameters of the planner and the controller.  
+      gradplanner::ControlParams params;  // The parameters of the planner and the controller.
+      double origin_x_attr; // The x coordinate of the origin of the attractor field.
+      double origin_y_attr; // The y coordinate of the origin of the attractor field.
       unsigned int size_x_attr; // The x size of the attractive field.
       unsigned int size_y_attr; // The y size of the attractive field.
       unsigned int size_x_rep; // The x size of the repulsive field.

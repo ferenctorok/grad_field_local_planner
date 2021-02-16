@@ -45,8 +45,9 @@ namespace gradplanner
        * @param state the State to set.
        * @param origin_x_attr The x coordinate of the origin of the attractor field.
        * @param origin_y_attr The y coordinate of the origin of the attractor field.
+       * @return True if the state that was given is a valid state.
        */
-      void set_state(const State& state,
+      bool set_state(const State& state,
                      const double origin_x_attr,
                      const double origin_y_attr);
 

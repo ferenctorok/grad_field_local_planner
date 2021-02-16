@@ -86,6 +86,15 @@ namespace gradplanner
       virtual void update_field() = 0;
 
       /**
+       * @brief Returns whether a given index is valid for indexing
+       * this gradient field.
+       * @param ind Index to be checked.
+       * @return True if the index is valid, that is, it points to within
+       * the boarders of the gradient field.
+       */
+      bool is_valid_index(const Index& ind);
+
+      /**
        * @brief Returns a 2D vector (Matrix) that contains the values of
        * The Pixels in the field. Mostly for testing purposes.
        */

@@ -105,4 +105,9 @@ namespace gradplanner
 
     return out;
   }
+
+  bool GradFieldBase::is_valid_index(const Index& ind)
+  {
+    return field.is_valid_index(ind);
+  }
 } //namespace gradplanner

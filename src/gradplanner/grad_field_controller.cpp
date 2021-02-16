@@ -65,7 +65,7 @@ namespace gradplanner
   }
 
 
-  void GradFieldController::set_state(const State& state,
+  bool GradFieldController::set_state(const State& state,
                                       const double origin_x_attr,
                                       const double origin_y_attr)
   {
@@ -90,6 +90,8 @@ namespace gradplanner
     state_rep.psi = state.psi;
 
     rob_ind_rep = Index(new int [2] {int(state_rep.x), int(state_rep.y)});
+
+    return repulsive.is_valid_index(rob_ind_rep);
   }
 
 
