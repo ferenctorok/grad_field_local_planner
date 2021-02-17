@@ -1,0 +1,21 @@
+obstacle_range: 3.0
+raytrace_range: 3.5
+
+footprint: [[-0.205, -0.155], [-0.205, 0.155], [0.077, 0.155], [0.077, -0.155]]
+#robot_radius: 0.17
+
+inflation_radius: 1.0
+cost_scaling_factor: 3.0
+
+# For default layered costmap configuration: (if plugins are provided, it is not used)
+#map_type: costmap
+
+# observation source definitions: #
+# global obs source, that could be used by any layer if other is not provided:
+observation_sources: scan
+scan: {sensor_frame: base_scan, data_type: LaserScan, topic: scan, marking: true, clearing: true}
+
+# observation source definition of the custom obstacle layer:
+obstacle_layer:
+  observation_sources: scan
+  scan: {sensor_frame: base_scan, data_type: LaserScan, topic: scan, marking: true, clearing: true}

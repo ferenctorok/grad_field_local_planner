@@ -110,6 +110,16 @@ namespace grad_field_local_planner
     else
       safety_R = 0;
 
+    // debug //
+    if (ros::param::has("/move_base/GradFieldPlannerROS/debug/publish_occ_grid"))
+      ros::param::get("/move_base/GradFieldPlannerROS/debug/publish_occ_grid", publish_occ_grid);
+    else
+      publish_occ_grid = false; // Default
+    
+    if (ros::param::has("/move_base/GradFieldPlannerROS/debug/publish_grad_field"))
+      ros::param::get("/move_base/GradFieldPlannerROS/debug/publish_grad_field", publish_grad_field);
+    else
+      publish_grad_field = false; // Default
 
     // Printing summary:
     printSummary();
@@ -154,10 +164,14 @@ namespace grad_field_local_planner
     ROS_INFO_STREAM("- params.end_mode.K: " << params.end_mode.K << std::endl);
 
     // attractor //
-    ROS_INFO_STREAM("- params.attractor.search_dir_8: " << params.attractor.search_dir_8);
+    ROS_INFO_STREAM("- params.attractor.search_dir_8: " << params.attractor.search_dir_8 << std::endl);
 
     // other //
     ROS_INFO_STREAM("- Safety inflation radius: " << safety_R << std::endl);
+
+    // debug //
+    ROS_INFO_STREAM("- publish_occ_grid: " << publish_occ_grid);
+    ROS_INFO_STREAM("- publish_grad_field: " << publish_grad_field << std::endl);
 
     ROS_INFO("--- GradFieldPlannerROS Summary End ---\n");
   }

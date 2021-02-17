@@ -49,6 +49,20 @@ namespace grad_field_local_planner
       // create ROS node handler:
       ros::NodeHandle nh;
 
+      // creating publishers:
+      if (publish_occ_grid)
+      {
+        occ_grid_publisher = nh.advertise<nav_msgs::OccupancyGrid >(
+          "/grad_field_local_planner/occ_grid", 1);
+      }
+
+      if (publish_grad_field)
+      {
+        grad_field_publisher = nh.advertise<geometry_msgs::PoseArray >(
+          "/grad_field_local_planner/grad_field", 1);
+      }
+        
+
       // initializing the occupancy grids:
       initOccGrid(size_x_attr, size_y_attr, occ_grid_attr);
       initOccGrid(size_x_rep, size_y_rep, occ_grid_rep);
@@ -102,6 +116,10 @@ namespace grad_field_local_planner
 
     // updating the occupancy grids based on the actual costmap from ROS:
     updateOccGrids();
+
+    // publishing the inflated occupancy grid when needed:
+    if (publish_occ_grid)
+      publishOccGrid();
 
     // updating the controller state:
     if (! controller.set_state(state, origin_x_attr, origin_y_attr,
@@ -313,5 +331,39 @@ namespace grad_field_local_planner
     goal.psi = getYaw(&candidate);
 
     return true;
+  }
+
+
+  void GradFieldPlannerROS::publishOccGrid()
+  {
+    nav_msgs::OccupancyGrid::Ptr msg(new nav_msgs::OccupancyGrid);
+
+    // filling up the header:
+    msg->header.frame_id = costmap_ros->getBaseFrameID();
+
+    // filling up the meta data:
+    msg->info.resolution = params.general.cell_size;
+    msg->info.height = size_x_attr;
+    msg->info.width = size_y_attr;
+    msg->info.origin.position.x = origin_x_attr;
+    msg->info.origin.position.y = origin_y_attr;
+
+    for (int i = 0; i < size_x_attr; i ++)
+      for (int j = 0; j < size_y_attr; j ++)
+      {
+        if (occ_grid_attr[i][j])
+          msg->data.push_back(100);
+        else
+          msg->data.push_back(0);
+      }
+
+    // publishing:
+    occ_grid_publisher.publish(msg);
+  }
+
+
+  void GradFieldPlannerROS::publishGradField()
+  {
+
   }
 } // namespace grad_field_local_planner

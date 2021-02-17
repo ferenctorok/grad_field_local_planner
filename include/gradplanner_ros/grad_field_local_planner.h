@@ -26,6 +26,8 @@ using namespace std;
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <geometry_msgs/PoseArray.h>
+#include <nav_msgs/OccupancyGrid.h>
 
 // costmap & geometry
 #include <costmap_2d/costmap_2d_ros.h>
@@ -99,6 +101,10 @@ namespace grad_field_local_planner
       tf2_ros::Buffer* tf_buffer; // transform buffer
       const vector<geometry_msgs::PoseStamped>* plan_ptr; // pointer to the plan.
 
+      // Publishers:
+      ros::Publisher occ_grid_publisher;  // The occupancy grid publisher.
+      ros::Publisher grad_field_publisher;  // The gradient field publisher.
+
       // Controller related
       gradplanner::GradFieldController controller;  // The gradient field based controller.
       vector<vector<bool >> occ_grid_attr;  // The occupancy grid of the attractor field.
@@ -119,6 +125,9 @@ namespace grad_field_local_planner
       gradplanner::Pose goal; // The goal to give the attractor.
       bool goal_is_reached; // Is set to true if the goal has been reached. Then it is set back to false by isGoalReached().
 
+      // for debugging:
+      bool publish_occ_grid;  // whether to publish the inflated occupancy grid on a ROS topic.
+      bool publish_grad_field;  // whether to publish the gradient field on a ROS topic.
 
       /**
        * @brief Sets up the variables based on the parameter server.
@@ -172,8 +181,17 @@ namespace grad_field_local_planner
        * @return True if the goal was set successfuly.
        */
       bool getGoal();
-  };
 
+      /**
+       * @brief Publishes the inflated occupancy grid to a ROS topic.
+       */
+      void publishOccGrid();
+
+      /**
+       * @brief Publishes the gradient field to a ROS topic.
+       */
+      void publishGradField();
+  };
 } // namespace grad_field_local_planner
 
 
