@@ -21,6 +21,8 @@ using namespace std;
 // tf_2:
 #include <tf2_ros/transform_listener.h>
 #include <tf2_ros/buffer.h>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 // msgs:
 #include <geometry_msgs/Twist.h>

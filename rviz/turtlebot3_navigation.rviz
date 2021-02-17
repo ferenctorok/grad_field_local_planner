@@ -12,6 +12,7 @@ Panels:
         - /Local Map1/Polygon1
         - /Local Map1/Costmap1
         - /Local Map1/Planner1
+        - /Gradient Field1
       Splitter Ratio: 0.5
     Tree Height: 794
   - Class: rviz/Selection
@@ -357,7 +358,7 @@ Visualization Manager:
       Use Timestamp: false
       Value: true
     - Alpha: 1
-      Arrow Length: 0.30000001192092896
+      Arrow Length: 0.05000000074505806
       Axes Length: 0.30000001192092896
       Axes Radius: 0.009999999776482582
       Class: rviz/PoseArray
@@ -405,7 +406,7 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 100
+      Scale: 176.23416137695312
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz)
       X: 0

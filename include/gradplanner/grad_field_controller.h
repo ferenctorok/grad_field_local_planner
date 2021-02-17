@@ -93,6 +93,14 @@ namespace gradplanner
        */
       bool goal_is_reached();
 
+      /**
+       * @brief Gets the compined gradient at a given position.
+       * @param x The x grid coordinate of the cell from where we need the gradient.
+       * @param y The y grid coordinate of the cell from where we need the gradient.
+       * @return Returns the gradient at the given position.
+       */
+      double* get_grad(const unsigned int x, const unsigned int y);
+
     private:
       vector<vector<bool >>* occ_grid_rep;  // occupancy grid.
       vector<vector<bool >>* occ_grid_attr;  // occupancy grid.

@@ -155,6 +155,11 @@ namespace grad_field_local_planner
 
       // checking whether the goal was reached:
       goal_is_reached = controller.goal_is_reached();
+
+      // publish gradient fields:
+      if (publish_grad_field)
+        publishGradField();
+      
       return true;
     }
     else
@@ -340,7 +345,6 @@ namespace grad_field_local_planner
 
     // filling up the header:
     msg->header.frame_id = costmap_ros->getGlobalFrameID();
-    ROS_INFO_STREAM("global frame: " << costmap_ros->getGlobalFrameID());
 
     // filling up the meta data:
     msg->info.resolution = params.general.cell_size;
@@ -365,6 +369,37 @@ namespace grad_field_local_planner
 
   void GradFieldPlannerROS::publishGradField()
   {
+    geometry_msgs::PoseArray::Ptr msg(new geometry_msgs::PoseArray);
 
+    // filling up the header:
+    msg->header.frame_id = costmap_ros->getGlobalFrameID();
+
+    // filling up the data:
+    double* grad;
+    geometry_msgs::Pose p;
+    tf2::Quaternion q;
+    double cell_size = params.general.cell_size;
+
+    for (unsigned int i = 0; i < size_x_attr; i ++)
+      for (unsigned int j = 0; j < size_y_attr; j ++)
+      {
+        grad = controller.get_grad(i, j);
+        if ((grad[0] != 0) || grad[1] != 0)
+        {
+          p.position.x = origin_x_attr + i * cell_size + cell_size / 2;
+          p.position.y = origin_y_attr + j * cell_size + cell_size / 2;
+          p.position.z = 0;
+
+          // calculating the quaternion representation from RPY:
+          q.setRPY(0, 0, atan2(grad[1], grad[0]));
+          p.orientation = tf2::toMsg(q);
+
+          // pushing it into the message:
+          msg->poses.push_back(p);
+        }
+      }
+
+    // Publishing the message:
+    grad_field_publisher.publish(msg);
   }
 } // namespace grad_field_local_planner

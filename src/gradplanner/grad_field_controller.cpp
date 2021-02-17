@@ -369,4 +369,23 @@ namespace gradplanner
 
     return v_x;
   }
+
+
+  double* GradFieldController::get_grad(const unsigned int x,
+                                        const unsigned int y)
+  {
+    double* grad = new double [2]{0, 0};
+    const double* grad_attr = attractor.get_grad(x, y);
+    const double* grad_rep = repulsive.get_grad(x, y);
+
+    grad[0] = grad_attr[0] + grad_rep[0];
+    grad[1] = grad_attr[1] + grad_rep[1];
+
+    double l = get_length(grad);
+    double eps = 1e-5;
+    grad[0] /= (l + eps);
+    grad[1] /= (l + eps);
+
+    return grad;
+  }
 } // namespace gradplanner
