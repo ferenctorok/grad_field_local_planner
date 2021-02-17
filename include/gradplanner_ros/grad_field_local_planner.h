@@ -83,7 +83,7 @@ namespace grad_field_local_planner
       bool computeVelocityCommands(geometry_msgs::Twist& cmd_vel);
 
       /**
-       * @brief  Check if the goal pose has been achieved by the local planner.
+       * @brief  Checks if the goal pose has been achieved by the local planner.
        * @return True if achieved, false otherwise
        */
       bool isGoalReached();
@@ -117,6 +117,7 @@ namespace grad_field_local_planner
       geometry_msgs::PoseStamped rob_pose; // The pose of the robot in the costmap.
       gradplanner::State state; // The state of the robot.
       gradplanner::Pose goal; // The goal to give the attractor.
+      bool goal_is_reached; // Is set to true if the goal has been reached. Then it is set back to false by isGoalReached().
 
 
       /**

@@ -41,6 +41,7 @@ namespace grad_field_local_planner
       lay_costmap = costmap_ros->getLayeredCostmap();
       layers = lay_costmap->getPlugins();
       tf_buffer = tf_buffer_;
+      goal_is_reached = false;
 
       // setting up some params mostly based on the parameter server:
       getParams();
@@ -69,7 +70,12 @@ namespace grad_field_local_planner
 
   bool GradFieldPlannerROS::setPlan(const vector<geometry_msgs::PoseStamped>& plan)
   {
-    ROS_INFO_STREAM("plan frame: " << plan[0].header.frame_id);
+    if (! initialized)
+    {
+      ROS_ERROR("Could not set goal, because the planner has not been initialized.");
+      return false;
+    }
+    // ROS_INFO("New plan has been set to GradFieldPlannerROS.");
     plan_ptr = &plan;
     return true;
   }
@@ -77,95 +83,98 @@ namespace grad_field_local_planner
 
   bool GradFieldPlannerROS::computeVelocityCommands(geometry_msgs::Twist& cmd_vel)
   {
-    if (initialized)
+    if (! initialized)
     {
-      // updating the state and the origin of the attractor field:
-      if (! getState())
-        return false;
-      
-      getOrigins();
-
-      // setting the actual goal based on the plan.
-      if (! getGoal())
-        return false;
-
-      ROS_INFO_STREAM("x: " << state.x);
-      ROS_INFO_STREAM("y: " << state.y);
-      ROS_INFO_STREAM("psi: " << state.psi);
-
-      ROS_INFO_STREAM("origin_x: " << origin_x_attr);
-      ROS_INFO_STREAM("origin_y: " << origin_y_attr);
-
-      ROS_INFO_STREAM("goal.x: " << goal.x);
-      ROS_INFO_STREAM("goal.y: " << goal.y);
-      ROS_INFO_STREAM("goal.psi: " << goal.psi);
-
-      // updating the occupancy grids based on the actual costmap from ROS:
-      updateOccGrids();
-      for (auto& row: occ_grid_attr)
-        ROS_INFO_STREAM(row[0] << row[1] << row[2] << row[3] << row[4] << row[5]);
-
-      // updating the controller state with the most recent available:
-      if (! controller.set_state(state, origin_x_attr, origin_y_attr,
-                                 origin_x_rep, origin_y_rep))
-      {
-        ROS_WARN("Setting the state to the controller was unsuccessful!");
-        return false;
-      }
-
-      // setting the new goal to the controller and control:
-      if (! controller.set_new_goal(goal, origin_x_attr, origin_y_attr))
-      {
-        ROS_WARN("Setting the goal was unsuccessful!");
-        ROS_INFO_STREAM("robot is free: " << controller.robot_is_free());
-        ROS_INFO_STREAM("goal is reachable: " << controller.goal_is_reachable());
-        return false;
-      }
-
-      double v_x, omega;
-      if (controller.get_cmd_vel(v_x, omega))
-      {
-        cmd_vel.linear.x = v_x;
-        cmd_vel.linear.y = 0.0;
-        cmd_vel.linear.z = 0.0;
-        cmd_vel.angular.x = 0.0;
-        cmd_vel.angular.y = 0.0;
-        cmd_vel.angular.z = omega;
-        ROS_INFO("Set velocity commands!");
-        ROS_INFO_STREAM("v_x: " << v_x);
-        ROS_INFO_STREAM("omega: " << omega);
-
-        // for now setting back the velocities in the state:
-        state.v = v_x;
-        state.omega = omega;
-      }
-      else
-      {
-        ROS_WARN("Cmd_vel calculation was unsuccessful!");
-        cmd_vel.linear.x = 0.0;
-        cmd_vel.linear.y = 0.0;
-        cmd_vel.linear.z = 0.0;
-        cmd_vel.angular.x = 0.0;
-        cmd_vel.angular.y = 0.0;
-        cmd_vel.angular.z = 0.0;
-        return false;
-      }
-      
-    }
-    else
-    {
-      ROS_WARN("GradFieldPlannerROS is not initialized can not provide cmd_vel.");
+      ROS_ERROR("GradFieldPlannerROS has not been initialized, so could not call computeVelocityCommands()");
       return false;
     }
 
-    return true;
+    // updating the state and the origin of the attractor field:
+    if (! getState())
+      return false;
+
+    // setting the actual goal based on the plan.
+    if (! getGoal())
+      return false;
+    
+    // getting the origins of the occupancy grids:
+    getOrigins();
+
+    // updating the occupancy grids based on the actual costmap from ROS:
+    updateOccGrids();
+
+    // updating the controller state:
+    if (! controller.set_state(state, origin_x_attr, origin_y_attr,
+                                origin_x_rep, origin_y_rep))
+    {
+      ROS_WARN("Setting the state to the controller was unsuccessful!");
+      return false;
+    }
+
+    // setting the new goal to the controller:
+    if (! controller.set_new_goal(goal, origin_x_attr, origin_y_attr))
+    {
+      ROS_WARN("Setting the goal was unsuccessful!");
+      ROS_INFO_STREAM("robot is free: " << controller.robot_is_free());
+      ROS_INFO_STREAM("goal is reachable: " << controller.goal_is_reachable());
+      return false;
+    }
+
+    // calculating the command velocities:
+    double v_x, omega;
+    if (controller.get_cmd_vel(v_x, omega))
+    {
+      cmd_vel.linear.x = v_x;
+      cmd_vel.linear.y = 0.0;
+      cmd_vel.linear.z = 0.0;
+      cmd_vel.angular.x = 0.0;
+      cmd_vel.angular.y = 0.0;
+      cmd_vel.angular.z = omega;
+
+      // for now setting back the velocities in the state:
+      state.v = v_x;
+      state.omega = omega;
+
+      // checking whether the goal was reached:
+      goal_is_reached = controller.goal_is_reached();
+      return true;
+    }
+    else
+    {
+      ROS_WARN("Cmd_vel calculation was unsuccessful!");
+      cmd_vel.linear.x = 0.0;
+      cmd_vel.linear.y = 0.0;
+      cmd_vel.linear.z = 0.0;
+      cmd_vel.angular.x = 0.0;
+      cmd_vel.angular.y = 0.0;
+      cmd_vel.angular.z = 0.0;
+
+      // for now setting back the velocities in the state:
+      state.v = v_x;
+      state.omega = omega;
+
+      return false;
+    }
   }
 
 
   bool GradFieldPlannerROS::isGoalReached()
   {
-    ROS_INFO_STREAM("GOAL IS REACHED");
-    return controller.goal_is_reached();
+    if (! initialized)
+    {
+      ROS_ERROR("GradFieldPlannerROS has not been initialized, so could not call isGoalReached().");
+      return false;
+    }
+
+    if (goal_is_reached)
+    {
+      ROS_INFO("GOAL IS REACHED");
+      // has to be set back, or else it is not possible to set a new goal.
+      goal_is_reached = false;
+      return true;
+    }
+
+    return false;
   }
 
 
@@ -298,9 +307,6 @@ namespace grad_field_local_planner
           (my == 0) || (my == (size_y_attr - 1)))
         break;
     }
-
-    ROS_INFO_STREAM("mx: " << mx);
-    ROS_INFO_STREAM("my: " << my);
 
     goal.x = candidate.pose.position.x;
     goal.y = candidate.pose.position.y;
