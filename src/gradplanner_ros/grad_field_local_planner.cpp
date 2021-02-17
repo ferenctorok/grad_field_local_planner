@@ -64,7 +64,7 @@ namespace grad_field_local_planner
 
       if (publish_des_orient)
       {
-        des_orient_publisher = nh.advertise<geometry_msgs::Pose >(
+        des_orient_publisher = nh.advertise<geometry_msgs::PoseStamped >(
           "/grad_field_local_planner/des_orient", 1);
       }
         
@@ -417,16 +417,20 @@ namespace grad_field_local_planner
   void GradFieldPlannerROS::publishDesOrient()
   {
     double des_orient = controller.get_desired_orientation();
-    geometry_msgs::Pose::Ptr p(new geometry_msgs::Pose);
+    geometry_msgs::PoseStamped::Ptr p(new geometry_msgs::PoseStamped);
     tf2::Quaternion q;
 
-    p->position.x = state.x;
-    p->position.y = state.y;
-    p->position.z = 0;
+    // setting up the header:
+    p->header.frame_id = costmap_ros->getGlobalFrameID();
+
+    // setting up the data:
+    p->pose.position.x = state.x;
+    p->pose.position.y = state.y;
+    p->pose.position.z = 0;
     
     // creating the quaternion from RPY angles:
     q.setRPY(0, 0, des_orient);
-    p->orientation = tf2::toMsg(q);
+    p->pose.orientation = tf2::toMsg(q);
 
     // Publishing the message:
     des_orient_publisher.publish(p);
