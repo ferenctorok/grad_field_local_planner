@@ -339,7 +339,8 @@ namespace grad_field_local_planner
     nav_msgs::OccupancyGrid::Ptr msg(new nav_msgs::OccupancyGrid);
 
     // filling up the header:
-    msg->header.frame_id = costmap_ros->getBaseFrameID();
+    msg->header.frame_id = costmap_ros->getGlobalFrameID();
+    ROS_INFO_STREAM("global frame: " << costmap_ros->getGlobalFrameID());
 
     // filling up the meta data:
     msg->info.resolution = params.general.cell_size;
@@ -348,8 +349,8 @@ namespace grad_field_local_planner
     msg->info.origin.position.x = origin_x_attr;
     msg->info.origin.position.y = origin_y_attr;
 
-    for (int i = 0; i < size_x_attr; i ++)
-      for (int j = 0; j < size_y_attr; j ++)
+    for (int j = 0; j < size_y_attr; j ++)
+      for (int i = 0; i < size_x_attr; i ++)
       {
         if (occ_grid_attr[i][j])
           msg->data.push_back(100);
