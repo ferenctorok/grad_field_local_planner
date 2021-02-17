@@ -106,6 +106,7 @@ namespace grad_field_local_planner
       // Publishers:
       ros::Publisher occ_grid_publisher;  // The occupancy grid publisher.
       ros::Publisher grad_field_publisher;  // The gradient field publisher.
+      ros::Publisher des_orient_publisher;  // The desired orientation publisher.
 
       // Controller related
       gradplanner::GradFieldController controller;  // The gradient field based controller.
@@ -130,6 +131,7 @@ namespace grad_field_local_planner
       // for debugging:
       bool publish_occ_grid;  // whether to publish the inflated occupancy grid on a ROS topic.
       bool publish_grad_field;  // whether to publish the gradient field on a ROS topic.
+      bool publish_des_orient;  // whether to publish a Pose message with the desired orientation.
 
       /**
        * @brief Sets up the variables based on the parameter server.
@@ -193,6 +195,11 @@ namespace grad_field_local_planner
        * @brief Publishes the gradient field to a ROS topic.
        */
       void publishGradField();
+
+      /**
+       * @brief Publishes the desired orientation to a ROS topic.
+       */
+      void publishDesOrient();
   };
 } // namespace grad_field_local_planner
 

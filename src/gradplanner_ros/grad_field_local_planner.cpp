@@ -61,6 +61,12 @@ namespace grad_field_local_planner
         grad_field_publisher = nh.advertise<geometry_msgs::PoseArray >(
           "/grad_field_local_planner/grad_field", 1);
       }
+
+      if (publish_des_orient)
+      {
+        des_orient_publisher = nh.advertise<geometry_msgs::Pose >(
+          "/grad_field_local_planner/des_orient", 1);
+      }
         
 
       // initializing the occupancy grids:
@@ -159,6 +165,10 @@ namespace grad_field_local_planner
       // publish gradient fields:
       if (publish_grad_field)
         publishGradField();
+
+      // publish the desired orientation:
+      if (publish_des_orient)
+        publishDesOrient();
       
       return true;
     }
@@ -401,5 +411,24 @@ namespace grad_field_local_planner
 
     // Publishing the message:
     grad_field_publisher.publish(msg);
+  }
+
+
+  void GradFieldPlannerROS::publishDesOrient()
+  {
+    double des_orient = controller.get_desired_orientation();
+    geometry_msgs::Pose::Ptr p(new geometry_msgs::Pose);
+    tf2::Quaternion q;
+
+    p->position.x = state.x;
+    p->position.y = state.y;
+    p->position.z = 0;
+    
+    // creating the quaternion from RPY angles:
+    q.setRPY(0, 0, des_orient);
+    p->orientation = tf2::toMsg(q);
+
+    // Publishing the message:
+    des_orient_publisher.publish(p);
   }
 } // namespace grad_field_local_planner

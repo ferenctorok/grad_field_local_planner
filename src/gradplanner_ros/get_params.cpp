@@ -121,6 +121,11 @@ namespace grad_field_local_planner
     else
       publish_grad_field = false; // Default
 
+    if (ros::param::has("/move_base/GradFieldPlannerROS/debug/publish_des_orient"))
+      ros::param::get("/move_base/GradFieldPlannerROS/debug/publish_des_orient", publish_des_orient);
+    else
+      publish_des_orient = false; // Default
+
     // Printing summary:
     printSummary();
   }
@@ -171,7 +176,8 @@ namespace grad_field_local_planner
 
     // debug //
     ROS_INFO_STREAM("- publish_occ_grid: " << publish_occ_grid);
-    ROS_INFO_STREAM("- publish_grad_field: " << publish_grad_field << std::endl);
+    ROS_INFO_STREAM("- publish_grad_field: " << publish_grad_field);
+    ROS_INFO_STREAM("- publish_des_orient: " << publish_des_orient << std::endl);
 
     ROS_INFO("--- GradFieldPlannerROS Summary End ---\n");
   }

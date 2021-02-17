@@ -211,6 +211,19 @@ namespace gradplanner
   void GradFieldController::grad_controller(double& v_x,
                                             double& omega)
   {
+    // calculating the desired orienation and the error from it:
+    double des_orient = get_desired_orientation();
+    double ang_diff = get_ang_diff(state.psi, des_orient);
+
+    // based on this, calculating the command velocities:
+    v_x = get_trans_vel(ang_diff, boundary_error_grad,
+                        max_error_grad);
+    omega = get_ang_vel(ang_diff, K_grad);
+  }
+
+
+  double GradFieldController::get_desired_orientation()
+  {
     // We chose 2 neighboring Pixel next to the robot and sum up
     // their gradients together with the gradient of the Pixel where
     // the robot is. This gradient will be the desired orientation.
@@ -240,6 +253,7 @@ namespace gradplanner
     }*/
 
     // we choose the neighbouring pixels based on the position of the robot.
+    /*
     if ((state_attr.x - rob_ind_attr.get_x()) > 0.5)
     {
       ind2_rep = Index(new int [2] {rob_ind_rep.get_x() + 1, rob_ind_rep.get_y()});
@@ -261,25 +275,71 @@ namespace gradplanner
       ind1_rep = Index(new int [2] {rob_ind_rep.get_x(), rob_ind_rep.get_y() - 1});
       ind1_attr = Index(new int [2] {rob_ind_attr.get_x(), rob_ind_attr.get_y() - 1});
     }
+    */
+
+    // Using 2 neighboring cells //
+    /*
+    if (abs(tan(state.psi)) < 1)
+    {
+      ind1_attr = rob_ind_attr + Index(new int [2] {0, 1});
+      ind2_attr = rob_ind_attr + Index(new int [2] {0, -1});
+
+      ind1_rep = rob_ind_rep + Index(new int [2] {0, 1});
+      ind2_rep = rob_ind_rep + Index(new int [2] {0, -1});
+    }
+    else
+    {
+      ind1_attr = rob_ind_attr + Index(new int [2] {1, 0});
+      ind2_attr = rob_ind_attr + Index(new int [2] {-1, 0});
+
+      ind1_rep = rob_ind_rep + Index(new int [2] {1, 0});
+      ind2_rep = rob_ind_rep + Index(new int [2] {-1, 0});
+    }
+    */
+
+    // using only the nearest neighbouring cell's gradient.
+    if ((state_attr.x - rob_ind_attr.get_x()) > (state_attr.y - rob_ind_attr.get_y()))
+    {
+      if ((state_attr.x - rob_ind_attr.get_x()) > 0.5)
+      {
+        ind1_rep = rob_ind_rep + Index(new int [2] {0, 1});
+        ind1_attr = rob_ind_attr + Index(new int [2] {0, 1});
+      }
+      else
+      {
+        ind1_rep = rob_ind_rep + Index(new int [2] {-1, 0});
+        ind1_attr = rob_ind_attr + Index(new int [2] {-1, 0});
+      }
+    }
+    else
+    {
+      if ((state_attr.x - rob_ind_attr.get_x()) > 0.5)
+      {
+        ind1_rep = rob_ind_rep + Index(new int [2] {1, 0});
+        ind1_attr = rob_ind_attr + Index(new int [2] {1, 0});
+      }
+      else
+      {
+        ind1_rep = rob_ind_rep + Index(new int [2] {0, -1});
+        ind1_attr = rob_ind_attr + Index(new int [2] {0, -1});
+      }
+    }
 
     const double* g0_r = repulsive.get_grad(rob_ind_rep);
     const double* g0_a = attractor.get_grad(rob_ind_attr);
     const double* g1_r = repulsive.get_grad(ind1_rep);
     const double* g1_a = attractor.get_grad(ind1_attr);
-    const double* g2_r = repulsive.get_grad(ind2_rep);
-    const double* g2_a = attractor.get_grad(ind2_attr);
+    //const double* g2_r = repulsive.get_grad(ind2_rep);
+    //const double* g2_a = attractor.get_grad(ind2_attr);
 
     // summing up the gradients and calculate its orientation:
-    double dx = g0_r[0] + g0_a[0] + g1_r[0] + g1_a[0] + g2_r[0] + g2_a[0];
-    double dy = g0_r[1] + g0_a[1] + g1_r[1] + g1_a[1] + g2_r[1] + g2_a[1];
+    //double dx = g0_r[0] + g0_a[0] + g1_r[0] + g1_a[0] + g2_r[0] + g2_a[0];
+    //double dy = g0_r[1] + g0_a[1] + g1_r[1] + g1_a[1] + g2_r[1] + g2_a[1];
 
-    double des_orient = atan2(dy, dx);
-    double ang_diff = get_ang_diff(state.psi, des_orient);
+    double dx = g0_r[0] + g0_a[0] + g1_r[0] + g1_a[0];
+    double dy = g0_r[1] + g0_a[1] + g1_r[1] + g1_a[1];
 
-    // based on this, calculating the command velocities:
-    v_x = get_trans_vel(ang_diff, boundary_error_grad,
-                        max_error_grad);
-    omega = get_ang_vel(ang_diff, K_grad);
+    return atan2(dy, dx);
   }
 
 

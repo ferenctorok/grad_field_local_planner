@@ -69,12 +69,16 @@ namespace gradplanner
     for (int i = 0; i < size_x; i ++)
     {
       for (int j = 0; j < size_y; j ++)
+      {
+        field.set_grad(i, j, new double [2] {0, 0});
         if ((*occ_grid)[i][j])
         {
           field.set_val(i, j, 1);
           field.set_parent(i, j, new unsigned int [2] {i, j});
         }
-        else field.set_val(i, j, 0);
+        else
+          field.set_val(i, j, 0);
+      }
     }
   }
 

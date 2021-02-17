@@ -88,6 +88,13 @@ namespace gradplanner
       bool get_cmd_vel(double& v_x, double& omega);
 
       /**
+       * @brief In grad_controller mode, this is the function that combines together the
+       * gradients from some neigbouring cells and returns the desired orientation.
+       * @return The desired orientation angle around the z axis in radians.
+       */
+      double get_desired_orientation();
+
+      /**
        * @brief returns whether the goal is reached.
        * @return True if the goal was reached.
        */

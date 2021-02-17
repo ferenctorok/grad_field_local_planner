@@ -4,7 +4,7 @@ GradFieldPlannerROS:
     search_dir_8: false # whether to use 8 search directions during update. Default: false
 
   general:
-    R: 6
+    R: 10
     end_pos_tol: 0.1 # Goal position tolerance in meters. Default: 0.1 [m]
     end_ang_tol: 0.1 # Goal orientation tolerance in rad. Default: 0.2 [rad]
     max_trans_vel: 0.22 # Maximal translational velocity in m/s. Default: 4 [m/s]
@@ -19,7 +19,7 @@ GradFieldPlannerROS:
     max_error: 2.0944 # param for calculating translational command velocity in rad. Default: 2/3 PI [rad]
     
   direct_mode:
-    min_obst_dist: 4 # If the robot is closer to an obstacle then this -> grad_mode control. Default: 6 [grid cell]
+    min_obst_dist: 8 # If the robot is closer to an obstacle then this -> grad_mode control. Default: 6 [grid cell]
     K: 0.8 # Proportional control parameter. Defualt: 0.8 [-]
     boundary_error: 0.2 # param for calculating translational command velocity in rad. Default: 0.2 [rad]
     max_error: 1.0473 # param for calculating translational command velocity in rad. Default: 1.0473 [rad]
@@ -30,3 +30,6 @@ GradFieldPlannerROS:
   debug:
     publish_occ_grid: true # Publishing the inflated occupancy grid to the topic /grad_field_local_planner/occ_grid
     publish_grad_field: true # Publishing the gradient field to the topic /grad_field_local_planner/grad_field
+    publish_des_orient: true # Publishing the desired orientation calculated based on the gradient field.
+#				It is always calulated based on the gradient field no matter what, so it is not 
+#				representative, when the controller is in direct or end mode. 
