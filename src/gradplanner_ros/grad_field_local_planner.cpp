@@ -109,19 +109,19 @@ namespace grad_field_local_planner
       return false;
     }
 
-    // updating the state and the origin of the attractor field:
+    // getting the origins of the occupancy grids:
+    getOrigins();
+
+    // updating the occupancy grids based on the actual costmap from ROS:
+    updateOccGrids();
+    
+    // updating the state:
     if (! getState())
       return false;
 
     // setting the actual goal based on the plan.
     if (! getGoal())
       return false;
-    
-    // getting the origins of the occupancy grids:
-    getOrigins();
-
-    // updating the occupancy grids based on the actual costmap from ROS:
-    updateOccGrids();
 
     // publishing the inflated occupancy grid when needed:
     if (publish_occ_grid)
@@ -331,9 +331,11 @@ namespace grad_field_local_planner
     // now it only works if the plan and the costmap are in the same frame.
     geometry_msgs::PoseStamped candidate;
     unsigned int mx, my;
+    int index;
 
     for (int i = 0; i < plan_ptr->size(); i ++)
     {
+      index = i;
       candidate = (*plan_ptr)[i];
       costmap->worldToMap(candidate.pose.position.x, candidate.pose.position.y, mx, my);
       if ((mx == 0) || (mx == (size_x_attr - 1)) ||
@@ -341,6 +343,19 @@ namespace grad_field_local_planner
         break;
     }
 
+    // avoiding placing the new goal in an obstacle. Until the candidate point
+    // is in occupied place, the index is reduced and the previous point is tested.
+    while (occ_grid_attr[mx][my])
+    {
+      index --;
+      // couldn't find any point on the trajectory that is in free space:
+      if (index < 1)
+        return false;
+      // the new candidate:
+      candidate = (*plan_ptr)[index];
+    }
+
+    // copying the data to the goal Pose object.
     goal.x = candidate.pose.position.x;
     goal.y = candidate.pose.position.y;
     goal.psi = getYaw(&candidate);

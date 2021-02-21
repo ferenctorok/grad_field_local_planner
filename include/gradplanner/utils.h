@@ -4,6 +4,7 @@
 #include <cmath>
 
 const double PI = 3.141592;
+const double SQRT2 = 1.414214;
 
 namespace gradplanner
 {
@@ -12,7 +13,7 @@ namespace gradplanner
    * @param v The vector.
    * @return The length of the vector represented by v.
    */
-  double get_length(double v[2]);
+  double get_length(const double v[2]);
 
   /**
    * @brief Returns the length of a vector given by coordinates.
