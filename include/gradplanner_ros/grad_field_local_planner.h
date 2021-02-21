@@ -30,6 +30,7 @@ using namespace std;
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <geometry_msgs/PoseArray.h>
 #include <nav_msgs/OccupancyGrid.h>
+#include <std_msgs/Bool.h>
 
 // costmap & geometry
 #include <costmap_2d/costmap_2d_ros.h>
@@ -94,6 +95,7 @@ namespace grad_field_local_planner
 
     private:
       bool initialized; // true if the object is already initialized.
+      bool enabled; // whether the controller is enabled or not. Default: true
 
       // Pointers to external objects received from move_base:
       costmap_2d::Costmap2DROS* costmap_ros; // Pointer to the costmap ROS wrapper.
@@ -107,6 +109,7 @@ namespace grad_field_local_planner
       ros::Publisher occ_grid_publisher;  // The occupancy grid publisher.
       ros::Publisher grad_field_publisher;  // The gradient field publisher.
       ros::Publisher des_orient_publisher;  // The desired orientation publisher.
+      ros::Subscriber enabled_subscriber; // Subscriber to the enableing message.
 
       // Controller related
       gradplanner::GradFieldController controller;  // The gradient field based controller.
@@ -142,6 +145,13 @@ namespace grad_field_local_planner
        * @brief Prints the set up params to ROS_INFO
        */
       void printSummary();
+
+      /**
+       * @brief Enabled subscriber callback. Sets the enabled flag based 
+       * on the latest value that was received from ROS.
+       * @param msg Reference to the message that was received.
+       */
+      void enabledCallback(const std_msgs::Bool::ConstPtr& msg);
 
       /**
        * @brief Calculates the yaw angle from the quatiernion in the 

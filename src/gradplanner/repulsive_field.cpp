@@ -1,5 +1,6 @@
 #include <gradplanner/repulsive_field.h>
 #include <iostream>
+#include <cmath>
 
 
 namespace gradplanner
@@ -102,7 +103,8 @@ namespace gradplanner
     // decrease linearly from the edge of an obstacle.
     // It has got length 1 at the boarder of an obstacle,
     // that is, in pixels with value 2.
-    double scale = (1 - (new_pix->get_val() - 2) / R);
+    // double scale = (1 - (new_pix->get_val() - 2) / R);
+    double scale = sqrt((1 - pow((new_pix->get_val() - 2) / R, 2)));
     int val = new_pix->get_val();
     new_pix->scale_grad(scale);
   }

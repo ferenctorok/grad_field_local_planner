@@ -36,6 +36,7 @@ namespace grad_field_local_planner
   {
     if (! initialized)
     {
+      enabled = true;
       costmap_ros = costmap_ros_;
       costmap = costmap_ros->getCostmap();
       lay_costmap = costmap_ros->getLayeredCostmap();
@@ -49,25 +50,31 @@ namespace grad_field_local_planner
       // create ROS node handler:
       ros::NodeHandle nh;
 
-      // creating publishers:
+      // Publishers //
+      // Publisher for publishing the inflated occupancy grid:
       if (publish_occ_grid)
       {
         occ_grid_publisher = nh.advertise<nav_msgs::OccupancyGrid >(
           "/grad_field_local_planner/occ_grid", 1);
       }
 
+      // Publisher for publishing the gradient field:
       if (publish_grad_field)
       {
         grad_field_publisher = nh.advertise<geometry_msgs::PoseArray >(
           "/grad_field_local_planner/grad_field", 1);
       }
 
+      // Publisher for publishing the desired orientation calcualted from the gradient field:
       if (publish_des_orient)
       {
         des_orient_publisher = nh.advertise<geometry_msgs::PoseStamped >(
           "/grad_field_local_planner/des_orient", 1);
       }
-        
+
+      // Subscribers //
+      enabled_subscriber = nh.subscribe("grad_field_local_planner/enabled", 100,
+                                        &GradFieldPlannerROS::enabledCallback, this);
 
       // initializing the occupancy grids:
       initOccGrid(size_x_attr, size_y_attr, occ_grid_attr);
@@ -85,6 +92,12 @@ namespace grad_field_local_planner
 
       initialized = true;
     }      
+  }
+
+
+  void GradFieldPlannerROS::enabledCallback(const std_msgs::Bool::ConstPtr& msg)
+  {
+    enabled = msg->data;
   }
 
 
@@ -114,7 +127,7 @@ namespace grad_field_local_planner
 
     // updating the occupancy grids based on the actual costmap from ROS:
     updateOccGrids();
-    
+
     // updating the state:
     if (! getState())
       return false;
@@ -146,18 +159,30 @@ namespace grad_field_local_planner
 
     // calculating the command velocities:
     double v_x, omega;
+
+    // these are always zeros:
+    cmd_vel.linear.y = 0.0;
+    cmd_vel.linear.z = 0.0;
+    cmd_vel.angular.x = 0.0;
+    cmd_vel.angular.y = 0.0;
+
     if (controller.get_cmd_vel(v_x, omega))
     {
-      cmd_vel.linear.x = v_x;
-      cmd_vel.linear.y = 0.0;
-      cmd_vel.linear.z = 0.0;
-      cmd_vel.angular.x = 0.0;
-      cmd_vel.angular.y = 0.0;
-      cmd_vel.angular.z = omega;
+      if (enabled)
+      {
+        cmd_vel.linear.x = v_x;
+        cmd_vel.angular.z = omega;
+      }
+      else
+      {
+        cmd_vel.linear.x = 0.0;
+        cmd_vel.angular.z = 0.0;
+        ROS_WARN("The controller is desabled. Send message to topic grad_field_local_planner/enabled to enable it!");
+      }
 
       // for now setting back the velocities in the state:
-      state.v = v_x;
-      state.omega = omega;
+      state.v = cmd_vel.linear.x;
+      state.omega = cmd_vel.angular.z;
 
       // checking whether the goal was reached:
       goal_is_reached = controller.goal_is_reached();
@@ -176,15 +201,11 @@ namespace grad_field_local_planner
     {
       ROS_WARN("Cmd_vel calculation was unsuccessful!");
       cmd_vel.linear.x = 0.0;
-      cmd_vel.linear.y = 0.0;
-      cmd_vel.linear.z = 0.0;
-      cmd_vel.angular.x = 0.0;
-      cmd_vel.angular.y = 0.0;
       cmd_vel.angular.z = 0.0;
 
       // for now setting back the velocities in the state:
-      state.v = v_x;
-      state.omega = omega;
+      state.v = cmd_vel.linear.x = 0.0;
+      state.omega = cmd_vel.angular.z = 0.0;
 
       return false;
     }

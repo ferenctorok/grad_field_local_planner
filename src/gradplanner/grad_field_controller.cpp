@@ -158,14 +158,24 @@ namespace gradplanner
             v_x = 0;
             omega = 0;
           }
-          else end_controller(v_x, omega);
+          else 
+          {
+            ROS_INFO("In end mode.");
+            end_controller(v_x, omega);
+          }
         }
         else
         {
           if (is_direct_mode())
+          {
+            ROS_INFO("In direct mode.");
             direct_controller(v_x, omega);
+          }
           else
+          {
+            ROS_INFO("In grad mode.");
             grad_controller(v_x, omega);
+          }
         }
 
         return true;
@@ -349,7 +359,7 @@ namespace gradplanner
 
     // using altogether 4 cells, the 4 nearests to the robot
     // and sum their gradients weighted.
-    double x = rob_ind_attr.get_x() + 0.5; // x center of the actual cell
+    /*double x = rob_ind_attr.get_x() + 0.5; // x center of the actual cell
     double y = rob_ind_attr.get_y() + 0.5; // y center of the actual cell
     double x1, y1; // they will be used to index the neighboring pixels.
 
@@ -369,11 +379,11 @@ namespace gradplanner
     double d2 = get_length((x - state_attr.x), (y + y1 - state_attr.y));
     double d3 = get_length((x + x1 - state_attr.x), (y + y1 - state_attr.y));
 
-    // calculating the weights (they will be between 1 and 2):
-    double w0 = 2 - d0 / SQRT2;
-    double w1 = 2 - d1 / SQRT2;
-    double w2 = 2 - d2 / SQRT2;
-    double w3 = 2 - d3 / SQRT2;
+    // calculating the weights (they will be between 0 and 1):
+    double w0 = 1 - d0 / SQRT2;
+    double w1 = 1 - d1 / SQRT2;
+    double w2 = 1 - d2 / SQRT2;
+    double w3 = 1 - d3 / SQRT2;
     
     // getting the gradients:
     int x1i = int(x1);
@@ -403,6 +413,32 @@ namespace gradplanner
     // summing the weighted and normalized gradients:
     double dx = g0[0] * w0 / l0 + g1[0] * w3 / l3 + g2[0] * w3 / l3 + g3[0] * w3 / l3;
     double dy = g0[1] * w0 / l0 + g1[1] * w3 / l3 + g2[1] * w3 / l3 + g3[1] * w3 / l3;
+    */
+
+
+    // using a lot of cells in the neighborhood:
+    int K = 6;
+    double dx, dy, dx_act, dy_act;
+    const double* grad_rep, *grad_attr;
+    int x0_r = rob_ind_rep.get_x();
+    int y0_r = rob_ind_rep.get_y();
+    int x0_a = rob_ind_attr.get_x();
+    int y0_a = rob_ind_attr.get_y();
+    double l;
+
+    for (int i = -K; i <= K; i ++)
+      for (int j = -K; j <= K; j ++)
+      {
+        grad_attr = attractor.get_grad(x0_a + i, y0_a + j);
+        grad_rep = repulsive.get_grad(x0_r + i, y0_r + j);
+        
+        dx_act = grad_rep[0] + grad_attr[0];
+        dy_act = grad_rep[1] + grad_attr[1];
+        l = get_length(dx_act, dy_act);
+
+        dx += dx_act / (l + 1e-5);
+        dy += dy_act / (l + 1e-5);
+      }
 
     return atan2(dy, dx);
   }
@@ -410,15 +446,17 @@ namespace gradplanner
 
   bool GradFieldController::is_direct_mode()
   {
+    double distance = get_length(goal_rel.x, goal_rel.y);
+
     // Check whether the robot is too close to an obstacle:
     if ((0 < repulsive.get_val(rob_ind_rep)) &&
-        (repulsive.get_val(rob_ind_rep) < (min_obst_direct + 1))) 
+        (repulsive.get_val(rob_ind_rep) < (min_obst_direct + 1)) &&
+        ((distance / cell_size) > min_obst_direct)) 
       return false;
     else
     {
       // carrying out raytracing to check whether the
       // path to the goal is free.
-      double distance = get_length(goal_rel.x, goal_rel.y);
       double dx = goal_rel.x / distance;
       double dy = goal_rel.y / distance;
       double x = state_rep.x;
