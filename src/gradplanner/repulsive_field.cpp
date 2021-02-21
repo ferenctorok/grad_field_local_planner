@@ -103,10 +103,11 @@ namespace gradplanner
     // decrease linearly from the edge of an obstacle.
     // It has got length 1 at the boarder of an obstacle,
     // that is, in pixels with value 2.
-    // double scale = (1 - (new_pix->get_val() - 2) / R);
-    double scale = sqrt((1 - pow((new_pix->get_val() - 2) / R, 2)));
+    double scale1 = (1 - (new_pix->get_val() - 2) / R);
+    double scale2 = sqrt((1 - pow((new_pix->get_val() - 2) / R, 2)));
+    double scale3 = 2 * scale1 - scale2;
     int val = new_pix->get_val();
-    new_pix->scale_grad(scale);
+    new_pix->scale_grad(scale3);
   }
 
   bool RepulsiveField::is_special_case()

@@ -416,9 +416,16 @@ namespace gradplanner
     */
 
 
-    // using a lot of cells in the neighborhood:
-    int K = 6;
-    double dx, dy, dx_act, dy_act;
+    // using a lot of cells in the neighborhood //
+    int K;
+    if (repulsive.get_val(rob_ind_rep) > 1)
+      K = repulsive.get_val(rob_ind_rep) - 2;
+    else
+      K = params->general.R;
+
+    double dx = 0;
+    double dy = 0;
+    double dx_act, dy_act;
     const double* grad_rep, *grad_attr;
     int x0_r = rob_ind_rep.get_x();
     int y0_r = rob_ind_rep.get_y();
@@ -451,7 +458,7 @@ namespace gradplanner
     // Check whether the robot is too close to an obstacle:
     if ((0 < repulsive.get_val(rob_ind_rep)) &&
         (repulsive.get_val(rob_ind_rep) < (min_obst_direct + 1)) &&
-        ((distance / cell_size) > min_obst_direct)) 
+        ((distance / cell_size) > params->general.R)) 
       return false;
     else
     {

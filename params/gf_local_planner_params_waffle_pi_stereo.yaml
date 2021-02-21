@@ -4,7 +4,7 @@ GradFieldPlannerROS:
     search_dir_8: false # whether to use 8 search directions during update. Default: false
 
   general:
-    R: 12
+    R: 14
     end_pos_tol: 0.1 # Goal position tolerance in meters. Default: 0.1 [m]
     end_ang_tol: 0.1 # Goal orientation tolerance in rad. Default: 0.2 [rad]
     max_trans_vel: 0.22 # Maximal translational velocity in m/s. Default: 4 [m/s]
@@ -16,10 +16,10 @@ GradFieldPlannerROS:
   grad_mode:
     K: 1.0 # Proportional control parameter. Defualt: 0.8 [-]
     boundary_error: 0.5 # param for calculating translational command velocity in rad. Default: 0.5 [rad]
-    max_error: 1.5 # param for calculating translational command velocity in rad. Default: 2/3 PI [rad]
+    max_error: 2.0 # param for calculating translational command velocity in rad. Default: 2/3 PI [rad]
     
   direct_mode:
-    min_obst_dist: 12 # If the robot is closer to an obstacle then this -> grad_mode control. Default: 6 [grid cell]
+    min_obst_dist: 14 # If the robot is closer to an obstacle then this -> grad_mode control. Default: 6 [grid cell]
     K: 0.8 # Proportional control parameter. Defualt: 0.8 [-]
     boundary_error: 0.2 # param for calculating translational command velocity in rad. Default: 0.2 [rad]
     max_error: 1.0473 # param for calculating translational command velocity in rad. Default: 1.0473 [rad]
