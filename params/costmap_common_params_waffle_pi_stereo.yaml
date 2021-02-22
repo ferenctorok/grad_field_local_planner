@@ -1,1 +1,38 @@
-/home/ferenc/Documents/Iteratec/projects/Turtlebot/ros-turtlebot3/office_navigation/params/costmap_common_params_waffle_pi_stereo.yaml
+obstacle_range: 3.0
+raytrace_range: 3.5
+
+footprint: [[-0.205, -0.155], [-0.205, 0.155], [0.077, 0.155], [0.077, -0.155]]
+robot_radius: 0.17
+
+inflation_radius: 1.0
+cost_scaling_factor: 2.0
+
+# For default layered costmap configuration: (if plugins are provided, it is not used)
+#map_type: costmap
+
+# observation source definitions:
+# global obs source, that could be used by any layer if other is not provided:
+#observation_sources: scan
+#scan: {sensor_frame: base_scan, data_type: LaserScan, topic: scan, marking: true, clearing: true}
+
+# definition of the obstacle layer based on the planar laser scanner:
+obstacle_layer:
+  observation_sources: scan
+  scan: {sensor_frame: base_scan, data_type: LaserScan, topic: filtered_scan, marking: true, clearing: true}
+
+# definition of the obstacle layer based on the RGB-D camera:
+stereo_layer:
+  observation_sources: stereo
+#  stereo: {sensor_frame: astra_camera_rgb_optical_frame, data_type: PointCloud2, topic: filtered_pointcloud, marking: true, clearing: true}
+  stereo: {sensor_frame: astra_camera_rgb_optical_frame, data_type: PointCloud2, topic: /astra_camera/depth/points, marking: true, clearing: true}
+  max_obstacle_height: 1.5
+
+# definition of the obstacle layer based on the cliff sensors:
+cliff_layer:
+  ns: /cliff
+  topics: ["/cliffdetect/c_fl", "/cliffdetect/c_fr", "/cliffdetect/c_rl", "/cliffdetect/c_rr"]
+  input_sensor_type: FIXED
+  clear_on_max_reading: true
+  no_readings_timeout: 0.0
+  clear_threshold: 0.3
+  mark_threshold: 0.5
