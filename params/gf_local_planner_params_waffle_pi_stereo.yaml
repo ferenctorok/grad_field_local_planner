@@ -4,14 +4,14 @@ GradFieldPlannerROS:
     search_dir_8: false # whether to use 8 search directions during update. Default: false
 
   general:
-    R: 6
+    R: 6 # The radius around an obstacle where the repulsive field has got an effect in number of cells. Default 16 [grid cell]
     end_pos_tol: 0.1 # Goal position tolerance in meters. Default: 0.1 [m]
     end_ang_tol: 0.1 # Goal orientation tolerance in rad. Default: 0.2 [rad]
     max_trans_vel: 0.22 # Maximal translational velocity in m/s. Default: 4 [m/s]
     max_trans_acc: 1.0 # Maximal translational acceleration in m/s². Default: 2 [m/a²]
     max_ang_vel: 1.0 # Maximal angular velocity in rad/s. Default: 1.5708 [rad/s]
     max_ang_acc: 1.5708 # Maximal angular acceleration in rad/s². Default: 3.1415 [rad/s²]
-    decel_ratio: 0.8 # During deceleration the robot uses this partition of its maximal acceleration. Default: 0.8
+    decel_ratio: 0.8 # During deceleration the robot uses this partition of its maximal acceleration. Default: 0.8 [-]
 
   grad_mode:
     K: 1.0 # Proportional control parameter. Defualt: 0.8 [-]

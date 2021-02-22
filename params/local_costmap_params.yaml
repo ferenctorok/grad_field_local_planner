@@ -10,8 +10,6 @@ local_costmap:
   rolling_window: true
   width: 2.0
   height: 2.0
-  #origin_x: -0.75
-  #origin_y: -0.75
   resolution: 0.1
   
   plugins:
