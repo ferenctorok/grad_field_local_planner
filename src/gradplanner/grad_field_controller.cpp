@@ -160,7 +160,7 @@ namespace gradplanner
           }
           else 
           {
-            ROS_INFO("In end mode.");
+            //ROS_INFO("In end mode.");
             end_controller(v_x, omega);
           }
         }
@@ -168,12 +168,12 @@ namespace gradplanner
         {
           if (is_direct_mode())
           {
-            ROS_INFO("In direct mode.");
+            //ROS_INFO("In direct mode.");
             direct_controller(v_x, omega);
           }
           else
           {
-            ROS_INFO("In grad mode.");
+            //ROS_INFO("In grad mode.");
             grad_controller(v_x, omega);
           }
         }
@@ -234,188 +234,6 @@ namespace gradplanner
 
   double GradFieldController::get_desired_orientation()
   {
-    // We chose 2 neighboring Pixel next to the robot and sum up
-    // their gradients together with the gradient of the Pixel where
-    // the robot is. This gradient will be the desired orientation.
-    // The choice of the 2 neighboring Pixels depends on the orientation of the robot.
-    Index ind1_rep, ind1_attr;
-    Index ind2_rep, ind2_attr;
-    /*if (state.psi > 0)
-    {
-      ind1_rep = Index(new int [2] {rob_ind_rep.get_x(), rob_ind_rep.get_y() + 1});
-      ind1_attr = Index(new int [2] {rob_ind_attr.get_x(), rob_ind_attr.get_y() + 1});
-    }
-    else
-    {
-      ind1_rep = Index(new int [2] {rob_ind_rep.get_x(), rob_ind_rep.get_y() - 1});
-      ind1_attr = Index(new int [2] {rob_ind_attr.get_x(), rob_ind_attr.get_y() - 1});
-    }
-      
-    if (state.psi < (PI / 2) && state.psi > (-PI / 2))
-    {
-      ind2_rep = Index(new int [2] {rob_ind_rep.get_x() + 1, rob_ind_rep.get_y()});
-      ind2_attr = Index(new int [2] {rob_ind_attr.get_x() + 1, rob_ind_attr.get_y()});
-    }
-    else
-    {
-      ind2_rep = Index(new int [2] {rob_ind_rep.get_x() - 1, rob_ind_rep.get_y()});
-      ind2_attr = Index(new int [2] {rob_ind_attr.get_x() - 1, rob_ind_attr.get_y()});
-    }*/
-
-    // we choose the neighbouring pixels based on the position of the robot.
-    /*
-    if ((state_attr.x - rob_ind_attr.get_x()) > 0.5)
-    {
-      ind2_rep = Index(new int [2] {rob_ind_rep.get_x() + 1, rob_ind_rep.get_y()});
-      ind2_attr = Index(new int [2] {rob_ind_attr.get_x() + 1, rob_ind_attr.get_y()});
-    }
-    else
-    {
-      ind2_rep = Index(new int [2] {rob_ind_rep.get_x() - 1, rob_ind_rep.get_y()});
-      ind2_attr = Index(new int [2] {rob_ind_attr.get_x() - 1, rob_ind_attr.get_y()});
-    }
-
-    if ((state_attr.y - rob_ind_attr.get_y()) > 0.5)
-    {
-      ind1_rep = Index(new int [2] {rob_ind_rep.get_x(), rob_ind_rep.get_y() + 1});
-      ind1_attr = Index(new int [2] {rob_ind_attr.get_x(), rob_ind_attr.get_y() + 1});
-    }
-    else
-    {
-      ind1_rep = Index(new int [2] {rob_ind_rep.get_x(), rob_ind_rep.get_y() - 1});
-      ind1_attr = Index(new int [2] {rob_ind_attr.get_x(), rob_ind_attr.get_y() - 1});
-    }
-    */
-
-    // Using 2 neighboring cells //
-    /*
-    if (abs(tan(state.psi)) < 1)
-    {
-      ind1_attr = rob_ind_attr + Index(new int [2] {0, 1});
-      ind2_attr = rob_ind_attr + Index(new int [2] {0, -1});
-
-      ind1_rep = rob_ind_rep + Index(new int [2] {0, 1});
-      ind2_rep = rob_ind_rep + Index(new int [2] {0, -1});
-    }
-    else
-    {
-      ind1_attr = rob_ind_attr + Index(new int [2] {1, 0});
-      ind2_attr = rob_ind_attr + Index(new int [2] {-1, 0});
-
-      ind1_rep = rob_ind_rep + Index(new int [2] {1, 0});
-      ind2_rep = rob_ind_rep + Index(new int [2] {-1, 0});
-    }
-    */
-
-    //const double* g0_r = repulsive.get_grad(rob_ind_rep);
-    //const double* g0_a = attractor.get_grad(rob_ind_attr);
-    //const double* g1_r = repulsive.get_grad(ind1_rep);
-    //const double* g1_a = attractor.get_grad(ind1_attr);
-    //const double* g2_r = repulsive.get_grad(ind2_rep);
-    //const double* g2_a = attractor.get_grad(ind2_attr);
-
-    // summing up the gradients and calculate its orientation:
-    //double dx = g0_r[0] + g0_a[0] + g1_r[0] + g1_a[0] + g2_r[0] + g2_a[0];
-    //double dy = g0_r[1] + g0_a[1] + g1_r[1] + g1_a[1] + g2_r[1] + g2_a[1];
-
-
-    // using only the nearest neighbouring cell's gradient.
-    /*
-    if ((state_attr.x - rob_ind_attr.get_x()) > (state_attr.y - rob_ind_attr.get_y()))
-    {
-      if ((state_attr.x - rob_ind_attr.get_x()) > 0.5)
-      {
-        ind1_rep = rob_ind_rep + Index(new int [2] {0, 1});
-        ind1_attr = rob_ind_attr + Index(new int [2] {0, 1});
-      }
-      else
-      {
-        ind1_rep = rob_ind_rep + Index(new int [2] {-1, 0});
-        ind1_attr = rob_ind_attr + Index(new int [2] {-1, 0});
-      }
-    }
-    else
-    {
-      if ((state_attr.x - rob_ind_attr.get_x()) > 0.5)
-      {
-        ind1_rep = rob_ind_rep + Index(new int [2] {1, 0});
-        ind1_attr = rob_ind_attr + Index(new int [2] {1, 0});
-      }
-      else
-      {
-        ind1_rep = rob_ind_rep + Index(new int [2] {0, -1});
-        ind1_attr = rob_ind_attr + Index(new int [2] {0, -1});
-      }
-    }*/    
-
-    //const double* g0_r = repulsive.get_grad(rob_ind_rep);
-    //const double* g0_a = attractor.get_grad(rob_ind_attr);
-    //const double* g1_r = repulsive.get_grad(ind1_rep);
-    //const double* g1_a = attractor.get_grad(ind1_attr);
-
-    //double dx = g0_r[0] + g0_a[0] + g1_r[0] + g1_a[0];
-    //double dy = g0_r[1] + g0_a[1] + g1_r[1] + g1_a[1];
-
-
-    // using altogether 4 cells, the 4 nearests to the robot
-    // and sum their gradients weighted.
-    /*double x = rob_ind_attr.get_x() + 0.5; // x center of the actual cell
-    double y = rob_ind_attr.get_y() + 0.5; // y center of the actual cell
-    double x1, y1; // they will be used to index the neighboring pixels.
-
-    if (state_attr.x > x)
-      x1 = 1.0;
-    else
-      x1 = -1.0;
-
-    if (state_attr.y > y)
-      y1 = 1.0;
-    else
-      y1 = -1.0;
-
-    // calculating the cell origin distances from the robot:
-    double d0 = get_length((x - state_attr.x), (y - state_attr.y));
-    double d1 = get_length((x + x1 - state_attr.x), (y - state_attr.y));
-    double d2 = get_length((x - state_attr.x), (y + y1 - state_attr.y));
-    double d3 = get_length((x + x1 - state_attr.x), (y + y1 - state_attr.y));
-
-    // calculating the weights (they will be between 0 and 1):
-    double w0 = 1 - d0 / SQRT2;
-    double w1 = 1 - d1 / SQRT2;
-    double w2 = 1 - d2 / SQRT2;
-    double w3 = 1 - d3 / SQRT2;
-    
-    // getting the gradients:
-    int x1i = int(x1);
-    int y1i = int(y1);
-    const double* g0_r = repulsive.get_grad(rob_ind_rep);
-    const double* g0_a = attractor.get_grad(rob_ind_attr);
-    double g0 [2] {(g0_r[0] + g0_a[0]), (g0_r[1] + g0_a[1])};
-
-    const double* g1_r = repulsive.get_grad(rob_ind_rep + Index(new int [2] {x1i, 0}));
-    const double* g1_a = attractor.get_grad(rob_ind_attr + Index(new int [2] {x1i, 0}));
-    double g1 [2] {(g1_r[0] + g1_a[0]), (g1_r[1] + g1_a[1])};
-
-    const double* g2_r = repulsive.get_grad(rob_ind_rep + Index(new int [2] {0, y1i}));
-    const double* g2_a = attractor.get_grad(rob_ind_attr + Index(new int [2] {0, y1i}));
-    double g2 [2] {(g2_r[0] + g2_a[0]), (g2_r[1] + g2_a[1])};
-
-    const double* g3_r = repulsive.get_grad(rob_ind_rep + Index(new int [2] {x1i, y1i}));
-    const double* g3_a = attractor.get_grad(rob_ind_attr + Index(new int [2] {y1i, y1i}));
-    double g3 [2] {(g3_r[0] + g3_a[0]), (g3_r[1] + g3_a[1])};
-
-    // calculating the lengths of the gradients for normalization:
-    double l0 = get_length(g0);
-    double l1 = get_length(g1);
-    double l2 = get_length(g1);
-    double l3 = get_length(g2);
-
-    // summing the weighted and normalized gradients:
-    double dx = g0[0] * w0 / l0 + g1[0] * w3 / l3 + g2[0] * w3 / l3 + g3[0] * w3 / l3;
-    double dy = g0[1] * w0 / l0 + g1[1] * w3 / l3 + g2[1] * w3 / l3 + g3[1] * w3 / l3;
-    */
-
-
     // using a lot of cells in the neighborhood //
     int K;
     if (repulsive.get_val(rob_ind_rep) > 1)
