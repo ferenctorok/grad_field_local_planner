@@ -2,8 +2,6 @@
 
 This repository contains the source file for a gradient field based local planner that can be used with the ROS Navigation Stack. It also contains some launch and parameter files.
 
-Description on how to set up the robot, the remote pc and how to operate the robot with this package can be found [here](https://iteragit.iteratec.de/iterastudents/ros-turtlebot3/-/tree/master/office_navigation)
-
 ## gradplanner library
 
 The `gradplanner` library is a cpp library that implements the gradient field based controller. It implements a repulsive and an attractor gradient field which together provide a local minima free gradient field to control the robot based on them. Tests for the library are written with the help of `CXXTest-4.3`.
