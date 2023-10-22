@@ -16,6 +16,7 @@ namespace gradplanner
   {
     this->GradFieldBase::operator=(other);
     R = other.R;
+    return *this;
   }
 
   unsigned int RepulsiveField::get_R() {return R;}

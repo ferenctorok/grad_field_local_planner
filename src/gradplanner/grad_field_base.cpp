@@ -74,7 +74,7 @@ namespace gradplanner
         if ((*occ_grid)[i][j])
         {
           field.set_val(i, j, 1);
-          field.set_parent(i, j, new unsigned int [2] {i, j});
+          field.set_parent(i, j, new unsigned int [2] {static_cast<unsigned int>(i), static_cast<unsigned int>(j)});
         }
         else
           field.set_val(i, j, 0);
